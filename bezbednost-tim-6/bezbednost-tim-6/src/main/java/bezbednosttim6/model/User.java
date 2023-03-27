@@ -1,23 +1,23 @@
 package bezbednosttim6.model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collection;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name="users")
 @Entity
-public class User {
+public class User implements UserDetails, Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false, updatable = false, unique = true)
@@ -32,16 +32,17 @@ public class User {
 	private String password;
 	private boolean activated;
 	private boolean blocked;
-	
-	@Enumerated(EnumType.STRING)
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonManagedReference
 	private Role role;
-	
+
 	@Transient
 	private String accessToken;
-	
+
 	public User() {
 		super();
-				
+
 	}
 
 	public User(Long id, String name, String surname, byte[] profilePicture, String telephoneNumber, String email,
@@ -58,7 +59,7 @@ public class User {
 		this.activated = activated;
 		this.blocked = blocked;
 		this.role = role;
-		
+
 	}
 
 	public Long getId() {
@@ -84,11 +85,11 @@ public class User {
 	public void setSurname(String surname) {
 		this.surname = surname;
 	}
-	
+
 	public byte[] getProfilePicture() {
 		return profilePicture;
 	}
-	
+
 	public String getProfilePictureAsString() {
 		if (this.profilePicture == null)
 			return null;
@@ -139,14 +140,6 @@ public class User {
 		this.password = password;
 	}
 
-	public Role getRole() {
-		return role;
-	}
-
-	public void setRole(Role role) {
-		this.role = role;
-	}
-
 	public String getAccessToken() {
 		return accessToken;
 	}
@@ -175,22 +168,65 @@ public class User {
 	public String toString() {
 		return "User [id=" + id + ", name=" + name + ", surname=" + surname + ", profilePicture=" + profilePicture
 				+ ", telephoneNumber=" + telephoneNumber + ", email=" + email + ", address=" + address + ", password="
-				+ password + ", role=" + role + ", accessToken=" + accessToken + "]";
+				+ password + ", role=" + role.toString() + ", accessToken=" + accessToken + "]";
 	}
 
-	
-	private byte[] convertToByte(String string) 
+
+	private byte[] convertToByte(String string)
 	{
 		byte[] decodedBytes = Base64.getMimeDecoder().decode(string);
-		
-			
+
+
 		return decodedBytes;
 	}
 
 	public void setProfilePicture(String profilePicture2) {
 		this.profilePicture = convertToByte(profilePicture2);
-		
+
 	}
-	
-	
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
+	}
+
+	/******************************************************/
+	@JsonIgnore
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		List<Role> roles = new ArrayList<Role>();
+		roles.add(this.role);
+		return roles;
+	}
+	@JsonIgnore
+	@Override
+	public String getUsername() {
+		return email;
+	}
+
+	@JsonIgnore
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@JsonIgnore
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
+
+	@JsonIgnore
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
 }
