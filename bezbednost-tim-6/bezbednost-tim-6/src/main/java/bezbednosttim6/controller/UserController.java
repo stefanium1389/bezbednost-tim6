@@ -1,6 +1,11 @@
 package bezbednosttim6.controller;
 
+import bezbednosttim6.dto.*;
+import bezbednosttim6.exception.ResourceConflictException;
+import bezbednosttim6.mapper.UserDTOwithPasswordMapper;
+import bezbednosttim6.model.User;
 import bezbednosttim6.security.TokenUtils;
+import bezbednosttim6.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,26 +16,25 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import bezbednosttim6.dto.ErrorDTO;
-import bezbednosttim6.dto.LoginRequestDTO;
-import bezbednosttim6.dto.LoginResponseDTO;
 import bezbednosttim6.service.UserService;
 
-import java.security.Principal;
+import java.io.UnsupportedEncodingException;
 
 
 @RestController
-@RequestMapping("api/")
+@RequestMapping("api/user/")
 public class UserController {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private RoleService roleService;
 	
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -40,9 +44,12 @@ public class UserController {
 
 	@Autowired
 	PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private UserDTOwithPasswordMapper mapper;
 	
 	
-	@PostMapping ("user/login")
+	@PostMapping ("login")
 	public ResponseEntity<?> postLogin (@RequestBody LoginRequestDTO loginRequestDTO)
 	{
 		try
@@ -68,10 +75,26 @@ public class UserController {
 	}
 
 	//@PreAuthorize("hasRole('ADMIN')")
-	@GetMapping("proba")
-	public ResponseEntity<?> proba (Principal principal)
-	{
-		return new ResponseEntity<>(passwordEncoder.encode("admin"),HttpStatus.OK);
+//	@GetMapping("proba")
+//	public ResponseEntity<?> proba (Principal principal)
+//	{
+//		return new ResponseEntity<>(passwordEncoder.encode("admin"),HttpStatus.OK);
+//	}
+
+
+	@PostMapping("register")
+	public ResponseEntity<?> register(@RequestBody RegisterRequestDTO userRequest) throws UnsupportedEncodingException {
+		User existUser = this.userService.findUserByEmail(userRequest.getEmail());
+		if (existUser != null) {
+			return new ResponseEntity<>(new ResourceConflictException(userRequest.getId(), "Username already exists").getMessage(), HttpStatus.BAD_REQUEST);
+		} else {
+			User user = mapper.fromDTOtoUser(userRequest);
+			user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+			user.setRole(roleService.findById(2));
+
+			user = userService.addUser(user);
+			return new ResponseEntity<>(new RegisterResponseDTO(user), HttpStatus.CREATED);
+		}
 	}
 
 }
