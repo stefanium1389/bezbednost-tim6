@@ -3,7 +3,3 @@ VALUES (true, 'Narodnog fronta 5', false, 'andrijinkristina@gmail.com', 'Kristin
 
 INSERT INTO roles (name) VALUES ("admin");
 INSERT INTO roles (name) VALUES ("user");
-
-INSERT INTO certificate_types (name) VALUES ("end");
-INSERT INTO certificate_types (name) VALUES ("root");
-INSERT INTO certificate_types (name) VALUES ("intermediate");
