@@ -7,7 +7,6 @@ import java.time.format.DateTimeFormatter;
 public class CertificateRequestResponseDTO {
 	private String certificateType;
 	private Long issuerCertificateId;
-
 	private Long userId;
 	private String timeOfRequest;
 

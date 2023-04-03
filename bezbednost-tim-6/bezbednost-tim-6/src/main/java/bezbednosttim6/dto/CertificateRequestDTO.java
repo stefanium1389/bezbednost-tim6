@@ -3,21 +3,17 @@ package bezbednosttim6.dto;
 public class CertificateRequestDTO {
 	private String certificateType;
 	private Long issuerCertificateId;
-
 	private String duration;
-
 
 	public CertificateRequestDTO() {
 		super();
 	}
-
 
 	public CertificateRequestDTO(String certificateType, Long issuerCertificateId, String duration) {
 		super();
 		this.certificateType = certificateType;
 		this.issuerCertificateId = issuerCertificateId;
 		this.duration = duration;
-
 	}
 
 	public String getCertificateType() {
@@ -36,7 +32,6 @@ public class CertificateRequestDTO {
 		this.issuerCertificateId = issuerCertificateId;
 	}
 
-
 	public String getDuration() {
 		return duration;
 	}
@@ -44,5 +39,4 @@ public class CertificateRequestDTO {
 	public void setDuration(String duration) {
 		this.duration = duration;
 	}
-
 }
