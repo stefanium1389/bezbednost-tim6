@@ -3,16 +3,8 @@ package bezbednosttim6.service;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.SignatureException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateFactory;
-import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
-import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +50,15 @@ public class CertificateValidationService {
 			if(db_certificate.getSerialNumber() != db_certificate.getIssuer()) { //ako nije root
 				parent = getCertificate(db_certificate.getIssuer());
 				certificate.verify(parent.getPublicKey()); //verifikijue potpis sa kljucem roditelja
-				isValid(db_certificate.getIssuer()); //verifikujemo i roditelja
+				try {
+					isValid(db_certificate.getIssuer()); //verifikujemo i roditelja
+				}
+				catch (GeneralSecurityException e) { //ako je roditelj nevalidan, onda sam i ja
+					db_certificate.setStatus(CertificateStatus.NOTVALID);
+					repo.save(db_certificate);
+					repo.flush();
+					throw new GeneralSecurityException(e.getMessage());
+				}
 			}
 			else { //ako jeste root
 				certificate.verify(certificate.getPublicKey()); //sam sebe je potpisao, pa proverava sa svojim
