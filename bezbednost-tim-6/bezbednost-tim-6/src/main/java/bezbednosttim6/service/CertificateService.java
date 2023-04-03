@@ -6,6 +6,7 @@ import bezbednosttim6.dto.CertificateRequestResponseDTO;
 import bezbednosttim6.dto.LoginResponseDTO;
 import bezbednosttim6.exception.ObjectNotFoundException;
 import bezbednosttim6.exception.TypeNotFoundException;
+import bezbednosttim6.exception.UserNotFoundException;
 import bezbednosttim6.model.CertificateRequest;
 import bezbednosttim6.model.CertificateType;
 import bezbednosttim6.model.RequestStatus;
@@ -43,6 +44,12 @@ public class CertificateService {
 
 	public CertificateRequestResponseDTO createRequest(CertificateRequestDTO certificateRequestDTO, String mail) {
 
+		User user = userRepo.findUserByEmail(mail);
+		if (user == null)
+		{
+			throw new UserNotFoundException("User not found.");
+		}
+
 		String requestedType = certificateRequestDTO.getCertificateType().toUpperCase().trim();
 		CertificateType type = null;
 		if (requestedType.equals("ROOT"))
@@ -57,9 +64,9 @@ public class CertificateService {
 		//TODO: proveriti da li postoji id issuera
 		//TODO: dodati koliko dugo treba da traje novi cert
 		//nisam siguran u vezi ovog mail xd
-		CertificateRequest newRequest = new CertificateRequest(type, certificateRequestDTO.getIssuerCertificateId(), mail, RequestStatus.CREATED, now);
+		CertificateRequest newRequest = new CertificateRequest(type, certificateRequestDTO.getIssuerCertificateId(), user.getId(), RequestStatus.CREATED, now);
 		certificateRequestRepo.save(newRequest);
 
-		return new CertificateRequestResponseDTO(certificateRequestDTO.getCertificateType(), certificateRequestDTO.getIssuerCertificateId(),mail,now);
+		return new CertificateRequestResponseDTO(certificateRequestDTO.getCertificateType(), certificateRequestDTO.getIssuerCertificateId(),user.getId(),now);
 	}
 }

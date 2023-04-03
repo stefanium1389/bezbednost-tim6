@@ -25,16 +25,7 @@ import java.security.Principal;
 public class CertificateController {
 
 	@Autowired
-	private UserService userService;
-
-	@Autowired
 	private CertificateService certificateService;
-	
-	@Autowired
-	private AuthenticationManager authenticationManager;
-	
-	@Autowired
-	private TokenUtils jwtTokenUtil;
 
 	@Autowired
 	PasswordEncoder passwordEncoder;

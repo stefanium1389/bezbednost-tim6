@@ -20,7 +20,7 @@ public class CertificateRequest {
 
     private Long issuerCertificateId;
 
-    private String userId;
+    private Long userId;
 
     @Enumerated(EnumType.STRING)
     private RequestStatus status;
@@ -28,7 +28,7 @@ public class CertificateRequest {
     private LocalDateTime timeOfRequest;
 
 
-    public CertificateRequest(CertificateType certificateType, Long issuerCertificateId, String userId, RequestStatus status, LocalDateTime timeOfRequest) {
+    public CertificateRequest(CertificateType certificateType, Long issuerCertificateId, Long userId, RequestStatus status, LocalDateTime timeOfRequest) {
         this.certificateType = certificateType;
         this.issuerCertificateId = issuerCertificateId;
         this.userId = userId;
@@ -37,7 +37,7 @@ public class CertificateRequest {
     }
 
     public CertificateRequest() {
-        
+
     }
 
     public Long getId() {
@@ -64,11 +64,11 @@ public class CertificateRequest {
         this.issuerCertificateId = issuerCertificateId;
     }
 
-    public String getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
