@@ -44,6 +44,12 @@ public class CertificateController {
 			ErrorDTO error = new ErrorDTO(e.getMessage());
 			return new ResponseEntity<ErrorDTO>(error,HttpStatus.BAD_REQUEST);
 		}
+		//TODO: napisati ovo lepše xd
+		catch (Exception e)
+		{
+			ErrorDTO error = new ErrorDTO(e.getMessage());
+			return new ResponseEntity<ErrorDTO>(error,HttpStatus.BAD_REQUEST);
+		}
 	}
 
 }
