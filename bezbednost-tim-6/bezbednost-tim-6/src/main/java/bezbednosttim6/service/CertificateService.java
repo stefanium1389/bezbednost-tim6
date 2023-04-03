@@ -131,7 +131,7 @@ public class CertificateService {
 		CertificateRequest newRequest = new CertificateRequest(type, certificateRequestDTO.getIssuerCertificateId(), user.getId(), RequestStatus.CREATED, now, duration);
 		certificateRequestRepo.save(newRequest);
 
-		return new CertificateRequestResponseDTO(certificateRequestDTO.getCertificateType(), certificateRequestDTO.getIssuerCertificateId(),user.getId(),now);
+		return new CertificateRequestResponseDTO(certificateRequestDTO.getCertificateType(), certificateRequestDTO.getIssuerCertificateId(),user.getId(),now, certificateRequestDTO.getCommonName());
 	}
 
 	private boolean checkIfValidDuration(Long issuerCertificateId, Duration requestedDuration) {
@@ -326,7 +326,7 @@ public class CertificateService {
 		String commonName = IETFUtils.valueToString(cn.getFirst().getValue());
 
 		// MySql
-		Certificate certificate1 = new Certificate(longValue(certificate.getSerialNumber()), certificate.getSigAlgName(), commonName,
+		Certificate certificate1 = new Certificate(longValue(certificate.getSerialNumber()), certificate.getSigAlgName(), 1L,
 				certificate.getNotBefore(), certificate.getNotAfter(), CertificateStatus.VALID, type, user);
 		certificateRepository.save(certificate1);
 

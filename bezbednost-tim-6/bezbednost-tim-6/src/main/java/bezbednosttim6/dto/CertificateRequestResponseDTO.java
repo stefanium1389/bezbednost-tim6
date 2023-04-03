@@ -10,17 +10,20 @@ public class CertificateRequestResponseDTO {
 	private Long userId;
 	private String timeOfRequest;
 
+	private String commonName;
+
 	public CertificateRequestResponseDTO() {
 		super();
 	}
 
-	public CertificateRequestResponseDTO(String certificateType, Long issuerCertificateId, Long userId, LocalDateTime timeOfRequest) {
+	public CertificateRequestResponseDTO(String certificateType, Long issuerCertificateId, Long userId, LocalDateTime timeOfRequest, String commonName) {
 		super();
 		this.certificateType = certificateType;
 		this.issuerCertificateId = issuerCertificateId;
 		this.userId = userId;
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		this.timeOfRequest = timeOfRequest.format(formatter);
+		this.commonName = commonName;
 
 	}
 
@@ -54,5 +57,13 @@ public class CertificateRequestResponseDTO {
 
 	public void setTimeOfRequest(String timeOfRequest) {
 		this.timeOfRequest = timeOfRequest;
+	}
+
+	public String getCommonName() {
+		return commonName;
+	}
+
+	public void setCommonName(String commonName) {
+		this.commonName = commonName;
 	}
 }
