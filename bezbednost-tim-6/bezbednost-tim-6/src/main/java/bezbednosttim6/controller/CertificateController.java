@@ -4,7 +4,9 @@ import bezbednosttim6.dto.*;
 import bezbednosttim6.exception.TypeNotFoundException;
 import bezbednosttim6.security.TokenUtils;
 import bezbednosttim6.service.CertificateService;
+import bezbednosttim6.service.CertificateValidationService;
 import bezbednosttim6.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,13 +33,7 @@ public class CertificateController {
 	private CertificateService certificateService;
 	
 	@Autowired
-	private AuthenticationManager authenticationManager;
-	
-	@Autowired
-	private TokenUtils jwtTokenUtil;
-
-	@Autowired
-	PasswordEncoder passwordEncoder;
+	private CertificateValidationService certificateValidationService;
 	
 	
 	@PostMapping ("request")
@@ -53,6 +49,26 @@ public class CertificateController {
 			ErrorDTO error = new ErrorDTO(e.getMessage());
 			return new ResponseEntity<ErrorDTO>(error,HttpStatus.BAD_REQUEST);
 		}
+	}
+	
+	@GetMapping("getAll")
+	public ResponseEntity<?> getAllCertificates() {
+		
+		return new ResponseEntity<>(this.certificateService.getAllCertificateDTOs(), HttpStatus.OK);
+		
+	}
+	
+	@GetMapping("isValid/{serialNumber}")
+	public ResponseEntity<?> checkIsValid(@PathVariable("serialNumber") Long serialNumber){
+		
+		try {
+			this.certificateValidationService.isValid(serialNumber);
+			return new ResponseEntity<>(HttpStatus.OK);
+		}
+		catch(Exception e) {
+			return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+		}
+				
 	}
 
 }

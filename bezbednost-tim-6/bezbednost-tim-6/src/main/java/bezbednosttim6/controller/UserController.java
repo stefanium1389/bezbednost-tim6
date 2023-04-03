@@ -101,12 +101,5 @@ public class UserController {
 			return new ResponseEntity<>(new RegisterResponseDTO(user), HttpStatus.CREATED);
 		}
 	}
-	
-	@GetMapping("getAllCertificates")
-	public ResponseEntity<?> getAllCertificates() {
-		
-		return new ResponseEntity<>(this.certService.getAllCertificates(), HttpStatus.OK);
-		
-	}
 
 }

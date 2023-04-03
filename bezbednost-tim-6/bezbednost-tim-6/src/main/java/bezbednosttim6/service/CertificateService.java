@@ -1,15 +1,18 @@
 package bezbednosttim6.service;
 
 
+import bezbednosttim6.dto.CertificateDTO;
 import bezbednosttim6.dto.CertificateRequestDTO;
 import bezbednosttim6.dto.CertificateRequestResponseDTO;
 import bezbednosttim6.dto.LoginResponseDTO;
 import bezbednosttim6.exception.ObjectNotFoundException;
 import bezbednosttim6.exception.TypeNotFoundException;
+import bezbednosttim6.model.Certificate;
 import bezbednosttim6.model.CertificateRequest;
 import bezbednosttim6.model.CertificateType;
 import bezbednosttim6.model.RequestStatus;
 import bezbednosttim6.model.User;
+import bezbednosttim6.repository.CertificateRepository;
 import bezbednosttim6.repository.CertificateRequestRepository;
 import bezbednosttim6.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -27,6 +31,9 @@ public class CertificateService {
 	
 	@Autowired
 	private UserRepository userRepo;
+	
+	@Autowired
+	private CertificateRepository certificateRepo;
 
 	@Autowired
 	private CertificateRequestRepository certificateRequestRepo;
@@ -61,5 +68,14 @@ public class CertificateService {
 		certificateRequestRepo.save(newRequest);
 
 		return new CertificateRequestResponseDTO(certificateRequestDTO.getCertificateType(), certificateRequestDTO.getIssuerCertificateId(),mail,now);
+	}
+
+	public List<CertificateDTO> getAllCertificateDTOs() {
+		List<Certificate> lista = certificateRepo.findAll();
+		List<CertificateDTO> dtos = new ArrayList<CertificateDTO>();
+		for(Certificate c : lista) {
+			dtos.add(new CertificateDTO(c));
+		}
+		return dtos;
 	}
 }
