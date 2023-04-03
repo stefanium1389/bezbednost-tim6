@@ -81,6 +81,22 @@ public class CertificateController {
 		}
 	}
 
+	@GetMapping ("request/view")
+	public ResponseEntity<?> createRequest (Principal principal)
+	{
+		try
+		{
+			DTOList<CertificateRequestResponseDTO> response = certificateService.getAllForUser(principal.getName());
+			return new ResponseEntity<>(response, HttpStatus.OK);
+		}
+		//TODO: napisati ovo lepše xd
+		catch (Exception e)
+		{
+			ErrorDTO error = new ErrorDTO(e.getMessage());
+			return new ResponseEntity<ErrorDTO>(error,HttpStatus.BAD_REQUEST);
+		}
+	}
+
 	
 	@GetMapping("getAll")
 	public ResponseEntity<?> getAllCertificates() {

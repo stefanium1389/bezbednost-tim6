@@ -15,4 +15,6 @@ import java.util.Optional;
 
 public interface CertificateRequestRepository extends JpaRepository<CertificateRequest, Long> {
 
+    List<CertificateRequest> findAllByUserId(Long userId);
+
 }
