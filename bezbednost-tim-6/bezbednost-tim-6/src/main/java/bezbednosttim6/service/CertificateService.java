@@ -294,6 +294,8 @@ public class CertificateService {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
 	public List<CertificateDTO> getAllCertificateDTOs() {
 		List<Certificate> lista = certificateRepo.findAll();
 		List<CertificateDTO> dtos = new ArrayList<CertificateDTO>();
