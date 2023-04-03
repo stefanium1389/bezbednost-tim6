@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +35,15 @@ import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.TreeSet;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 
 @RestController
@@ -58,6 +69,7 @@ public class CertificateController {
 
 
 	private CertificateValidationService certificateValidationService;
+
 	
 	
 	@PostMapping ("request")
@@ -73,6 +85,7 @@ public class CertificateController {
 			ErrorDTO error = new ErrorDTO(e.getMessage());
 			return new ResponseEntity<ErrorDTO>(error,HttpStatus.BAD_REQUEST);
 		}
+
 	}
 	
 	@GetMapping("getAll")
@@ -166,4 +179,13 @@ public class CertificateController {
 //		for (String algorithm : algorithms)
 //			System.out.println(algorithm);
 //	}
+		//TODO: napisati ovo lepše xd
+		catch (Exception e)
+		{
+			ErrorDTO error = new ErrorDTO(e.getMessage());
+			return new ResponseEntity<ErrorDTO>(error,HttpStatus.BAD_REQUEST);
+		}
+	}
+
+
 }

@@ -7,14 +7,15 @@ import java.time.format.DateTimeFormatter;
 public class CertificateRequestResponseDTO {
 	private String certificateType;
 	private Long issuerCertificateId;
-	private String userId;
+
+	private Long userId;
 	private String timeOfRequest;
 
 	public CertificateRequestResponseDTO() {
 		super();
 	}
 
-	public CertificateRequestResponseDTO(String certificateType, Long issuerCertificateId, String userId, LocalDateTime timeOfRequest) {
+	public CertificateRequestResponseDTO(String certificateType, Long issuerCertificateId, Long userId, LocalDateTime timeOfRequest) {
 		super();
 		this.certificateType = certificateType;
 		this.issuerCertificateId = issuerCertificateId;
@@ -40,11 +41,11 @@ public class CertificateRequestResponseDTO {
 		this.issuerCertificateId = issuerCertificateId;
 	}
 
-	public String getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(String userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 
