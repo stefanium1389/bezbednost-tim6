@@ -5,7 +5,6 @@ import bezbednosttim6.exception.ResourceConflictException;
 import bezbednosttim6.mapper.UserDTOwithPasswordMapper;
 import bezbednosttim6.model.User;
 import bezbednosttim6.security.TokenUtils;
-import bezbednosttim6.service.CerificateService;
 import bezbednosttim6.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +16,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,9 +32,6 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
-	
-	@Autowired
-	private CerificateService certService;
 
 	@Autowired
 	private RoleService roleService;
