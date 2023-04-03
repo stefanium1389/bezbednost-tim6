@@ -119,7 +119,8 @@ public class CertificateService {
 		CertificateRequest newRequest = new CertificateRequest(type, certificateRequestDTO.getIssuerCertificateId(), user.getId(), RequestStatus.CREATED, now, duration);
 		certificateRequestRepo.save(newRequest);
 
-		return new CertificateRequestResponseDTO(certificateRequestDTO.getCertificateType(), certificateRequestDTO.getIssuerCertificateId(),user.getId(),now,RequestStatus.CREATED.toString());
+		return new CertificateRequestResponseDTO(certificateRequestDTO.getCertificateType(), certificateRequestDTO.getIssuerCertificateId(),user.getId(),now,certificateRequestDTO.getCommonName(),RequestStatus.CREATED.toString());
+
 	}
 
 	private boolean checkIfValidDuration(Long issuerCertificateId, Duration requestedDuration) {

@@ -11,14 +11,16 @@ public class CertificateRequestResponseDTO {
 	private Long issuerCertificateId;
 	private Long userId;
 	private String timeOfRequest;
-
 	private String status;
+	private String commonName;
 
 	public CertificateRequestResponseDTO() {
 		super();
 	}
 
-	public CertificateRequestResponseDTO(String certificateType, Long issuerCertificateId, Long userId, LocalDateTime timeOfRequest, String status) {
+
+	public CertificateRequestResponseDTO(String certificateType, Long issuerCertificateId, Long userId, LocalDateTime timeOfRequest, String commonName, String status) {
+
 		super();
 		this.certificateType = certificateType;
 		this.issuerCertificateId = issuerCertificateId;
@@ -26,6 +28,7 @@ public class CertificateRequestResponseDTO {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		this.timeOfRequest = timeOfRequest.format(formatter);
 		this.status = status;
+		this.commonName = commonName;
 
 	}
 
@@ -37,6 +40,7 @@ public class CertificateRequestResponseDTO {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		this.timeOfRequest = formatter.format(cr.getTimeOfRequest());
 		this.status = cr.getStatus().toString();
+		this.commonName = commonName;
 
 	}
 
@@ -78,5 +82,14 @@ public class CertificateRequestResponseDTO {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getCommonName() {
+		return commonName;
+	}
+
+	public void setCommonName(String commonName) {
+		this.commonName = commonName;
+
 	}
 }

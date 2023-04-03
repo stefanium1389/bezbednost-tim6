@@ -27,7 +27,7 @@ public class CertificateValidationService {
 		X509Certificate certificate = null;
 		X509Certificate parent = null;
 		
-		Optional<Certificate> db_certificateOpt = repo.findById(serialNumber);
+		Optional<Certificate> db_certificateOpt = repo.findBySerialNumber(serialNumber);
 		
 		if(db_certificateOpt.isEmpty()) {
 			throw new ObjectNotFoundException("Certificate "+serialNumber+" not found!");
@@ -73,7 +73,7 @@ public class CertificateValidationService {
 	}
 
 	private X509Certificate getCertificate(Long serialNumber) throws Exception { //za dobavljanje pravih sertifikata, fajlova valjda
-		InputStream inStream = new FileInputStream("path/to/certificate.crt"); //dummy path, treba napraviti folder i parametrizovati sa serialNumber
+		InputStream inStream = new FileInputStream("src/main/resources/certificates/public/1680527310325.cer"); //dummy path, treba napraviti folder i parametrizovati sa serialNumber
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         X509Certificate cert = (X509Certificate)cf.generateCertificate(inStream);
         inStream.close();
