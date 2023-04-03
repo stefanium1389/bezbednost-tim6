@@ -1,9 +1,12 @@
 package bezbednosttim6.model;
 
-public enum CertificateType {
-	
-	ROOT,
-	INTERMEDIATE,
-	END
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+
+import java.io.Serializable;
+
+public enum CertificateType {
+	ROOT, INTERMEDIATE, END
 }
