@@ -3,7 +3,6 @@ package bezbednosttim6.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -21,9 +20,7 @@ public class CertificateRequest {
 
     private Long issuerCertificateId;
 
-    private Long userId;
-
-    private Duration duration;
+    private String userId;
 
     @Enumerated(EnumType.STRING)
     private RequestStatus status;
@@ -31,17 +28,16 @@ public class CertificateRequest {
     private LocalDateTime timeOfRequest;
 
 
-    public CertificateRequest(CertificateType certificateType, Long issuerCertificateId, Long userId, RequestStatus status, LocalDateTime timeOfRequest, Duration duration) {
+    public CertificateRequest(CertificateType certificateType, Long issuerCertificateId, String userId, RequestStatus status, LocalDateTime timeOfRequest) {
         this.certificateType = certificateType;
         this.issuerCertificateId = issuerCertificateId;
         this.userId = userId;
         this.status = status;
         this.timeOfRequest = timeOfRequest;
-        this.duration = duration;
     }
 
     public CertificateRequest() {
-
+        
     }
 
     public Long getId() {
@@ -68,11 +64,11 @@ public class CertificateRequest {
         this.issuerCertificateId = issuerCertificateId;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
@@ -90,13 +86,5 @@ public class CertificateRequest {
 
     public void setTimeOfRequest(LocalDateTime timeOfRequest) {
         this.timeOfRequest = timeOfRequest;
-    }
-
-    public Duration getDuration() {
-        return duration;
-    }
-
-    public void setDuration(Duration duration) {
-        this.duration = duration;
     }
 }
