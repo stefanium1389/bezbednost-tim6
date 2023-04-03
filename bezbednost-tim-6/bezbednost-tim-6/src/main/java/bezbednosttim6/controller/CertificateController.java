@@ -6,12 +6,14 @@ import bezbednosttim6.model.CertificateType;
 import bezbednosttim6.model.User;
 import bezbednosttim6.security.TokenUtils;
 import bezbednosttim6.service.CertificateService;
+import bezbednosttim6.service.CertificateValidationService;
 import bezbednosttim6.service.UserService;
 import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x500.style.IETFUtils;
 import org.bouncycastle.operator.OperatorCreationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +57,9 @@ public class CertificateController {
 	private X509Certificate root;
 
 
+	private CertificateValidationService certificateValidationService;
+	
+	
 	@PostMapping ("request")
 	public ResponseEntity<?> createRequest (@RequestBody CertificateRequestDTO certificateRequestDTO, Principal principal)
 	{
@@ -68,6 +73,26 @@ public class CertificateController {
 			ErrorDTO error = new ErrorDTO(e.getMessage());
 			return new ResponseEntity<ErrorDTO>(error,HttpStatus.BAD_REQUEST);
 		}
+	}
+	
+	@GetMapping("getAll")
+	public ResponseEntity<?> getAllCertificates() {
+		
+		return new ResponseEntity<>(this.certificateService.getAllCertificateDTOs(), HttpStatus.OK);
+		
+	}
+	
+	@GetMapping("isValid/{serialNumber}")
+	public ResponseEntity<?> checkIsValid(@PathVariable("serialNumber") Long serialNumber){
+		
+		try {
+			this.certificateValidationService.isValid(serialNumber);
+			return new ResponseEntity<>(HttpStatus.OK);
+		}
+		catch(Exception e) {
+			return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+		}
+				
 	}
 
 
