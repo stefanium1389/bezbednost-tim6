@@ -18,7 +18,7 @@ public class Certificate implements Serializable {
 	@Column(nullable = false, updatable = false, unique = true)
 	public Long serialNumber;
 	public String SignatureAlgorithm;
-    public String Issuer;
+    public Long Issuer; //ovde ide roditeljski id
     public LocalDateTime ValidFrom;
     public LocalDateTime ValidTo;
 	@Enumerated(EnumType.STRING)
@@ -28,7 +28,7 @@ public class Certificate implements Serializable {
 	@ManyToOne
     public User user;
 	
-	public Certificate(Long serialNumber, String signatureAlgorithm, String issuer, LocalDateTime validFrom,
+	public Certificate(Long serialNumber, String signatureAlgorithm, Long issuer, LocalDateTime validFrom,
 			LocalDateTime validTo, CertificateStatus status, bezbednosttim6.model.CertificateType certificateType,
 			User user) {
 		super();
@@ -58,10 +58,10 @@ public class Certificate implements Serializable {
 	public void setSignatureAlgorithm(String signatureAlgorithm) {
 		SignatureAlgorithm = signatureAlgorithm;
 	}
-	public String getIssuer() {
+	public Long getIssuer() {
 		return Issuer;
 	}
-	public void setIssuer(String issuer) {
+	public void setIssuer(Long issuer) {
 		Issuer = issuer;
 	}
 	public LocalDateTime getValidFrom() {
