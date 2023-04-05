@@ -1,10 +1,7 @@
 package bezbednosttim6.service;
 
 
-import bezbednosttim6.dto.CertificateDTO;
-import bezbednosttim6.dto.CertificateRequestDTO;
-import bezbednosttim6.dto.CertificateRequestResponseDTO;
-import bezbednosttim6.dto.LoginResponseDTO;
+import bezbednosttim6.dto.*;
 import bezbednosttim6.exception.*;
 import bezbednosttim6.model.*;
 import bezbednosttim6.model.Certificate;
@@ -84,16 +81,6 @@ public class CertificateService {
 
 	@Autowired
 	private CertificateRepository certificateRepository;
-	
-	public User findUserById (Long id) 
-	{
-		return userRepo.findUserById(id).orElseThrow(()-> new ObjectNotFoundException("User not found."));
-	}
-	
-	public User findUserByEmail(String email) {
-		return userRepo.findUserByEmail(email);
-	}
-
 
 	public CertificateRequestResponseDTO createRequest(CertificateRequestDTO certificateRequestDTO, String mail) {
 
@@ -128,10 +115,12 @@ public class CertificateService {
 			throw new InvalidArgumentException("Requested duration is longer than possible");
 		}
 
+
 		CertificateRequest newRequest = new CertificateRequest(type, certificateRequestDTO.getIssuerCertificateId(), user.getId(), RequestStatus.CREATED, now, duration);
 		certificateRequestRepo.save(newRequest);
 
-		return new CertificateRequestResponseDTO(certificateRequestDTO.getCertificateType(), certificateRequestDTO.getIssuerCertificateId(),user.getId(),now, certificateRequestDTO.getCommonName());
+		return new CertificateRequestResponseDTO(certificateRequestDTO.getCertificateType(), certificateRequestDTO.getIssuerCertificateId(),user.getId(),now,certificateRequestDTO.getCommonName(),RequestStatus.CREATED.toString());
+
 	}
 
 	private boolean checkIfValidDuration(Long issuerCertificateId, Duration requestedDuration) {
@@ -161,6 +150,25 @@ public class CertificateService {
 		else if (type.equals("END"))
 			return CertificateType.END;
 		else throw new TypeNotFoundException("Type of certificate is not valid.");
+	}
+
+
+	public DTOList<CertificateRequestResponseDTO> getAllForUser(String mail) {
+
+		User user = userRepo.findUserByEmail(mail);
+		if (user == null)
+		{
+			throw new UserNotFoundException("User not found.");
+		}
+		DTOList<CertificateRequestResponseDTO> dtoList = new DTOList<>();
+		List<CertificateRequest> requests = certificateRequestRepo.findAllByUserId(user.getId());
+		for (CertificateRequest cr : requests)
+		{
+			CertificateRequestResponseDTO dto = new CertificateRequestResponseDTO(cr);
+			dtoList.add(dto);
+		}
+
+		return dtoList;
 	}
 
 
@@ -352,4 +360,6 @@ public class CertificateService {
 		}
 		return dtos;
 	}
+
+
 }
