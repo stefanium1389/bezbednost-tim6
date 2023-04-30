@@ -25,7 +25,7 @@ public class User implements UserDetails, Serializable {
 	private String telephoneNumber;
 	private String email;
 	private String password;
-//	private boolean activated;
+	private boolean activated;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonManagedReference
@@ -40,7 +40,7 @@ public class User implements UserDetails, Serializable {
 	}
 
 	public User(Long id, String name, String surname, String telephoneNumber, String email,
-			String password, /*boolean activated,*/ Role role) {
+			String password, boolean activated, Role role) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -48,7 +48,7 @@ public class User implements UserDetails, Serializable {
 		this.telephoneNumber = telephoneNumber;
 		this.email = email;
 		this.password = password;
-//		this.activated = activated;
+		this.activated = activated;
 		this.role = role;
 	}
 
@@ -109,13 +109,13 @@ public class User implements UserDetails, Serializable {
 		this.accessToken = accessToken;
 	}
 
-//	public boolean isActivated() {
-//		return activated;
-//	}
-//
-//	public void setActivated(boolean activated) {
-//		this.activated = activated;
-//	}
+	public boolean isActivated() {
+		return activated;
+	}
+
+	public void setActivated(boolean activated) {
+		this.activated = activated;
+	}
 
 	@Override
 	public String toString() {

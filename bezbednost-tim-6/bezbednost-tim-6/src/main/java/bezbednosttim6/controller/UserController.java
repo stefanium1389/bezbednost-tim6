@@ -37,9 +37,6 @@ public class UserController {
 	
 	@Autowired
 	private CerificateService certService;
-
-	@Autowired
-	private RoleService roleService;
 	
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -48,10 +45,9 @@ public class UserController {
 	private TokenUtils jwtTokenUtil;
 
 	@Autowired
-	PasswordEncoder passwordEncoder;
-
-	@Autowired
 	private UserDTOwithPasswordMapper mapper;
+	
+	
 	
 	
 	@PostMapping ("login")
@@ -89,16 +85,12 @@ public class UserController {
 
 	@PostMapping("register")
 	public ResponseEntity<?> register(@RequestBody RegisterRequestDTO userRequest) throws UnsupportedEncodingException {
-		User existUser = this.userService.findUserByEmail(userRequest.getEmail());
-		if (existUser != null) {
+		try {
+			User newUser = userService.registerUser(userRequest);
+			return new ResponseEntity<>(newUser , HttpStatus.CREATED);
+		}
+		catch(RuntimeException e){
 			return new ResponseEntity<>(new ResourceConflictException(userRequest.getId(), "Username already exists").getMessage(), HttpStatus.BAD_REQUEST);
-		} else {
-			User user = mapper.fromDTOtoUser(userRequest);
-			user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-			user.setRole(roleService.findById(2));
-
-			user = userService.addUser(user);
-			return new ResponseEntity<>(new RegisterResponseDTO(user), HttpStatus.CREATED);
 		}
 	}
 
