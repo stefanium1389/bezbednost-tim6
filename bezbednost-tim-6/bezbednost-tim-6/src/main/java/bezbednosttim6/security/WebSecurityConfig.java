@@ -70,18 +70,12 @@ public class WebSecurityConfig {
 	// Definisemo prava pristupa za zahteve ka odredjenim URL-ovima/rutama
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    	// svim korisnicima dopusti da pristupe sledecim putanjama:
-    	// komunikacija izmedju klijenta i servera je stateless posto je u pitanju REST aplikacija
-        // ovo znaci da server ne pamti nikakvo stanje, tokeni se ne cuvaju na serveru 
-		// ovo nije slucaj kao sa sesijama koje se cuvaju na serverskoj strani - STATEFULL aplikacija
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 //        http.csrf().disable();
         // sve neautentifikovane zahteve obradi uniformno i posalji 401 gresku
-        http.authorizeHttpRequests().requestMatchers("/api/**", "/socket/**").permitAll()
+        http.authorizeHttpRequests() //.requestMatchers("/api/**", "/socket/**").permitAll()
         .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
-        .requestMatchers("/api/user/login","/api/user/activate/*","/api/user/activate/resend/*","/api/user/resetPassword").permitAll()		// /auth/**
-//			.requestMatchers("/h2-console/**").permitAll()	// /h2-console/** ako se koristi H2 baza)
-//			.requestMatchers("/api/foo").permitAll()		// /api/foo
+        .requestMatchers("/api/user/register","/api/user/login","/api/user/activate/*","/api/user/activate/resend/*","/api/user/resetPassword").permitAll()		// /auth/**
 			// ukoliko ne zelimo da koristimo @PreAuthorize anotacije nad metodama kontrolera, moze se iskoristiti hasRole() metoda da se ogranici
 			// koji tip korisnika moze da pristupi odgovarajucoj ruti. Npr. ukoliko zelimo da definisemo da ruti 'admin' moze da pristupi
 			// samo korisnik koji ima rolu 'ADMIN', navodimo na sledeci nacin: 

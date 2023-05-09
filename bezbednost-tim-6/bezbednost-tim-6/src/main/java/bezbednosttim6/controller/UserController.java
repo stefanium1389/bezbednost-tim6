@@ -98,17 +98,6 @@ public class UserController {
 
 	@PostMapping("register")
 	public ResponseEntity<?> register(@RequestBody RegisterRequestDTO userRequest) throws UnsupportedEncodingException {
-//		User existUser = this.userService.findUserByEmail(userRequest.getEmail());
-//		if (existUser != null) {
-//			return new ResponseEntity<>(new ResourceConflictException(userRequest.getId(), "Username already exists").getMessage(), HttpStatus.BAD_REQUEST);
-//		} else {
-//		User user = mapper.fromDTOtoUser(userRequest);
-//		user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
-//		user.setRole(roleService.findById(2));
-//
-//		user = userService.addUser(user);
-//		return new ResponseEntity<>(new RegisterResponseDTO(user), HttpStatus.CREATED);
-//		}
 		try {
 			User newUser = userService.registerUser(userRequest);
 			return new ResponseEntity<>(new RegisterResponseDTO(newUser) , HttpStatus.CREATED);
@@ -147,9 +136,7 @@ public class UserController {
     		ErrorDTO dto = new ErrorDTO(e.getMessage());
             return new ResponseEntity<ErrorDTO>(dto, HttpStatus.NOT_FOUND);
     	}    	
-    }
-	
-    
+    }    
     
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("")
