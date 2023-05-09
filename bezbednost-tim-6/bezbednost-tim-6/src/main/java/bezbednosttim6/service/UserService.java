@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import bezbednosttim6.dto.RegisterRequestDTO;
 import bezbednosttim6.dto.RegisterResponseDTO;
+import bezbednosttim6.dto.SuccessDTO;
 import bezbednosttim6.exception.ObjectNotFoundException;
 import bezbednosttim6.exception.ResourceConflictException;
 import bezbednosttim6.model.User;
@@ -95,6 +96,18 @@ public class UserService {
 		return user;
 		
 	}	
+	
+	public SuccessDTO resendActivation(String id) {
+		
+		List<String> lista = activationService.regenerateActivation(id);
+		try {
+			mailService.sendActivationEmail(lista.get(1), lista.get(0)); //lista[1] je mail, a lista[0] je token
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}
+		return new SuccessDTO("Successfully resent activation!");
+	}
+	
 	
 	
 }

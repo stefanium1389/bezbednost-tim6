@@ -1,11 +1,14 @@
 package bezbednosttim6.controller;
 
 import bezbednosttim6.dto.*;
+import bezbednosttim6.exception.ActionExpiredException;
+import bezbednosttim6.exception.ObjectNotFoundException;
 import bezbednosttim6.exception.ResourceConflictException;
 import bezbednosttim6.mapper.UserDTOwithPasswordMapper;
 import bezbednosttim6.model.CertificateType;
 import bezbednosttim6.model.User;
 import bezbednosttim6.security.TokenUtils;
+import bezbednosttim6.service.ActivationService;
 import bezbednosttim6.service.RoleService;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,6 +55,9 @@ public class UserController {
 
 	@Autowired
 	private UserDTOwithPasswordMapper mapper;
+	
+	@Autowired
+	private ActivationService activationService;
 	
 	
 	
@@ -111,6 +118,35 @@ public class UserController {
 
 	}
 	
+	@GetMapping("/activate/{activationId}")
+    public ResponseEntity<?> activatePassenger(@PathVariable("activationId") String id)
+    {
+    	try {
+    		SuccessDTO dto = activationService.activatePassenger(id);
+            return new ResponseEntity<SuccessDTO>(dto, HttpStatus.OK);
+    	}
+    	catch(ObjectNotFoundException e) {
+    		ErrorDTO dto = new ErrorDTO(e.getMessage());
+            return new ResponseEntity<ErrorDTO>(dto, HttpStatus.NOT_FOUND);
+    	}
+    	catch(ActionExpiredException e) {
+    		ErrorDTO dto = new ErrorDTO(e.getMessage());
+            return new ResponseEntity<ErrorDTO>(dto, HttpStatus.BAD_REQUEST);
+    	}
+    	
+    }
+    @GetMapping("/activate/resend/{activationId}")
+    public ResponseEntity<?> activatePassengerResend(@PathVariable("activationId") String id)
+    {
+    	try {
+    		SuccessDTO dto = userService.resendActivation(id);
+            return new ResponseEntity<SuccessDTO>(dto, HttpStatus.OK);
+    	}
+    	catch(ObjectNotFoundException e) {
+    		ErrorDTO dto = new ErrorDTO(e.getMessage());
+            return new ResponseEntity<ErrorDTO>(dto, HttpStatus.NOT_FOUND);
+    	}    	
+    }
 	
 
 	@PreAuthorize("hasRole('ADMIN')")
