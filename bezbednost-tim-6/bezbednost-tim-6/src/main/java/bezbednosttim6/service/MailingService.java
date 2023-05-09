@@ -33,11 +33,11 @@ public class MailingService {
 	
 	public void sendActivationEmail(String email, String token) throws MessagingException {		
 		String body = "To verify your email click on the following link http://localhost:4200/activate?token="+token;
-		sendEmail(email,"IB Projekat tim6 Email Validation",body);
+		sendEmail(email,"IB Projekat Tim6 Email Validation",body);
 	}
 	
 	public void sendPasswordResetMail(String email, String token) throws MessagingException {
 		String body = "To change your password click on the following link http://localhost:4200/reset-password?token="+token;
-		sendEmail(email,"IB Projekat tim6 Reset Password",body);
+		sendEmail(email,"IB Projekat Tim6 Reset Password",body);
 	}
 }

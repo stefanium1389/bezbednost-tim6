@@ -33,36 +33,30 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   sendReset(){
-
     if(this.emailForm.get('email')?.value){
-      // this.users.sendPasswordResetEmail({email:this.emailForm.get('email')?.value}).subscribe({
-      //   next: () => {
-      //     this.emailSent = true;
-      //   }
-      // })
+      this.users.sendPasswordResetEmail({email:this.emailForm.get('email')?.value}).subscribe({
+        next: () => {
+          this.emailSent = true;
+        }
+      })
       this.emailSent = true;
-      console.log('xddd');
     }
   };
 
   confirmReset(){
     if(this.passwordForm.get('password')?.value){
-      // this.users.checkResetPassword({newPassword:this.passwordForm.get('password')?.value, code:this.token}).subscribe({
-      //   next: (result: any) => {
-      //     console.log(result);
-      //     this.backToLogin();
-      //   }
-      // })
-      console.log('xdd');
+      this.users.checkResetPassword({newPassword:this.passwordForm.get('password')?.value, code:this.token}).subscribe({
+        next: (result: any) => {
+          console.log(result);
+          this.backToLogin();
+        }
+      })
     }
   }
 
   backToLogin(){
-    
     this.router.navigate(['..']);
-
   };
-
 }
 
 
