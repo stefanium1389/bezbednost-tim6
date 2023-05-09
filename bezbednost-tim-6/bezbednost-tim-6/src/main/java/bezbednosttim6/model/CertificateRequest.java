@@ -21,6 +21,8 @@ public class CertificateRequest {
 
     private Long issuerCertificateId;
 
+    private Long issuerId;
+
     private Long userId;
 
     private Duration duration;
@@ -30,14 +32,21 @@ public class CertificateRequest {
 
     private LocalDateTime timeOfRequest;
 
+    private String commonName;
 
-    public CertificateRequest(CertificateType certificateType, Long issuerCertificateId, Long userId, RequestStatus status, LocalDateTime timeOfRequest, Duration duration) {
+    private String rejection;
+
+
+    public CertificateRequest(CertificateType certificateType, Long issuerCertificateId, Long issuerId, Long userId, RequestStatus status, LocalDateTime timeOfRequest, Duration duration, String commonName, String rejection) {
         this.certificateType = certificateType;
         this.issuerCertificateId = issuerCertificateId;
+        this.issuerId = issuerId;
         this.userId = userId;
         this.status = status;
         this.timeOfRequest = timeOfRequest;
         this.duration = duration;
+        this.commonName = commonName;
+        this.rejection = rejection;
     }
 
     public CertificateRequest() {
@@ -98,5 +107,29 @@ public class CertificateRequest {
 
     public void setDuration(Duration duration) {
         this.duration = duration;
+    }
+
+    public Long getIssuerId() {
+        return issuerId;
+    }
+
+    public void setIssuerId(Long issuerId) {
+        this.issuerId = issuerId;
+    }
+
+    public String getCommonName() {
+        return commonName;
+    }
+
+    public void setCommonName(String commonName) {
+        this.commonName = commonName;
+    }
+
+    public String getRejection() {
+        return rejection;
+    }
+
+    public void setRejection(String rejection) {
+        this.rejection = rejection;
     }
 }

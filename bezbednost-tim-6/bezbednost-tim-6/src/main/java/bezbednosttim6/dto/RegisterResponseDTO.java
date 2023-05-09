@@ -15,13 +15,11 @@ public class RegisterResponseDTO {
 
     private String surname;
     @Length(max = 18)
-
     private String telephoneNumber;
     @Length(max = 100)
     @Email(regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", message = "Bad email format")
     private String email;
 
-    private String password = "protected entity :-)";
 
     public RegisterResponseDTO() {
     }
