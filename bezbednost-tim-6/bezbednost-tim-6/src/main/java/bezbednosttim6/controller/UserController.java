@@ -3,13 +3,15 @@ package bezbednosttim6.controller;
 import bezbednosttim6.dto.*;
 import bezbednosttim6.exception.ResourceConflictException;
 import bezbednosttim6.mapper.UserDTOwithPasswordMapper;
+import bezbednosttim6.model.CertificateType;
 import bezbednosttim6.model.User;
 import bezbednosttim6.security.TokenUtils;
-import bezbednosttim6.service.CerificateService;
 import bezbednosttim6.service.RoleService;
+import org.bouncycastle.operator.OperatorCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,7 +27,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import bezbednosttim6.service.UserService;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.KeyPair;
+import java.security.Principal;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 
 @RestController
@@ -34,9 +41,7 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
-	
-	@Autowired
-	private CerificateService certService;
+
 	
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -85,13 +90,31 @@ public class UserController {
 
 	@PostMapping("register")
 	public ResponseEntity<?> register(@RequestBody RegisterRequestDTO userRequest) throws UnsupportedEncodingException {
+//		User existUser = this.userService.findUserByEmail(userRequest.getEmail());
+//		if (existUser != null) {
+//			return new ResponseEntity<>(new ResourceConflictException(userRequest.getId(), "Username already exists").getMessage(), HttpStatus.BAD_REQUEST);
+//		} else {
+//		User user = mapper.fromDTOtoUser(userRequest);
+//		user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
+//		user.setRole(roleService.findById(2));
+//
+//		user = userService.addUser(user);
+//		return new ResponseEntity<>(new RegisterResponseDTO(user), HttpStatus.CREATED);
+//		}
 		try {
 			User newUser = userService.registerUser(userRequest);
-			return new ResponseEntity<>(newUser , HttpStatus.CREATED);
+			return new ResponseEntity<>(new RegisterResponseDTO(newUser) , HttpStatus.CREATED);
 		}
-		catch(RuntimeException e){
+		catch(RuntimeException e) {
 			return new ResponseEntity<>(new ResourceConflictException(userRequest.getId(), "Username already exists").getMessage(), HttpStatus.BAD_REQUEST);
 		}
+
+	}
+
+	@PreAuthorize("hasRole('ADMIN')")
+	@PostMapping("")
+	public ResponseEntity<?> createRoot(Principal principal) {
+		return new ResponseEntity<>(principal.getName(), HttpStatus.OK);
 	}
 
 }

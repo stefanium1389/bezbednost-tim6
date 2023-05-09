@@ -5,7 +5,6 @@ import bezbednosttim6.dto.*;
 import bezbednosttim6.exception.*;
 import bezbednosttim6.model.*;
 import bezbednosttim6.model.Certificate;
-import bezbednosttim6.model.Certificate;
 import bezbednosttim6.model.CertificateRequest;
 import bezbednosttim6.model.CertificateType;
 import bezbednosttim6.model.RequestStatus;
@@ -16,32 +15,31 @@ import bezbednosttim6.repository.UserRepository;
 import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x500.style.IETFUtils;
-import org.bouncycastle.cert.X509CertificateHolder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.*;
-import java.security.cert.CertificateEncodingException;
+import java.security.cert.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import java.math.BigInteger;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Date;
+
 import org.bouncycastle.asn1.oiw.OIWObjectIdentifiers;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
@@ -61,6 +59,8 @@ import org.bouncycastle.operator.DigestCalculator;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.bc.BcDigestCalculatorProvider;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.security.auth.x500.X500Principal;
 
@@ -79,96 +79,12 @@ public class CertificateService {
 	@Autowired
 	private CertificateRequestRepository certificateRequestRepo;
 
-	@Autowired
-	private CertificateRepository certificateRepository;
-
-	public CertificateRequestResponseDTO createRequest(CertificateRequestDTO certificateRequestDTO, String mail) {
-
-		User user = userRepo.findUserByEmail(mail);
-		if (user == null)
-		{
-			throw new UserNotFoundException("User not found.");
-		}
-
-		String requestedType = certificateRequestDTO.getCertificateType().toUpperCase().trim();
-		CertificateType type = findCertificateType(requestedType);
-
-		if (type == CertificateType.ROOT && user.getRole().getName().equals("user"))
-			throw new TypePermissionException("You don't have the permission to create root certificates");
-
-		LocalDateTime now = LocalDateTime.now();
-		Duration duration;
-		try {
-			// pogledajte (hoverujte) .parse metodu za primere
-			duration = Duration.parse(certificateRequestDTO.getDuration());
-		} catch (DateTimeParseException e) {
-			throw new IllegalArgumentException("Invalid duration provided");
-		}
-
-		if (!checkIfCertificateExist(certificateRequestDTO.getIssuerCertificateId()))
-		{
-			throw new CertificateNotFoundException("Issuer certificate not found");
-		}
-
-		if (!checkIfValidDuration(certificateRequestDTO.getIssuerCertificateId(),duration))
-		{
-			throw new InvalidArgumentException("Requested duration is longer than possible");
-		}
+//	private X509Certificate root;
 
 
-		CertificateRequest newRequest = new CertificateRequest(type, certificateRequestDTO.getIssuerCertificateId(), user.getId(), RequestStatus.CREATED, now, duration);
-		certificateRequestRepo.save(newRequest);
 
-		return new CertificateRequestResponseDTO(certificateRequestDTO.getCertificateType(), certificateRequestDTO.getIssuerCertificateId(),user.getId(),now,certificateRequestDTO.getCommonName(),RequestStatus.CREATED.toString());
-
-	}
-
-	private boolean checkIfValidDuration(Long issuerCertificateId, Duration requestedDuration) {
-		//TODO: zapravo dobaviti certifikat, napraviti duration od now i enddate
-		//"something must be done, 500 years" xdd
-		Duration dummyDuration = Duration.of(500L * 365, ChronoUnit.DAYS);
-
-
-		if (requestedDuration.compareTo(dummyDuration) > 0) {
-			return false;
-		}
-		return true;
-	}
-
-
-	private boolean checkIfCertificateExist(Long issuerCertificateId) {
-		//TODO: implementirati
-		return true;
-	}
-
-	private CertificateType findCertificateType(String type)
-	{
-		if (type.equals("ROOT"))
-			return CertificateType.ROOT;
-		else if (type.equals("INTERMEDIATE"))
-			return CertificateType.INTERMEDIATE;
-		else if (type.equals("END"))
-			return CertificateType.END;
-		else throw new TypeNotFoundException("Type of certificate is not valid.");
-	}
-
-
-	public DTOList<CertificateRequestResponseDTO> getAllForUser(String mail) {
-
-		User user = userRepo.findUserByEmail(mail);
-		if (user == null)
-		{
-			throw new UserNotFoundException("User not found.");
-		}
-		DTOList<CertificateRequestResponseDTO> dtoList = new DTOList<>();
-		List<CertificateRequest> requests = certificateRequestRepo.findAllByUserId(user.getId());
-		for (CertificateRequest cr : requests)
-		{
-			CertificateRequestResponseDTO dto = new CertificateRequestResponseDTO(cr);
-			dtoList.add(dto);
-		}
-
-		return dtoList;
+	public Optional<Certificate> getBySerialNumber(Long serialNumber) {
+		return certificateRepo.findBySerialNumber(serialNumber);
 	}
 
 
@@ -213,10 +129,10 @@ public class CertificateService {
 	 */
 
 	// root
-	public X509Certificate generateCA(KeyPair keyPair,
+	private X509Certificate generateCA(KeyPair keyPair,
 									String hashAlgorithm,
 									String cn,
-									int days)
+									long days)
 			throws OperatorCreationException, CertificateException, CertIOException
 	{
 		Instant now = Instant.now();
@@ -241,13 +157,13 @@ public class CertificateService {
 	}
 
 
-	public X509Certificate generateIntermediateEnd(
+	private X509Certificate generateIntermediateEnd(
 			KeyPair subjectKP,
 			String  subjectCN,
 			KeyPair issuerKP,
 			String  issuerCN,
 			String hashAlgorithm,
-			int days)
+			long days)
 			throws GeneralSecurityException, IOException, OperatorCreationException {
 
 		PublicKey subjectPub = subjectKP.getPublic();
@@ -309,7 +225,7 @@ public class CertificateService {
 		return new X509ExtensionUtils(digCalc).createAuthorityKeyIdentifier(publicKeyInfo);
 	}
 
-	public void exportCertificate(X509Certificate certificate, PrivateKey privateKey, String path, CertificateType type, User user) throws IOException, CertificateEncodingException {
+	private void exportCertificate(X509Certificate certificate, PrivateKey privateKey, String path, CertificateType type, User user, Long issuerId) throws IOException, CertificateEncodingException {
 		// Store Certificate
 		FileOutputStream fos;
 		X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(certificate.getEncoded());
@@ -334,13 +250,14 @@ public class CertificateService {
 		String commonName = IETFUtils.valueToString(cn.getFirst().getValue());
 
 		// MySql
-		Certificate certificate1 = new Certificate(longValue(certificate.getSerialNumber()), certificate.getSigAlgName(), 1L,
-				certificate.getNotBefore(), certificate.getNotAfter(), CertificateStatus.VALID, type, user);
-		certificateRepository.save(certificate1);
+		Certificate certificate1 = new Certificate(longValue(certificate.getSerialNumber()), certificate.getSigAlgName(), issuerId,
+				certificate.getNotBefore(), certificate.getNotAfter(), CertificateStatus.VALID, type, CertificateRevocationStatus.GOOD,
+				user, commonName);
+		certificateRepo.save(certificate1);
 
 	}
 
-	public KeyPair generateKeyPair() {
+	private KeyPair generateKeyPair() {
 		try {
 			KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
 			SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
@@ -360,6 +277,85 @@ public class CertificateService {
 		}
 		return dtos;
 	}
+
+	public void createRoot(User user, String commonName, Duration duration) throws CertificateException, OperatorCreationException, IOException {
+		KeyPair keyPair = generateKeyPair();
+		long days = duration.toDays();
+		X509Certificate certificate = generateCA(keyPair, "SHA256WithRSAEncryption", commonName, days);
+//		this.root = certificate;
+		exportCertificate(certificate, keyPair.getPrivate(), "src/main/resources/certificates/", CertificateType.ROOT, user, null);
+	}
+
+	public void createIntermediate(User user, Long serialNumber, String commonName, Duration duration) throws GeneralSecurityException, OperatorCreationException, IOException {
+
+		Optional<Certificate> certificateOpt = getBySerialNumber(serialNumber);
+
+		if(certificateOpt.isEmpty()) {
+			throw new CertificateNotFoundException("Certificate with serial number " + serialNumber + " not found");
+		}
+
+		Certificate fromCertificate = certificateOpt.get();
+
+		KeyPair subjectKP = generateKeyPair();
+
+		byte[] key = Files.readAllBytes(Paths.get("src/main/resources/certificates/private/" + serialNumber + ".key"));
+		KeyFactory keyFactory = KeyFactory.getInstance("RSA", "SunRsaSign");
+		PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(key);
+		PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
+
+		byte[] certData = Files.readAllBytes(Paths.get("src/main/resources/certificates/public/" + serialNumber + ".cer"));
+		CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+		java.security.cert.Certificate cert = certFactory.generateCertificate(new ByteArrayInputStream(certData));
+
+		// Extract the public key from the certificate
+		PublicKey publicKey = cert.getPublicKey();
+
+		KeyPair issuerKP = new KeyPair(publicKey, privateKey);
+
+//		X500Principal principal = this.root.getSubjectX500Principal();
+//		X500Name x500name = new X500Name(principal.getName());
+//		RDN cn = x500name.getRDNs(BCStyle.CN)[0];
+//		String issuerCN = IETFUtils.valueToString(cn.getFirst().getValue());
+
+		X509Certificate certificate = generateIntermediateEnd(subjectKP, commonName, issuerKP, fromCertificate.getCommonName(), "SHA256WithRSAEncryption", duration.toDays());
+		exportCertificate(certificate, subjectKP.getPrivate(), "src/main/resources/certificates/", CertificateType.INTERMEDIATE, user, fromCertificate.getIssuer());
+	}
+
+	public void createEnd(User user, Long serialNumber, String commonName, Duration duration) throws GeneralSecurityException, OperatorCreationException, IOException {
+
+		Optional<Certificate> certificateOpt = getBySerialNumber(serialNumber);
+
+		if(certificateOpt.isEmpty()) {
+			throw new CertificateNotFoundException("Certificate with serial number " + serialNumber + " not found");
+		}
+
+		Certificate fromCertificate = certificateOpt.get();
+
+		KeyPair subjectKP = generateKeyPair();
+
+		byte[] key = Files.readAllBytes(Paths.get("src/main/resources/certificates/private/" + serialNumber + ".key"));
+		KeyFactory keyFactory = KeyFactory.getInstance("RSA", "SunRsaSign");
+		PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(key);
+		PrivateKey privateKey = keyFactory.generatePrivate(keySpec);
+
+		byte[] certData = Files.readAllBytes(Paths.get("src/main/resources/certificates/public/" + serialNumber + ".cer"));
+		CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+		java.security.cert.Certificate cert = certFactory.generateCertificate(new ByteArrayInputStream(certData));
+
+		// Extract the public key from the certificate
+		PublicKey publicKey = cert.getPublicKey();
+
+		KeyPair issuerKP = new KeyPair(publicKey, privateKey);
+
+//		X500Principal principal = this.root.getSubjectX500Principal();
+//		X500Name x500name = new X500Name(principal.getName());
+//		RDN cn = x500name.getRDNs(BCStyle.CN)[0];
+//		String issuerCN = IETFUtils.valueToString(cn.getFirst().getValue());
+
+		X509Certificate certificate = generateIntermediateEnd(subjectKP, commonName, issuerKP, fromCertificate.getCommonName(), "SHA256WithRSAEncryption", 750);
+		exportCertificate(certificate, subjectKP.getPrivate(), "src/main/resources/certificates/", CertificateType.END, user, fromCertificate.getIssuer());
+	}
+
 
 
 }

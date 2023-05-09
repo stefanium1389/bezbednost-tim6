@@ -72,8 +72,8 @@ public class CertificateValidationService {
 		} 
 	}
 
-	private X509Certificate getCertificate(Long serialNumber) throws Exception { //za dobavljanje pravih sertifikata, fajlova valjda
-		InputStream inStream = new FileInputStream("src/main/resources/certificates/public/1680527310325.cer"); //dummy path, treba napraviti folder i parametrizovati sa serialNumber
+	private X509Certificate getCertificate(Long serialNumber) throws Exception {
+		InputStream inStream = new FileInputStream("src/main/resources/certificates/public/" + serialNumber +".cer");
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         X509Certificate cert = (X509Certificate)cf.generateCertificate(inStream);
         inStream.close();

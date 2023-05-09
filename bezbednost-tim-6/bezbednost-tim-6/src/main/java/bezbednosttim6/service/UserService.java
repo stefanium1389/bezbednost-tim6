@@ -4,6 +4,7 @@ package bezbednosttim6.service;
 import java.util.List;
 
 
+import bezbednosttim6.mapper.UserDTOwithPasswordMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,9 @@ public class UserService {
 	
 	@Autowired
 	private RoleService roleService;
+
+	@Autowired
+	private UserDTOwithPasswordMapper mapper;
 
 	public User addUser(User User) 
 	{
@@ -64,11 +68,11 @@ public class UserService {
 		User existUser = findUserByEmail(userRequest.getEmail());
 		if (existUser != null) {
 			throw new RuntimeException();
-		} 
-		
-		User user = new User();
+		}
+
+		User user = mapper.fromDTOtoUser(userRequest);
 		user.setActivated(false);
-		user.setEmail(userRequest.getEmail());
+//		user.setEmail(userRequest.getEmail());
 		user.setPassword(this.passwordEncoder.encode(userRequest.getPassword()));
 		user.setRole(roleService.findById(2));
 

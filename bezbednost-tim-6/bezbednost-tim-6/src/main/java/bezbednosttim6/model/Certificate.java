@@ -28,14 +28,17 @@ public class Certificate implements Serializable {
     public CertificateStatus Status;
 	@Enumerated(EnumType.STRING)
     public CertificateType CertificateType;
+
+	@Enumerated(EnumType.STRING)
+	public CertificateRevocationStatus CertificateRevocationStatus;
 	@ManyToOne
     public User user;
 	
-	
+	public String commonName;
 
 	public Certificate(Long serialNumber, String signatureAlgorithm, Long issuer, Date validFrom,
-					   Date validTo, CertificateStatus status, bezbednosttim6.model.CertificateType certificateType,
-					   User user) {
+					   Date validTo, CertificateStatus status, bezbednosttim6.model.CertificateType certificateType, CertificateRevocationStatus certificateRevocationStatus,
+					   User user, String commonName) {
 		super();
 		this.serialNumber = serialNumber;
 		SignatureAlgorithm = signatureAlgorithm;
@@ -44,7 +47,9 @@ public class Certificate implements Serializable {
 		ValidTo = validTo;
 		Status = status;
 		CertificateType = certificateType;
+		this.CertificateRevocationStatus = certificateRevocationStatus;
 		this.user = user;
+		this.commonName = commonName;
 	}
 
 	public Certificate() {
@@ -102,5 +107,21 @@ public class Certificate implements Serializable {
 
 	public void setValidTo(Date validTo) {
 		ValidTo = validTo;
+	}
+
+	public CertificateRevocationStatus getCertificateRevocationStatus() {
+		return CertificateRevocationStatus;
+	}
+
+	public void setCertificateRevocationStatus(CertificateRevocationStatus certificateRevocationStatus) {
+		CertificateRevocationStatus = certificateRevocationStatus;
+	}
+
+	public String getCommonName() {
+		return commonName;
+	}
+
+	public void setCommonName(String commonName) {
+		this.commonName = commonName;
 	}
 }

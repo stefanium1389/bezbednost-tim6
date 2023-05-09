@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class CertificateRequestResponseDTO {
+
+	private Long id;
 	private String certificateType;
 	private Long issuerCertificateId;
 	private Long userId;
@@ -14,14 +16,17 @@ public class CertificateRequestResponseDTO {
 	private String status;
 	private String commonName;
 
+	private String rejection;
+
 	public CertificateRequestResponseDTO() {
 		super();
 	}
 
 
-	public CertificateRequestResponseDTO(String certificateType, Long issuerCertificateId, Long userId, LocalDateTime timeOfRequest, String commonName, String status) {
+	public CertificateRequestResponseDTO(Long id, String certificateType, Long issuerCertificateId, Long userId, LocalDateTime timeOfRequest, String commonName, String status, String rejection) {
 
 		super();
+		this.id = id;
 		this.certificateType = certificateType;
 		this.issuerCertificateId = issuerCertificateId;
 		this.userId = userId;
@@ -29,19 +34,29 @@ public class CertificateRequestResponseDTO {
 		this.timeOfRequest = timeOfRequest.format(formatter);
 		this.status = status;
 		this.commonName = commonName;
+		this.rejection = rejection;
 
 	}
 
 	public CertificateRequestResponseDTO(CertificateRequest cr) {
 		super();
+		this.id = cr.getId();
 		this.certificateType = cr.getCertificateType().toString();
 		this.issuerCertificateId = cr.getIssuerCertificateId();
 		this.userId = cr.getUserId();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		this.timeOfRequest = formatter.format(cr.getTimeOfRequest());
 		this.status = cr.getStatus().toString();
-		this.commonName = commonName;
+		this.commonName = cr.getCommonName();
+		this.rejection = cr.getRejection();
+	}
 
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getCertificateType() {
@@ -91,5 +106,13 @@ public class CertificateRequestResponseDTO {
 	public void setCommonName(String commonName) {
 		this.commonName = commonName;
 
+	}
+
+	public String getRejection() {
+		return rejection;
+	}
+
+	public void setRejection(String rejection) {
+		this.rejection = rejection;
 	}
 }
