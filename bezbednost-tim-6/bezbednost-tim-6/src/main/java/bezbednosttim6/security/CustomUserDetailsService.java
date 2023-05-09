@@ -1,5 +1,6 @@
 package bezbednosttim6.security;
 
+import bezbednosttim6.exception.UserNotActivatedException;
 import bezbednosttim6.model.User;
 import bezbednosttim6.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		User user = userRepository.findUserByEmail(email);
+		
 		if (user == null) {
 			throw new UsernameNotFoundException(String.format("No user found with email '%s'.", email));
-		} else {
-			return user;
+		} 
+		else if(!user.isActivated()) { //jel ovo sme ovako uopste?
+			throw new UserNotActivatedException("User with email " + email+ " is not activated");
 		}
+		else return user;
 	}
 }

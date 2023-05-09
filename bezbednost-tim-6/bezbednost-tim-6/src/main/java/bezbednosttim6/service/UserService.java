@@ -17,6 +17,7 @@ import bezbednosttim6.exception.ObjectNotFoundException;
 import bezbednosttim6.exception.ResourceConflictException;
 import bezbednosttim6.model.User;
 import bezbednosttim6.repository.UserRepository;
+import jakarta.mail.MessagingException;
 
 
 @Service
@@ -34,6 +35,12 @@ public class UserService {
 	@Autowired
 	private UserDTOwithPasswordMapper mapper;
 
+	@Autowired
+	private MailingService mailService;
+	
+	@Autowired
+	private ActivationService activationService;
+	
 	public User addUser(User User) 
 	{
 		return userRepo.save(User);
@@ -72,11 +79,19 @@ public class UserService {
 
 		User user = mapper.fromDTOtoUser(userRequest);
 		user.setActivated(false);
-//		user.setEmail(userRequest.getEmail());
+		user.setEmail(userRequest.getEmail());
 		user.setPassword(this.passwordEncoder.encode(userRequest.getPassword()));
 		user.setRole(roleService.findById(2));
 
 		user = addUser(user);
+		
+		String token = activationService.generateActivation(userRequest.getEmail());
+		try {
+			mailService.sendActivationEmail(userRequest.getEmail(), token);
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}
+		
 		return user;
 		
 	}	
