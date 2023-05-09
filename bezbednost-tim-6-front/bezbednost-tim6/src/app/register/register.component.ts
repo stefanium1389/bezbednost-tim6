@@ -13,6 +13,7 @@ export class RegisterComponent implements OnInit {
   constructor(private http: HttpClient, private router: Router) { }
 
   registerForm!: FormGroup;
+  selectedOption!: string;
 
   ngOnInit(): void {
     this.registerForm = new FormGroup({
@@ -35,7 +36,6 @@ export class RegisterComponent implements OnInit {
     }
   }
 }
-
 
 export function matchPasswords(control: AbstractControl) {
   const password = control.get('password');

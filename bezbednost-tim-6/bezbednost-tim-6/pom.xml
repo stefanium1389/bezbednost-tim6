@@ -108,6 +108,13 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-websocket</artifactId>
 		</dependency>
+		<!-- clicksend za slanje sms-->
+		<dependency>
+			<groupId>com.github.clicksend</groupId>
+			<artifactId>clicksend-java-client</artifactId>
+			<version>1.0.0</version>
+			<scope>compile</scope>
+		</dependency>
 
     </dependencies>
 
