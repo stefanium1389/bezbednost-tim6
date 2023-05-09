@@ -77,7 +77,7 @@ public class WebSecurityConfig {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 //        http.csrf().disable();
         // sve neautentifikovane zahteve obradi uniformno i posalji 401 gresku
-        http.authorizeHttpRequests().requestMatchers("/api/**", "/socket/**").permitAll()		// /auth/**
+        http.authorizeHttpRequests().requestMatchers("/api/**", "/socket/**").permitAll().requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()		// /auth/**
 //			.requestMatchers("/h2-console/**").permitAll()	// /h2-console/** ako se koristi H2 baza)
 //			.requestMatchers("/api/foo").permitAll()		// /api/foo
 			// ukoliko ne zelimo da koristimo @PreAuthorize anotacije nad metodama kontrolera, moze se iskoristiti hasRole() metoda da se ogranici

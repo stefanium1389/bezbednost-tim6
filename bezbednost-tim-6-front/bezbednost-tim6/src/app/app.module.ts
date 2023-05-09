@@ -11,6 +11,7 @@ import { RegisterComponent } from './register/register.component';
 import { UserMainComponent } from './user-main/user-main.component';
 import { AdminMainComponent } from './admin-main/admin-main.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { VerifyEmailComponent } from './verify-email/verify-email.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
     RegisterComponent,
     UserMainComponent,
     AdminMainComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    VerifyEmailComponent
   ],
   imports: [
     BrowserModule,
