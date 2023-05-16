@@ -6,12 +6,23 @@
       (ngSubmit)="register()"
     >
       <input class="element" type="email" id="e-mail" name="e-mail" placeholder="E-mail" formControlName="email">
+      <br>
       <input class="element" type="password" id="password" name="password" placeholder="Password" formControlName="password"> 
+      <br>
       <input class="element" type="password" id="repeat password" name="repeat password" placeholder="Repeat password" formControlName="repeatPassword">
+      <br>
       <div *ngIf="registerForm.hasError('notSame')">Passwords do not match</div>
       <input class="element" type="text" id="name" name="name" placeholder="Name" formControlName="name">
+      <br>
       <input class="element" type="text" id="surname" name="surname" placeholder="Surname" formControlName="surname">
+      <br>
       <input class="element" type="tel" id="phone number" name="phone number" placeholder="Phone number" formControlName="phone">
+      <br>
+      <input type="radio" value="emailValidation" name="validationType" formControlName="validationType"> Verify with Email
+      <br>
+      <input type="radio" value="phoneValidation" name="validationType" formControlName="validationType"> Verify with SMS
+      <br>
+      <br>
       <button class="element" type="submit">Register</button>
     </form>
     

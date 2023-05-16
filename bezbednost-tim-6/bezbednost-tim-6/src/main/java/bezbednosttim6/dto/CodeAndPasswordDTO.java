@@ -3,10 +3,12 @@ package bezbednosttim6.dto;
 public class CodeAndPasswordDTO {
 	
 	private String newPassword;
+	private String repeatPassword;
 	private String code;
-	public CodeAndPasswordDTO(String newPassword, String code) {
+	public CodeAndPasswordDTO(String newPassword, String repeatPassword, String code) {
 		super();
 		this.newPassword = newPassword;
+		this.repeatPassword = repeatPassword;
 		this.code = code;
 	}
 	public CodeAndPasswordDTO() {
@@ -24,6 +26,12 @@ public class CodeAndPasswordDTO {
 	}
 	public void setCode(String code) {
 		this.code = code;
+	}
+	public String getRepeatPassword() {
+		return repeatPassword;
+	}
+	public void setRepeatPassword(String repeatPassword) {
+		this.repeatPassword = repeatPassword;
 	}
 	
 	

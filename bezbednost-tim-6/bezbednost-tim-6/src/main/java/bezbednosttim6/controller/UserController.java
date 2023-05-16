@@ -57,9 +57,6 @@ public class UserController {
 	private TokenUtils jwtTokenUtil;
 
 	@Autowired
-	private UserDTOwithPasswordMapper mapper;
-	
-	@Autowired
 	private ActivationService activationService;
 		
 	
@@ -105,7 +102,6 @@ public class UserController {
 		catch(RuntimeException e) {
 			return new ResponseEntity<>(new ResourceConflictException(userRequest.getId(), "Username already exists").getMessage(), HttpStatus.BAD_REQUEST);
 		}
-
 	}
 	
 	@GetMapping("/activate/{activationId}")

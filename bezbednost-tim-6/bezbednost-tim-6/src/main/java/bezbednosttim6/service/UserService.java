@@ -86,11 +86,18 @@ public class UserService {
 
 		user = addUser(user);
 		
-		String token = activationService.generateActivation(userRequest.getEmail());
-		try {
-			mailService.sendActivationEmail(userRequest.getEmail(), token);
-		} catch (MessagingException e) {
-			e.printStackTrace();
+		if(userRequest.getValidationType() == "emailValidation") {
+			String token = activationService.generateActivation(userRequest.getEmail());
+			try {
+				mailService.sendActivationEmail(userRequest.getEmail(), token);
+			} catch (MessagingException e) {
+				e.printStackTrace();
+			}
+		}
+		else if(userRequest.getValidationType() == "smsValidation") {
+			String code = activationService.generateSMSActivation(userRequest.getEmail());
+			
+			//pozovi sms servis :))
 		}
 		
 		return user;
