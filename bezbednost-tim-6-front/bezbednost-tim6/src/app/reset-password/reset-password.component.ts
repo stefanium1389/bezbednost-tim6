@@ -24,7 +24,8 @@ export class ResetPasswordComponent implements OnInit {
       email: new FormControl('',Validators.required)
     });
     this.passwordForm = new FormGroup({
-      password: new FormControl('',Validators.required)
+      password: new FormControl('',Validators.required),
+      repeatPassword: new FormControl('',Validators.required)
     }, { validators: matchPasswords });
     this.route.queryParams.subscribe(params => {
       let token = params['token'];

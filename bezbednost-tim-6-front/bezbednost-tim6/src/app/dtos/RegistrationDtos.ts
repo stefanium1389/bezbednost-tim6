@@ -3,7 +3,7 @@ export interface RegistrationDTO{
     password:string;
     name:string;
     surname:string;
-    phone:string;
+    telephoneNumber:string;
     validationType: string;
   }
 export interface RegisterResponseDTO{

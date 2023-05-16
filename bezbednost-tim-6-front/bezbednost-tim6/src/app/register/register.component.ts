@@ -45,13 +45,19 @@ export class RegisterComponent implements OnInit {
       email: this.registerForm.get('email')?.value,
       password: this.registerForm.get('password')?.value,
       name: this.registerForm.get('name')?.value,
-      phone: this.registerForm.get('phone')?.value,
+      telephoneNumber: this.registerForm.get('phone')?.value,
       surname: this.registerForm.get('surname')?.value,
       validationType: this.registerForm.get('validationType')?.value,
     }
     this.userData.registerUser(dto).subscribe({
       next: result => {
         alert('wellcome, '+ result.name)
+        if(this.registerForm.get('validationType')?.value == "emailValidation"){
+          this.router.navigate([""]);
+        }
+        else{
+          this.router.navigate(["sms-validation"]);
+        }
       }
     })
   }

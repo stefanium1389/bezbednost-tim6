@@ -96,7 +96,7 @@ public class UserService {
 				e.printStackTrace();
 			}
 		}
-		if(userRequest.getValidationType().equals("smsValidation")) {
+		if(userRequest.getValidationType().equals("phoneValidation")) {
 			String code = activationService.generateSMSActivation(userRequest.getEmail());
 			
 			try {
