@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import jwtDecode, { JwtPayload } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -21,5 +22,28 @@ export class JwtService {
     sessionStorage.setItem('refreshToken',refreshToken);
   }
 
+  logout(){
+    sessionStorage.clear();
+  }
+
+  getEmail() : string | undefined{
+    const jwt = this.getAccessToken();
+    if(jwt){
+      const decoded = jwtDecode(jwt) as JwtPayload;
+      return decoded.sub; 
+    }
+    return undefined;
+  }
+
+  getRole() : string | undefined{
+    const jwt = this.getAccessToken();
+    if(jwt){
+      const decoded = jwtDecode(jwt) as {role: string};
+      return decoded.role; 
+    }
+    return undefined;
+  }
+
   constructor() { }
 }
+

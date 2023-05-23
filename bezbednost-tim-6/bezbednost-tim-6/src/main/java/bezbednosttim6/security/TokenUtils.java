@@ -1,6 +1,9 @@
 package bezbednosttim6.security;
 
+import bezbednosttim6.model.Role;
 import bezbednosttim6.model.User;
+import bezbednosttim6.repository.UserRepository;
+import bezbednosttim6.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -8,6 +11,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -19,6 +24,8 @@ import java.util.Date;
 @Component
 public class TokenUtils {
 
+	@Autowired
+	private UserRepository userRepo;
 	// Izdavac tokena
 	@Value("spring-security-example")
 	private String APP_NAME;
@@ -28,8 +35,11 @@ public class TokenUtils {
 	public String SECRET;
 
 	// Period vazenja tokena - 30 minuta
-	@Value("1800000")
+	@Value("600000")
 	private int EXPIRES_IN;
+	
+	@Value("1800000")
+	private int REFRESH_EXPIRES_IN;
 	
 	// Naziv headera kroz koji ce se prosledjivati JWT u komunikaciji server-klijent
 	@Value("Authorization")
@@ -57,16 +67,29 @@ public class TokenUtils {
 	 * @return JWT token
 	 */
 	public String generateToken(String username) {
+		User u = userRepo.findUserByEmail(username);
 		return Jwts.builder()
 				.setIssuer(APP_NAME)
 				.setSubject(username)
 				.setAudience(generateAudience())
 				.setIssuedAt(new Date())
-				.setExpiration(generateExpirationDate())
+				.setExpiration(generateExpirationDate(EXPIRES_IN))
+				.claim("role", u.getRole().getName())
 				.signWith(getSignInKey(), SIGNATURE_ALGORITHM).compact();
+		
 		
 
 		// moguce je postavljanje proizvoljnih podataka u telo JWT tokena pozivom funkcije .claim("key", value), npr. .claim("role", user.getRole())
+	}
+	
+	public String generateRefreshToken(String username) {
+		return Jwts.builder()
+				.setIssuer(APP_NAME)
+				.setSubject(username)
+				.setAudience(generateAudience())
+				.setIssuedAt(new Date())
+				.setExpiration(generateExpirationDate(REFRESH_EXPIRES_IN))
+				.signWith(getSignInKey(), SIGNATURE_ALGORITHM).compact();
 	}
 
 	private Key getSignInKey() {
@@ -100,8 +123,8 @@ public class TokenUtils {
 	 * 
 	 * @return Datum do kojeg je JWT validan.
 	 */
-	private Date generateExpirationDate() {
-		return new Date(new Date().getTime() + EXPIRES_IN);
+	private Date generateExpirationDate(int expires) {
+		return new Date(new Date().getTime() + expires);
 	}
 	
 	// =================================================================

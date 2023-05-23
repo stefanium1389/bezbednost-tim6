@@ -15,6 +15,9 @@ import { VerifyEmailComponent } from './verify-email/verify-email.component';
 import { SmsValidationComponent } from './sms-validation/sms-validation.component';
 import { CheckCertValidityComponent } from './check-cert-validity/check-cert-validity.component';
 import { JwtInterceptorService } from './jwt-interceptor.service';
+import { RequestCertComponent } from './request-cert/request-cert.component';
+import { ViewAllCertsComponent } from './view-all-certs/view-all-certs.component';
+import { ErrorInterceptorService } from './error-interceptor.service';
 
 @NgModule({
   declarations: [
@@ -26,7 +29,9 @@ import { JwtInterceptorService } from './jwt-interceptor.service';
     ResetPasswordComponent,
     VerifyEmailComponent,
     SmsValidationComponent,
-    CheckCertValidityComponent
+    CheckCertValidityComponent,
+    RequestCertComponent,
+    ViewAllCertsComponent
   ],
   imports: [
     BrowserModule,
@@ -37,6 +42,11 @@ import { JwtInterceptorService } from './jwt-interceptor.service';
   providers: [{
     provide: HTTP_INTERCEPTORS,
     useClass: JwtInterceptorService,
+    multi: true
+  },
+  {
+    provide: HTTP_INTERCEPTORS,
+    useClass: ErrorInterceptorService,
     multi: true
   }],
   bootstrap: [AppComponent]

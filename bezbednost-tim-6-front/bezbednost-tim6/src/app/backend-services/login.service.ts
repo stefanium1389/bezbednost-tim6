@@ -14,5 +14,7 @@ export class LoginService {
   login(body: LoginRequest):Observable<LoginResponse>{
     return this.http.post<LoginResponse>(`${environment.apiUrl}/user/login`, body) 
   }
-
+  refreshToken(body: LoginResponse):Observable<any>{
+    return this.http.post<any>(`${environment.apiUrl}/user/refreshToken`, body)
+  }
 }

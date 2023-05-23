@@ -73,8 +73,8 @@ public class UserController {
 		sc.setAuthentication(auth);
 
 		String token = jwtTokenUtil.generateToken(loginRequestDTO.getEmail());
-		//String refreshToken = jwtTokenUtil.generateRefrshToken(loginRequestDTO.getEmail());
-		LoginResponseDTO response = new LoginResponseDTO(token, token);
+		String refreshToken = jwtTokenUtil.generateRefreshToken(loginRequestDTO.getEmail());
+		LoginResponseDTO response = new LoginResponseDTO(token, refreshToken);
 				
 		return new ResponseEntity<LoginResponseDTO>(response,HttpStatus.OK);
 		}
@@ -85,6 +85,18 @@ public class UserController {
 		}
 	}
 
+	@PostMapping("refreshToken")
+	public ResponseEntity<?> postRefresh(@RequestBody LoginResponseDTO dto){
+		try {
+			SuccessDTO new_token = new SuccessDTO(userService.refreshToken(dto));
+			return new ResponseEntity<>(new_token, HttpStatus.OK);
+		}
+		catch(Exception e){
+			ErrorDTO error = new ErrorDTO(e.getMessage());
+			return new ResponseEntity<ErrorDTO>(error, HttpStatus.NOT_EXTENDED);
+		}
+	}
+	
 	//@PreAuthorize("hasRole('ADMIN')")
 //	@GetMapping("proba")
 //	public ResponseEntity<?> proba (Principal principal)
