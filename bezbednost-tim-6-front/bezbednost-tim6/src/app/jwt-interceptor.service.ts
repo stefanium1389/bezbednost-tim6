@@ -12,6 +12,9 @@ export class JwtInterceptorService implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>{
     const jwt = sessionStorage.getItem('accessToken');
     //console.log("INTERCEPTED! Adding JWT: ", jwt);
+    if(request.url.includes('/user/refreshToken')){
+      return next.handle(request);
+    }
     if (jwt){
       const cloned = request.clone({
         setHeaders:{
@@ -19,7 +22,8 @@ export class JwtInterceptorService implements HttpInterceptor {
         }
       });
       return next.handle(cloned);
-    }else{
+    }
+    else{
       return next.handle(request);
     }
   } 

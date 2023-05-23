@@ -91,7 +91,7 @@ public class UserController {
 			SuccessDTO new_token = new SuccessDTO(userService.refreshToken(dto));
 			return new ResponseEntity<>(new_token, HttpStatus.OK);
 		}
-		catch(Exception e){
+		catch(RuntimeException e){
 			ErrorDTO error = new ErrorDTO(e.getMessage());
 			return new ResponseEntity<ErrorDTO>(error, HttpStatus.NOT_EXTENDED);
 		}

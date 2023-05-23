@@ -39,16 +39,18 @@ import { ErrorInterceptorService } from './error-interceptor.service';
     AppRoutingModule,
     HttpClientModule
   ],
-  providers: [{
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ErrorInterceptorService,
+      multi: true
+    },
+    {
     provide: HTTP_INTERCEPTORS,
     useClass: JwtInterceptorService,
     multi: true
-  },
-  {
-    provide: HTTP_INTERCEPTORS,
-    useClass: ErrorInterceptorService,
-    multi: true
-  }],
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

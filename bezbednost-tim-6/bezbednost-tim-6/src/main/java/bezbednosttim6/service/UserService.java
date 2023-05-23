@@ -133,7 +133,7 @@ public class UserService {
 		String accessToken = dto.getAccessToken();
 		String refreshToken = dto.getRefreshToken();
 		
-		if(jwtTokenUtils.getExpirationDateFromToken(refreshToken).after(new Date())) {
+		if(jwtTokenUtils.getExpirationDateFromToken(refreshToken).before(new Date(System.currentTimeMillis()))) {
 			throw new RuntimeException("RefreshToken Expired");
 		}
 				
