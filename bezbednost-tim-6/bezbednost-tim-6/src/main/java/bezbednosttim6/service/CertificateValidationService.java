@@ -30,6 +30,7 @@ public class CertificateValidationService {
 		Optional<Certificate> db_certificateOpt = repo.findBySerialNumber(serialNumber);
 		
 		if(db_certificateOpt.isEmpty()) {
+			System.err.println("nema certificate u bazi");
 			throw new ObjectNotFoundException("Certificate "+serialNumber+" not found!");
 		}
 		
@@ -40,14 +41,21 @@ public class CertificateValidationService {
 		}
 		
 		try {
+			System.err.println("trazim fajl");
 			certificate = getCertificate(serialNumber);
+			System.err.println(certificate.getSigAlgName());
 		} catch (Exception e) {
 			throw new ObjectNotFoundException("Certificate "+serialNumber+" not found!");
 		}
 		
 		try {
+			System.err.println("proverava datum");
 			certificate.checkValidity(); //proverava datume
-			if(db_certificate.getSerialNumber() != db_certificate.getIssuer()) { //ako nije root
+			System.err.println(db_certificate.getSerialNumber());
+			System.err.println(db_certificate.getIssuer());
+			System.err.println(db_certificate.getSerialNumber() != db_certificate.getIssuer());
+			if(db_certificate.getIssuer() != null) { //ako nije root
+				System.err.println("usao u ne-root proveru");
 				parent = getCertificate(db_certificate.getIssuer());
 				certificate.verify(parent.getPublicKey()); //verifikijue potpis sa kljucem roditelja
 				try {
@@ -61,6 +69,7 @@ public class CertificateValidationService {
 				}
 			}
 			else { //ako jeste root
+				System.err.println("proverava root");
 				certificate.verify(certificate.getPublicKey()); //sam sebe je potpisao, pa proverava sa svojim
 			}
 		} catch (GeneralSecurityException e) {

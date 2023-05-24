@@ -34,6 +34,10 @@ export class CheckCertValidityComponent implements OnInit {
       error: error => {
         if(error.status == 404){
           this.responded = true;
+          this.certificateStatus = 'Not Existing'
+        }
+        if(error.status == 400){
+          this.responded = true;
           this.certificateStatus = 'Invalid'
         }
       }

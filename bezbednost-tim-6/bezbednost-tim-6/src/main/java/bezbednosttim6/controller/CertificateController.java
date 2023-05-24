@@ -1,6 +1,7 @@
 package bezbednosttim6.controller;
 
 import bezbednosttim6.dto.*;
+import bezbednosttim6.exception.ObjectNotFoundException;
 import bezbednosttim6.exception.TypeNotFoundException;
 import bezbednosttim6.model.Certificate;
 import bezbednosttim6.model.CertificateRequest;
@@ -134,8 +135,11 @@ public class CertificateController {
 			this.certificateValidationService.isValid(serialNumber);
 			return new ResponseEntity<>(HttpStatus.OK);
 		}
-		catch(Exception e) {
+		catch(ObjectNotFoundException e) {
 			return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+		}
+		catch(Exception e) {
+			return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
 		}
 	}
 	@PostMapping("isValidFile")

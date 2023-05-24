@@ -79,7 +79,8 @@ public class CertificateRequestService {
             if (requestedType!=CertificateType.ROOT)
             {
                 throw new CertificateNotFoundException("Issuer certificate not found");
-            } else {
+            } 
+            else {
 //                fromCertificate = certificateOpt.get();
                 newRequest = new CertificateRequest(requestedType, certificateRequestDTO.getIssuerCertificateId(), null, user.getId(), requestStatus, now, duration, certificateRequestDTO.getCommonName(), null);
                 newRequest = certificateRequestRepo.save(newRequest);
