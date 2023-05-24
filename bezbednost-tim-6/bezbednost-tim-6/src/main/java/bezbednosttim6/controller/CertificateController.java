@@ -131,10 +131,10 @@ public class CertificateController {
 		
 		try {
 			this.certificateValidationService.isValid(serialNumber);
-			return new ResponseEntity<>(HttpStatus.OK);
+			return new ResponseEntity<>("Certificate is valid <3", HttpStatus.OK);
 		}
 		catch(Exception e) {
-			return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
 		}
 	}
 

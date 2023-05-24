@@ -5,8 +5,10 @@ import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Objects;
 import java.util.Optional;
 
+import bezbednosttim6.model.CertificateRevocationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +40,9 @@ public class CertificateValidationService {
 		if(db_certificate.getStatus() == CertificateStatus.NOTVALID) {
 			throw new InvalidCertificateException("Certificate "+serialNumber+" not valid!");
 		}
+		if(db_certificate.getCertificateRevocationStatus() != CertificateRevocationStatus.GOOD) {
+			throw new InvalidCertificateException("Certificate "+serialNumber+" not valid!");
+		}
 		
 		try {
 			certificate = getCertificate(serialNumber);
@@ -47,7 +52,7 @@ public class CertificateValidationService {
 		
 		try {
 			certificate.checkValidity(); //proverava datume
-			if(db_certificate.getSerialNumber() != db_certificate.getIssuer()) { //ako nije root
+			if(!Objects.equals(db_certificate.getSerialNumber(), db_certificate.getIssuer())) { //ako nije root
 				parent = getCertificate(db_certificate.getIssuer());
 				certificate.verify(parent.getPublicKey()); //verifikijue potpis sa kljucem roditelja
 				try {
