@@ -6,8 +6,10 @@ import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Objects;
 import java.util.Optional;
 
+import bezbednosttim6.model.CertificateRevocationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -81,6 +83,9 @@ public class CertificateValidationService {
 		Certificate db_certificate = db_certificateOpt.get();
 		
 		if(db_certificate.getStatus() == CertificateStatus.NOTVALID) {
+			throw new InvalidCertificateException("Certificate "+serialNumber+" not valid!");
+		}
+		if(db_certificate.getCertificateRevocationStatus() != CertificateRevocationStatus.GOOD) {
 			throw new InvalidCertificateException("Certificate "+serialNumber+" not valid!");
 		}
 		
