@@ -256,7 +256,7 @@ public class CertificateService {
 		// MySql
 		Certificate certificate1 = new Certificate(longValue(certificate.getSerialNumber()), certificate.getSigAlgName(), issuerId,
 				certificate.getNotBefore(), certificate.getNotAfter(), CertificateStatus.VALID, type, CertificateRevocationStatus.GOOD,
-				user, commonName);
+				user, commonName, null);
 		certificateRepo.save(certificate1);
 
 	}
@@ -274,7 +274,7 @@ public class CertificateService {
 	}
 	
 	public List<CertificateDTO> getAllCertificateDTOs() {
-		List<Certificate> lista = certificateRepo.findAll();
+		List<Certificate> lista = certificateRepo.findByCertificateRevocationStatus(CertificateRevocationStatus.GOOD);
 		List<CertificateDTO> dtos = new ArrayList<CertificateDTO>();
 		for(Certificate c : lista) {
 			dtos.add(new CertificateDTO(c));
@@ -361,5 +361,44 @@ public class CertificateService {
 	}
 
 
+	public void revokeCertificate(Long serialNumber, Principal principal, String reason) {
+		User user = userRepo.findUserByEmail(principal.getName());
+		boolean isAdmin = user.getRole().getId() == 1;
+		Optional<Certificate> db_certificateOpt = certificateRepo.findBySerialNumber(serialNumber);
+
+		if(db_certificateOpt.isEmpty()) {
+			throw new ObjectNotFoundException("Certificate "+serialNumber+" not found!");
+		}
+		Certificate db_certificate = db_certificateOpt.get();
+
+		if (!isAdmin && user.getId() != db_certificate.getUser().getId()) {
+			throw new ConditionNotMetException("You are not the owner of this certificate and therefore cannot revoke it");
+		}
+
+		if (!isAdmin && db_certificate.getCertificateType() == CertificateType.ROOT) {
+			throw new ConditionNotMetException("You don't have the permission to revoke this certificate");
+		}
+
+		// rekurzija koja nadam se radi
+		revokeCertificate(db_certificate, reason);
+	}
+
+	private void revokeCertificate(Certificate certificate, String reason) {
+		if (certificate.getCertificateType()!=CertificateType.END) {
+			List<Certificate> children = certificateRepo.findByIssuer(certificate.getSerialNumber());
+			for (Certificate child : children) {
+				// nesto mi je ovde sumnjivo
+				if (certificate.getSerialNumber().equals(child.getSerialNumber())) {
+					continue;
+				}
+				revokeCertificate(child, reason);
+			}
+		}
+		certificate.setRevocationReason(reason);
+		certificate.setCertificateRevocationStatus(CertificateRevocationStatus.REVOKED);
+		certificate.setStatus(CertificateStatus.NOTVALID);
+		certificateRepo.save(certificate);
+		certificateRepo.flush();
+	}
 
 }

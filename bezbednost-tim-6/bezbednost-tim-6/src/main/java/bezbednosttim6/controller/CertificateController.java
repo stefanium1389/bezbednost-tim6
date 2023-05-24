@@ -163,7 +163,7 @@ public class CertificateController {
 
 
 	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-	@PostMapping ("request/reject/{requestId}")
+	@PutMapping ("request/reject/{requestId}")
 	public ResponseEntity<?> rejectRequest (@PathVariable("requestId") Long requestId, @RequestBody ReasonDTO reasonDTO, Principal principal) {
 		try {
 			CertificateRequest newRequest = certificateRequestService.rejectRequest(requestId, reasonDTO.getReason(), principal);
@@ -176,7 +176,7 @@ public class CertificateController {
 	}
 
 	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-	@PostMapping ("request/accept/{requestId}")
+	@PutMapping ("request/accept/{requestId}")
 	public ResponseEntity<?> acceptRequest (@PathVariable("requestId") Long requestId, Principal principal) {
 		try {
 			CertificateRequest newRequest = certificateRequestService.acceptRequest(requestId, principal);
@@ -185,6 +185,19 @@ public class CertificateController {
 		{
 			ErrorDTO error = new ErrorDTO(e.getMessage());
 			return new ResponseEntity<ErrorDTO>(error,HttpStatus.NOT_FOUND);
+		}
+	}
+
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	@PutMapping ("revoke/{serialNumber}")
+	public ResponseEntity<?> revokeCertificate (@PathVariable("serialNumber") Long serialNumber, @RequestBody ReasonDTO reasonDTO, Principal principal) {
+		try {
+			certificateService.revokeCertificate(serialNumber, principal, reasonDTO.getReason());
+			return new ResponseEntity<>("Revoked successfully", HttpStatus.OK);
+		} catch (Exception e)
+		{
+			ErrorDTO error = new ErrorDTO(e.getMessage());
+			return new ResponseEntity<ErrorDTO>(error,HttpStatus.BAD_REQUEST);
 		}
 	}
 
