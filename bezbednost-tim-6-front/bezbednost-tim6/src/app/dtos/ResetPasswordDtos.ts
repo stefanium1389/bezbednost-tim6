@@ -3,5 +3,6 @@ export interface PasswordResetRequestDTO {
 }
 export interface CodeAndPasswordDTO {
     newPassword:string;
+    repeatPassword: string;
     code:string;
 }

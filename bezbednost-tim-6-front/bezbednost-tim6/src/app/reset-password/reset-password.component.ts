@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserdataService } from '../backend-services/userdata.service';
+import { matchPasswords } from '../register/register.component';
 
 @Component({
   selector: 'app-reset-password',
@@ -23,8 +24,9 @@ export class ResetPasswordComponent implements OnInit {
       email: new FormControl('',Validators.required)
     });
     this.passwordForm = new FormGroup({
-      password: new FormControl('',Validators.required)
-    })
+      password: new FormControl('',Validators.required),
+      repeatPassword: new FormControl('',Validators.required)
+    }, { validators: matchPasswords });
     this.route.queryParams.subscribe(params => {
       let token = params['token'];
       this.token = token;
@@ -45,7 +47,7 @@ export class ResetPasswordComponent implements OnInit {
 
   confirmReset(){
     if(this.passwordForm.get('password')?.value){
-      this.users.checkResetPassword({newPassword:this.passwordForm.get('password')?.value, code:this.token}).subscribe({
+      this.users.checkResetPassword({newPassword:this.passwordForm.get('password')?.value,repeatPassword:this.passwordForm.get('repeatPassword')?.value, code:this.token}).subscribe({
         next: (result: any) => {
           console.log(result);
           this.backToLogin();

@@ -12,6 +12,7 @@ import { UserMainComponent } from './user-main/user-main.component';
 import { AdminMainComponent } from './admin-main/admin-main.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { VerifyEmailComponent } from './verify-email/verify-email.component';
+import { SmsValidationComponent } from './sms-validation/sms-validation.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { VerifyEmailComponent } from './verify-email/verify-email.component';
     UserMainComponent,
     AdminMainComponent,
     ResetPasswordComponent,
-    VerifyEmailComponent
+    VerifyEmailComponent,
+    SmsValidationComponent
   ],
   imports: [
     BrowserModule,

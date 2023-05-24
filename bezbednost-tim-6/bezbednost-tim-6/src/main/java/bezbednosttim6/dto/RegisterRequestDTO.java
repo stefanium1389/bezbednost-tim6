@@ -19,6 +19,7 @@ public class RegisterRequestDTO {
     @Email(regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", message = "Bad email format")
     private String email;
     private String password;
+    private String validationType;
 
     public RegisterRequestDTO() {
     }

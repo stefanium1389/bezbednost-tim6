@@ -57,9 +57,6 @@ public class UserController {
 	private TokenUtils jwtTokenUtil;
 
 	@Autowired
-	private UserDTOwithPasswordMapper mapper;
-	
-	@Autowired
 	private ActivationService activationService;
 		
 	
@@ -98,6 +95,7 @@ public class UserController {
 
 	@PostMapping("register")
 	public ResponseEntity<?> register(@RequestBody RegisterRequestDTO userRequest) throws UnsupportedEncodingException {
+		
 		try {
 			User newUser = userService.registerUser(userRequest);
 			return new ResponseEntity<>(new RegisterResponseDTO(newUser) , HttpStatus.CREATED);
@@ -105,8 +103,7 @@ public class UserController {
 		catch(RuntimeException e) {
 			return new ResponseEntity<>(new ResourceConflictException(userRequest.getId(), "Username already exists").getMessage(), HttpStatus.BAD_REQUEST);
 		}
-
-	}
+	}  
 	
 	@GetMapping("/activate/{activationId}")
     public ResponseEntity<?> activatePassenger(@PathVariable("activationId") String id)

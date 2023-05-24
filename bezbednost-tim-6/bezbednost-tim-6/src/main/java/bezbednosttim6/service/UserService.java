@@ -40,6 +40,9 @@ public class UserService {
 	private MailingService mailService;
 	
 	@Autowired
+	private SMSService smsService;
+	
+	@Autowired
 	private ActivationService activationService;
 	
 	public User addUser(User User) 
@@ -85,12 +88,23 @@ public class UserService {
 		user.setRole(roleService.findById(2));
 
 		user = addUser(user);
-		
-		String token = activationService.generateActivation(userRequest.getEmail());
-		try {
-			mailService.sendActivationEmail(userRequest.getEmail(), token);
-		} catch (MessagingException e) {
-			e.printStackTrace();
+		if(userRequest.getValidationType().equals("emailValidation")) {
+			String token = activationService.generateActivation(userRequest.getEmail());
+			try {
+				mailService.sendActivationEmail(userRequest.getEmail(), token);
+			} catch (MessagingException e) {
+				e.printStackTrace();
+			}
+		}
+		if(userRequest.getValidationType().equals("phoneValidation")) {
+			String code = activationService.generateSMSActivation(userRequest.getEmail());
+			
+			try {
+				smsService.sendSMS("+381"+userRequest.getTelephoneNumber(), code);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
 		return user;

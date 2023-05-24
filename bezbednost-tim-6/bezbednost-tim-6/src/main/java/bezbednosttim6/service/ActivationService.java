@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,11 @@ public class ActivationService {
 		String token = uuid.toString();
 		return token;
 	}
+	private String generateSMSCode() {
+		Random r = new Random();
+		int code = r.nextInt(100000, 999999);
+		return String.valueOf(code);
+	}
 
 	public String generateActivation(String email) {
 		Activation activation = new Activation();
@@ -44,6 +50,18 @@ public class ActivationService {
 		activationRepo.save(activation);
 		activationRepo.flush();
 		return token;
+	}
+	
+	public String generateSMSActivation(String email) {
+		Activation activation = new Activation();
+		activation.setEmail(email);
+		String code = this.generateSMSCode();
+		activation.setToken(code);
+		activation.setTimestamp(new Date(System.currentTimeMillis()));
+		activation.setExpires(new Date(System.currentTimeMillis()+(EXPIRES*1000)));
+		activationRepo.save(activation);
+		activationRepo.flush();
+		return code;
 	}
 	
 	public SuccessDTO activatePassenger(String token)

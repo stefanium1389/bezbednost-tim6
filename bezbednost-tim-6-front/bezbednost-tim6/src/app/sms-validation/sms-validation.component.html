@@ -1,0 +1,9 @@
+<h1>SMS validation</h1>
+<form
+[formGroup]="smsCodeForm" 
+(ngSubmit)="checkCode()"
+>
+    <label>Code we sent you: </label><input type="text" formControlName="smsCode">
+    <br>
+    <button type="submit">Confirm</button>
+</form>
