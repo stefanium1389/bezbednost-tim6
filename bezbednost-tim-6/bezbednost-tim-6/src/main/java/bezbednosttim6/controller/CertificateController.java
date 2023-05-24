@@ -128,6 +128,7 @@ public class CertificateController {
 		
 	}
 	
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 	@GetMapping("isValid/{serialNumber}")
 	public ResponseEntity<?> checkIsValid(@PathVariable("serialNumber") Long serialNumber){
 		
@@ -142,13 +143,10 @@ public class CertificateController {
 			return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
 		}
 	}
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 	@PostMapping("isValidFile")
 	public ResponseEntity<?> checkIsValidFile(@RequestParam("file") MultipartFile file){
-		
-		System.err.println(file.getOriginalFilename());
-		System.err.println(file.getSize());
-		System.err.println(file.getContentType());
-		
+				
 		try {
 			this.certificateValidationService.isValidFromFile(file);
 			return new ResponseEntity<>(HttpStatus.OK);
@@ -161,6 +159,7 @@ public class CertificateController {
 		}
 		
 	}
+	
 
 
 	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")

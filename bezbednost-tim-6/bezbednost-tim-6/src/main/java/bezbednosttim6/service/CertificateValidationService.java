@@ -26,11 +26,13 @@ public class CertificateValidationService {
 	
 	public void isValidFromFile(MultipartFile file) throws Exception {
 		
+		if(file.getSize() > 1024 && !(file.getName().endsWith(".cer") || file.getName().endsWith(".crt"))) {
+			throw new ObjectNotFoundException("Invalid file");
+		}
+		
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         X509Certificate cert = (X509Certificate) cf.generateCertificate((InputStream) new ByteArrayInputStream(file.getBytes()));
         
-        System.err.println(cert.getSerialNumber());
-
 		try {
 			isValid(cert);
 		}
