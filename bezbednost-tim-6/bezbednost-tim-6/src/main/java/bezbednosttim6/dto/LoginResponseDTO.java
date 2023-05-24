@@ -5,12 +5,14 @@ public class LoginResponseDTO {
 	private String accessToken;
 	private String refreshToken;
 	
+	public LoginResponseDTO() {
+		super();
+	}
+	
 	public LoginResponseDTO(String accessToken, String refreshToken) {
 		super();
 		this.accessToken = accessToken;
-		this.refreshToken = refreshToken;
-		
-		
+		this.refreshToken = refreshToken;	
 	}
 
 	public String getAccessToken() {

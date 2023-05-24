@@ -6,6 +6,9 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
 import { VerifyEmailComponent } from './verify-email/verify-email.component';
 import { UserMainComponent } from './user-main/user-main.component';
 import { SmsValidationComponent } from './sms-validation/sms-validation.component';
+import { CheckCertValidityComponent } from './check-cert-validity/check-cert-validity.component';
+import { RequestCertComponent } from './request-cert/request-cert.component';
+import { ViewAllCertsComponent } from './view-all-certs/view-all-certs.component';
 
 const routes: Routes = [
   {path: "", component: LoginComponent},
@@ -13,7 +16,10 @@ const routes: Routes = [
   {path: "reset-password", component: ResetPasswordComponent},
   {path: "activate", component: VerifyEmailComponent},
   {path: "user-main", component: UserMainComponent},
-  {path: "sms-validation", component: SmsValidationComponent}
+  {path: "sms-validation", component: SmsValidationComponent},
+  {path: "check-cert-validity", component: CheckCertValidityComponent},
+  {path: "request-cert", component: RequestCertComponent},
+  {path: "view-all-certs", component: ViewAllCertsComponent}
 ];
 
 @NgModule({

@@ -1,6 +1,7 @@
 package bezbednosttim6.controller;
 
 import bezbednosttim6.dto.*;
+import bezbednosttim6.exception.ObjectNotFoundException;
 import bezbednosttim6.exception.TypeNotFoundException;
 import bezbednosttim6.model.Certificate;
 import bezbednosttim6.model.CertificateRequest;
@@ -22,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.x500.X500Principal;
 import java.io.IOException;
@@ -126,17 +128,38 @@ public class CertificateController {
 		
 	}
 	
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 	@GetMapping("isValid/{serialNumber}")
 	public ResponseEntity<?> checkIsValid(@PathVariable("serialNumber") Long serialNumber){
 		
 		try {
-			this.certificateValidationService.isValid(serialNumber);
-			return new ResponseEntity<>("Certificate is valid <3", HttpStatus.OK);
+			this.certificateValidationService.isValidFromSerial(serialNumber);
+			return new ResponseEntity<>(HttpStatus.OK);
+		}
+		catch(ObjectNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
 		}
 		catch(Exception e) {
 			return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
 		}
 	}
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	@PostMapping("isValidFile")
+	public ResponseEntity<?> checkIsValidFile(@RequestParam("file") MultipartFile file){
+				
+		try {
+			this.certificateValidationService.isValidFromFile(file);
+			return new ResponseEntity<>(HttpStatus.OK);
+		}
+		catch(ObjectNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+		}
+		catch(Exception e) {
+			return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+		}
+		
+	}
+	
 
 
 	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")

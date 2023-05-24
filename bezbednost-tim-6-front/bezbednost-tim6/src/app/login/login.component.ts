@@ -35,8 +35,11 @@ export class LoginComponent implements OnInit {
       next: result => {
         this.jwtService.setAccessToken(result.accessToken);
         this.jwtService.setRefreshToken(result.refreshToken);
-
-        this.router.navigate(['user-main']);
+        if(this.jwtService.getRole() === 'ROLE_USER')
+        {this.router.navigate(['user-main']);}
+        else if(this.jwtService.getRole() === 'ROLE_ADMIN')
+        {this.router.navigate(['admin-main']);}
+        else {console.log(this.jwtService.getRole())}
       },
       error: error => {
         alert(error.error.message);

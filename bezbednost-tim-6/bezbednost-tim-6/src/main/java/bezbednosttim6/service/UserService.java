@@ -1,6 +1,7 @@
 package bezbednosttim6.service;
 
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import bezbednosttim6.dto.LoginResponseDTO;
 import bezbednosttim6.dto.RegisterRequestDTO;
 import bezbednosttim6.dto.RegisterResponseDTO;
 import bezbednosttim6.dto.SuccessDTO;
@@ -18,6 +20,7 @@ import bezbednosttim6.exception.ObjectNotFoundException;
 import bezbednosttim6.exception.ResourceConflictException;
 import bezbednosttim6.model.User;
 import bezbednosttim6.repository.UserRepository;
+import bezbednosttim6.security.TokenUtils;
 import jakarta.mail.MessagingException;
 
 
@@ -44,6 +47,9 @@ public class UserService {
 	
 	@Autowired
 	private ActivationService activationService;
+	
+	@Autowired
+	private TokenUtils jwtTokenUtils;
 	
 	public User addUser(User User) 
 	{
@@ -121,7 +127,23 @@ public class UserService {
 		}
 		return new SuccessDTO("Successfully resent activation!");
 	}
-	
-	
+
+	public String refreshToken(LoginResponseDTO dto) {
+		
+		String accessToken = dto.getAccessToken();
+		String refreshToken = dto.getRefreshToken();
+		
+		if(jwtTokenUtils.getExpirationDateFromToken(refreshToken).before(new Date(System.currentTimeMillis()))) {
+			throw new RuntimeException("RefreshToken Expired");
+		}
+				
+		if(!jwtTokenUtils.getUsernameFromToken(accessToken).equals(jwtTokenUtils.getUsernameFromToken(refreshToken))) {
+			throw new RuntimeException("Usernames don't match!");
+		}
+		
+		String token = jwtTokenUtils.generateToken(jwtTokenUtils.getUsernameFromToken(refreshToken));
+		return token;
+		
+	}
 	
 }

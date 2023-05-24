@@ -1,5 +1,6 @@
 package bezbednosttim6.service;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
@@ -11,6 +12,7 @@ import java.util.Optional;
 import bezbednosttim6.model.CertificateRevocationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import bezbednosttim6.exception.InvalidCertificateException;
 import bezbednosttim6.exception.ObjectNotFoundException;
@@ -23,10 +25,53 @@ public class CertificateValidationService {
 	
 	@Autowired
 	private CertificateRepository repo;
-
-	public void isValid(Long serialNumber) throws Exception {
+	
+	public void isValidFromFile(MultipartFile file) throws Exception {
 		
-		X509Certificate certificate = null;
+		if(file.getSize() > 1024 && !(file.getName().endsWith(".cer") || file.getName().endsWith(".crt"))) {
+			throw new ObjectNotFoundException("Invalid file");
+		}
+		
+        CertificateFactory cf = CertificateFactory.getInstance("X.509");
+        X509Certificate cert = (X509Certificate) cf.generateCertificate((InputStream) new ByteArrayInputStream(file.getBytes()));
+        
+		try {
+			isValid(cert);
+		}
+		catch(ObjectNotFoundException e) {
+			throw new ObjectNotFoundException(e.getMessage());
+		}
+		catch(InvalidCertificateException e) {
+			throw new InvalidCertificateException(e.getMessage());
+		}
+		catch(GeneralSecurityException e) {
+			throw new GeneralSecurityException(e.getMessage());
+		}
+		
+		
+	}
+	
+	public void isValidFromSerial(Long serialNumber) throws Exception {
+		
+		X509Certificate cert = getCertificate(serialNumber);
+		try {
+			isValid(cert);
+		}
+		catch(ObjectNotFoundException e) {
+			throw new ObjectNotFoundException(e.getMessage());
+		}
+		catch(InvalidCertificateException e) {
+			throw new InvalidCertificateException(e.getMessage());
+		}
+		catch(GeneralSecurityException e) {
+			throw new GeneralSecurityException(e.getMessage());
+		}
+		
+	}
+
+	private void isValid(X509Certificate certificate) throws Exception {
+		
+		Long serialNumber = certificate.getSerialNumber().longValue();
 		X509Certificate parent = null;
 		
 		Optional<Certificate> db_certificateOpt = repo.findBySerialNumber(serialNumber);
@@ -51,12 +96,12 @@ public class CertificateValidationService {
 		}
 		
 		try {
-			certificate.checkValidity(); //proverava datume
-			if(!Objects.equals(db_certificate.getSerialNumber(), db_certificate.getIssuer())) { //ako nije root
+			certificate.checkValidity(); //proverava datume	
+			if(db_certificate.getIssuer() != null) { //ako nije root
 				parent = getCertificate(db_certificate.getIssuer());
 				certificate.verify(parent.getPublicKey()); //verifikijue potpis sa kljucem roditelja
 				try {
-					isValid(db_certificate.getIssuer()); //verifikujemo i roditelja
+					isValid(getCertificate(db_certificate.getIssuer())); //verifikujemo i roditelja
 				}
 				catch (GeneralSecurityException e) { //ako je roditelj nevalidan, onda sam i ja
 					db_certificate.setStatus(CertificateStatus.NOTVALID);
@@ -80,7 +125,7 @@ public class CertificateValidationService {
 	private X509Certificate getCertificate(Long serialNumber) throws Exception {
 		InputStream inStream = new FileInputStream("src/main/resources/certificates/public/" + serialNumber +".cer");
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
-        X509Certificate cert = (X509Certificate)cf.generateCertificate(inStream);
+        X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
         inStream.close();
         return cert;
 		
