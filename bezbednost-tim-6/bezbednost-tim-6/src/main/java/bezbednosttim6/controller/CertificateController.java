@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.x500.X500Principal;
 import java.io.IOException;
@@ -136,6 +137,15 @@ public class CertificateController {
 		catch(Exception e) {
 			return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
 		}
+	}
+	@PostMapping("isValidFile")
+	public ResponseEntity<?> checkIsValidFile(@RequestParam("file") MultipartFile file){
+		
+		System.err.println(file.getOriginalFilename());
+		System.err.println(file.getSize());
+		System.err.println(file.getContentType());
+		return new ResponseEntity<>(HttpStatus.OK);
+		
 	}
 
 

@@ -7,10 +7,16 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class CertificateService {
+  
+  
 
   constructor(private http: HttpClient) { }
 
   checkIsValid(serialNumber: string):Observable<any>{
     return this.http.get(environment.apiUrl+`/cert/isValid/${serialNumber}`);
+  }
+
+  checkIsValidFIle(formData: FormData) {
+    return this.http.post(environment.apiUrl+'/cert/isValidFile', formData);
   }
 }

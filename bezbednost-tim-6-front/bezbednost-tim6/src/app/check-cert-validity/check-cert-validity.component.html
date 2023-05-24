@@ -9,13 +9,17 @@
 
 <div *ngIf="selectModeForm.value == 'serial'">
     <label>Serial Number certificate checker</label>
+    <br>
     <input type="text" [formControl]="serialNumber">
+    <br>
     <button (click)="checkSerial()">Check</button>
 </div>
 
 <div *ngIf="selectModeForm.value == 'upload'">
     <label>File upload certificate checker</label>
+    <br>
     <input type="file" (change)="onFileSelected($event)">
+    <br>
     <button (click)="checkFile()">Check</button>
 </div>
 <div *ngIf="responded == true">

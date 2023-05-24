@@ -46,17 +46,25 @@ export class CheckCertValidityComponent implements OnInit {
 
   checkFile(): void {
     if(this.selectedFile){
-      if(this.selectedFile.size > 512*1024){
-        alert('file too big');
-        return;
-      }
-      if(!this.selectedFile.name.endsWith('.crt')){
-        alert('file is not .crt')
-        return
-      }
+      const formData = new FormData();
+      formData.append("file",this.selectedFile);  
+      // if(this.selectedFile.size > 512*1024){
+      //   alert('file too big');
+      //   return;
+      // }
+      // if(!this.selectedFile.name.endsWith('.crt')){
+      //   alert('file is not .crt')
+      //   return
+      // }
       console.log(this.selectedFile.size)
       console.log(this.selectedFile.name)
       console.log(this.selectedFile.type)
+
+      this.certService.checkIsValidFIle(formData).subscribe({
+        next: result => {
+            console.log(result);
+        }}
+      )
     }
   }
 
