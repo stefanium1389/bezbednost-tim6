@@ -66,8 +66,20 @@ export class CheckCertValidityComponent implements OnInit {
 
       this.certService.checkIsValidFIle(formData).subscribe({
         next: result => {
-            console.log(result);
-        }}
+          this.responded = true;
+          this.certificateStatus = 'Valid'
+        },
+        error: error => {
+          if(error.status == 404){
+            this.responded = true;
+            this.certificateStatus = 'Not Existing'
+          }
+          if(error.status == 400){
+            this.responded = true;
+            this.certificateStatus = 'Invalid'
+          }
+        }
+      }
       )
     }
   }

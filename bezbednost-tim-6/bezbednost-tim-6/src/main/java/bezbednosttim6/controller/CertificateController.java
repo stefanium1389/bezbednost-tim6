@@ -132,7 +132,7 @@ public class CertificateController {
 	public ResponseEntity<?> checkIsValid(@PathVariable("serialNumber") Long serialNumber){
 		
 		try {
-			this.certificateValidationService.isValid(serialNumber);
+			this.certificateValidationService.isValidFromSerial(serialNumber);
 			return new ResponseEntity<>(HttpStatus.OK);
 		}
 		catch(ObjectNotFoundException e) {
@@ -148,7 +148,17 @@ public class CertificateController {
 		System.err.println(file.getOriginalFilename());
 		System.err.println(file.getSize());
 		System.err.println(file.getContentType());
-		return new ResponseEntity<>(HttpStatus.OK);
+		
+		try {
+			this.certificateValidationService.isValidFromFile(file);
+			return new ResponseEntity<>(HttpStatus.OK);
+		}
+		catch(ObjectNotFoundException e) {
+			return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+		}
+		catch(Exception e) {
+			return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
+		}
 		
 	}
 
