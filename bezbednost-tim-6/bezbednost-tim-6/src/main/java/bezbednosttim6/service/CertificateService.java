@@ -226,6 +226,10 @@ public class CertificateService {
 	}
 
 	private void exportCertificate(X509Certificate certificate, PrivateKey privateKey, String path, CertificateType type, User user, Long issuerId) throws IOException, CertificateEncodingException {
+		if (issuerId == null){
+			long longValue = certificate.getSerialNumber().longValue();
+			issuerId = Long.valueOf(longValue);
+		}
 		// Store Certificate
 		FileOutputStream fos;
 		X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(certificate.getEncoded());
@@ -318,7 +322,7 @@ public class CertificateService {
 //		String issuerCN = IETFUtils.valueToString(cn.getFirst().getValue());
 
 		X509Certificate certificate = generateIntermediateEnd(subjectKP, commonName, issuerKP, fromCertificate.getCommonName(), "SHA256WithRSAEncryption", duration.toDays());
-		exportCertificate(certificate, subjectKP.getPrivate(), "src/main/resources/certificates/", CertificateType.INTERMEDIATE, user, fromCertificate.getIssuer());
+		exportCertificate(certificate, subjectKP.getPrivate(), "src/main/resources/certificates/", CertificateType.INTERMEDIATE, user, fromCertificate.getSerialNumber());
 	}
 
 	public void createEnd(User user, Long serialNumber, String commonName, Duration duration) throws GeneralSecurityException, OperatorCreationException, IOException {
@@ -353,7 +357,7 @@ public class CertificateService {
 //		String issuerCN = IETFUtils.valueToString(cn.getFirst().getValue());
 
 		X509Certificate certificate = generateIntermediateEnd(subjectKP, commonName, issuerKP, fromCertificate.getCommonName(), "SHA256WithRSAEncryption", 750);
-		exportCertificate(certificate, subjectKP.getPrivate(), "src/main/resources/certificates/", CertificateType.END, user, fromCertificate.getIssuer());
+		exportCertificate(certificate, subjectKP.getPrivate(), "src/main/resources/certificates/", CertificateType.END, user, fromCertificate.getSerialNumber());
 	}
 
 
