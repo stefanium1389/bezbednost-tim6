@@ -1,5 +1,5 @@
 <div class="div">
-    <h1 class="element">Registration</h1>
+    <h1>Registration</h1>
     <form
       method="POST"
       [formGroup]="registerForm" 
@@ -23,7 +23,8 @@
       <input type="radio" value="phoneValidation" name="validationType" formControlName="validationType"> Verify with SMS
       <br>
       <br>
-      <button class="element" type="submit">Register</button>
+      <button type="submit">Register</button>
+      <p class="small mb-5 pb-lg-2"> Already have account? <a class="text-white-50" [routerLink]="['']">Log in</a></p>
     </form>
     
   </div>

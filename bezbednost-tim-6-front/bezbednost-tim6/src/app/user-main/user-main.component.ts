@@ -5,7 +5,7 @@ import { Route, Router } from '@angular/router';
 @Component({
   selector: 'app-user-main',
   templateUrl: './user-main.component.html',
-  styleUrls: ['./user-main.component.scss']
+  styleUrls: ['./user-main.component.css']
 })
 export class UserMainComponent implements OnInit {
 
