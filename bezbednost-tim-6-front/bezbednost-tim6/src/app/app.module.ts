@@ -18,6 +18,12 @@ import { JwtInterceptorService } from './jwt-interceptor.service';
 import { RequestCertComponent } from './request-cert/request-cert.component';
 import { ViewAllCertsComponent } from './view-all-certs/view-all-certs.component';
 import { ErrorInterceptorService } from './error-interceptor.service';
+import { ViewSentRequestsComponent } from './view-sent-requests/view-sent-requests.component';
+import { ViewReceivedRequestsComponent } from './view-received-requests/view-received-requests.component';
+import { InputReasonComponent } from './input-reason/input-reason.component';
+import {MatDialogModule} from "@angular/material/dialog";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 
 @NgModule({
   declarations: [
@@ -31,13 +37,19 @@ import { ErrorInterceptorService } from './error-interceptor.service';
     SmsValidationComponent,
     CheckCertValidityComponent,
     RequestCertComponent,
-    ViewAllCertsComponent
+    ViewAllCertsComponent,
+    ViewSentRequestsComponent,
+    ViewReceivedRequestsComponent,
+    InputReasonComponent
   ],
   imports: [
     BrowserModule,
     ReactiveFormsModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    MatDialogModule,
+    FormsModule,
+    BrowserAnimationsModule
   ],
   providers: [
     {

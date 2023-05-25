@@ -2,6 +2,7 @@ package bezbednosttim6.dto;
 
 import bezbednosttim6.model.CertificateRequest;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -12,10 +13,10 @@ public class CertificateRequestResponseDTO {
 	private String certificateType;
 	private Long issuerCertificateId;
 	private Long userId;
+	private String userEmail;
 	private String timeOfRequest;
 	private String status;
 	private String commonName;
-
 	private String rejection;
 
 	public CertificateRequestResponseDTO() {
@@ -23,13 +24,14 @@ public class CertificateRequestResponseDTO {
 	}
 
 
-	public CertificateRequestResponseDTO(Long id, String certificateType, Long issuerCertificateId, Long userId, LocalDateTime timeOfRequest, String commonName, String status, String rejection) {
+	public CertificateRequestResponseDTO(Long id, String certificateType, Long issuerCertificateId, Long userId, String userEmail, LocalDateTime timeOfRequest, String commonName, String status, String rejection) {
 
 		super();
 		this.id = id;
 		this.certificateType = certificateType;
 		this.issuerCertificateId = issuerCertificateId;
 		this.userId = userId;
+		this.userEmail = userEmail;
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		this.timeOfRequest = timeOfRequest.format(formatter);
 		this.status = status;
@@ -44,12 +46,27 @@ public class CertificateRequestResponseDTO {
 		this.certificateType = cr.getCertificateType().toString();
 		this.issuerCertificateId = cr.getIssuerCertificateId();
 		this.userId = cr.getUserId();
+		this.userEmail = cr.getUserEmail();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		this.timeOfRequest = formatter.format(cr.getTimeOfRequest());
 		this.status = cr.getStatus().toString();
 		this.commonName = cr.getCommonName();
 		this.rejection = cr.getRejection();
 	}
+
+//	public CertificateRequestResponseDTO(CertificateRequest cr, Principal principal) {
+//		super();
+//		this.id = cr.getId();
+//		this.certificateType = cr.getCertificateType().toString();
+//		this.issuerCertificateId = cr.getIssuerCertificateId();
+//		this.userId = cr.getUserId();
+//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+//		this.timeOfRequest = formatter.format(cr.getTimeOfRequest());
+//		this.status = cr.getStatus().toString();
+//		this.commonName = cr.getCommonName();
+//		this.rejection = cr.getRejection();
+//		this.userEmail = principal.getName();
+//	}
 
 	public Long getId() {
 		return id;
@@ -114,5 +131,13 @@ public class CertificateRequestResponseDTO {
 
 	public void setRejection(String rejection) {
 		this.rejection = rejection;
+	}
+
+	public String getUserEmail() {
+		return userEmail;
+	}
+
+	public void setUserEmail(String userEmail) {
+		this.userEmail = userEmail;
 	}
 }

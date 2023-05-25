@@ -76,7 +76,7 @@ public class CertificateRequestService {
             } 
             else {
 //                fromCertificate = certificateOpt.get();
-                newRequest = new CertificateRequest(requestedType, certificateRequestDTO.getIssuerCertificateId(), null, user.getId(), requestStatus, now, duration, certificateRequestDTO.getCommonName(), null);
+                newRequest = new CertificateRequest(requestedType, certificateRequestDTO.getIssuerCertificateId(), null, user.getId(), user.getEmail(), requestStatus, now, duration, certificateRequestDTO.getCommonName(), null);
                 newRequest = certificateRequestRepo.save(newRequest);
                 // automatsko odobravanje
                 // admin trazi novi sertifikat
@@ -93,7 +93,7 @@ public class CertificateRequestService {
             {
                 throw new InvalidArgumentException("Requested duration is longer than possible");
             }
-            newRequest = new CertificateRequest(requestedType, certificateRequestDTO.getIssuerCertificateId(), fromCertificate.getUser().getId(), user.getId(), requestStatus, now, duration, certificateRequestDTO.getCommonName(), null);
+            newRequest = new CertificateRequest(requestedType, certificateRequestDTO.getIssuerCertificateId(), fromCertificate.getUser().getId(), user.getId(), user.getEmail(), requestStatus, now, duration, certificateRequestDTO.getCommonName(), null);
             newRequest = certificateRequestRepo.save(newRequest);
 
             // automatsko odobravanje
@@ -107,7 +107,7 @@ public class CertificateRequestService {
 //        newRequest = new CertificateRequest(requestedType, certificateRequestDTO.getIssuerCertificateId(), fromCertificate.getUser().getId(), user.getId(), requestStatus, now, duration, certificateRequestDTO.getCommonName(), null);
 
 
-        return new CertificateRequestResponseDTO(newRequest.getId(), certificateRequestDTO.getCertificateType(), certificateRequestDTO.getIssuerCertificateId(),user.getId(),now, newRequest.getCommonName(), newRequest.getStatus().toString(), null);
+        return new CertificateRequestResponseDTO(newRequest.getId(), certificateRequestDTO.getCertificateType(), certificateRequestDTO.getIssuerCertificateId(),user.getId(), user.getEmail(), now, newRequest.getCommonName(), newRequest.getStatus().toString(), null);
 
     }
 
