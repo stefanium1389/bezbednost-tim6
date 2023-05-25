@@ -1,8 +1,12 @@
-<p>view-all-certs works!</p>
+<p>View all certificates</p>
 <div >
     <div *ngFor="let x of lista">
-        {{x.certificateType}} 
-        {{x.issDate}}
-        <a> >download</a> 
+        SN: {{x.serialNumber}}<br>
+        CN: {{x.commonName}}<br>
+        cert type: {{x.certificateType}} <br>
+        owner: {{x.userEmail}}<br>
+        valid from: {{x.validFrom}}<br>
+        valid to: {{x.validTo}}<br>
+        <button (click)="download(x.serialNumber)">Download</button>
     </div> 
 </div>

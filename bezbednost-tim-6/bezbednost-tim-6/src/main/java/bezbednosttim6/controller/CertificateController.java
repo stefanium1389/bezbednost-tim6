@@ -20,6 +20,7 @@ import org.bouncycastle.operator.OperatorCreationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -196,18 +197,18 @@ public class CertificateController {
 	}
 	
 	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-	@PostMapping ("download/{serialNumber}")
+	@GetMapping ("download/{serialNumber}")
 	public ResponseEntity<?> downloadCertificate (@PathVariable("serialNumber") Long serialNumber, Principal principal) {
 				
 		try {
 			byte[] zipBytes = downloadService.getZipBytes(serialNumber, principal);
 			HttpHeaders headers = new HttpHeaders();
-	        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=certificate.zip");
-
+			headers.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE);
+	        headers.set(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment().filename("certificate.zip").build().toString());
+			
 	        return ResponseEntity.ok()
 	                .headers(headers)
-	                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-	                .body(new InputStreamResource(new ByteArrayInputStream(zipBytes)));
+	                .body(zipBytes);
 		} catch (Exception e)
 		{
 			ErrorDTO error = new ErrorDTO(e.getMessage());

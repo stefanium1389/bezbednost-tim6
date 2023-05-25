@@ -24,4 +24,10 @@ export class CertificateService {
   getAllCertificates():Observable<Array<CertificateDTO>>{
     return this.http.get<Array<CertificateDTO>>(environment.apiUrl+'/cert/getAll');
   }
+
+  downloadFile(serialNumber: number): Observable<Blob> {
+    const options = { responseType: 'blob' as 'json' };
+    return this.http.get<Blob>(environment.apiUrl+`/cert/download/${serialNumber}`, options);
+  }
+  
 }
