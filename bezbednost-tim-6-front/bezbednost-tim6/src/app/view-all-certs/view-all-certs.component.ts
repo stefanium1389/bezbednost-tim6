@@ -44,7 +44,7 @@ export class ViewAllCertsComponent implements OnInit {
 
   reason!: string;
   rejection!: Reason;
-  async revoke(id:number) {
+  revoke(id:number) {
     let obj: Reason;
 
     const dialogRef = this.dialog.open(InputReasonComponent, {

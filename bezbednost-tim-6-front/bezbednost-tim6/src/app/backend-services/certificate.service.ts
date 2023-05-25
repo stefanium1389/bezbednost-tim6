@@ -31,7 +31,7 @@ export class CertificateService {
     return this.http.get<Blob>(environment.apiUrl+`/cert/download/${serialNumber}`, options);
   }
 
-  async revoke(id: number, reason: Reason):Observable<any> {
+  revoke(id: number, reason: Reason):Observable<any> {
     return this.http.put(environment.apiUrl+`/cert/revoke/${id}`, reason);
   }
   
