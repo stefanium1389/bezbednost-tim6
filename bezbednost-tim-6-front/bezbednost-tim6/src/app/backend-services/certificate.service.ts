@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { CertificateDTO } from '../dtos/CertificateDTO';
+import { Reason } from '../view-received-requests/view-received-requests.component';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +29,10 @@ export class CertificateService {
   downloadFile(serialNumber: number): Observable<Blob> {
     const options = { responseType: 'blob' as 'json' };
     return this.http.get<Blob>(environment.apiUrl+`/cert/download/${serialNumber}`, options);
+  }
+
+  async revoke(id: number, reason: Reason):Observable<any> {
+    return this.http.put(environment.apiUrl+`/cert/revoke/${id}`, reason);
   }
   
 }

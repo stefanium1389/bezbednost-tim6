@@ -11,6 +11,8 @@ import { RequestCertComponent } from './request-cert/request-cert.component';
 import { ViewAllCertsComponent } from './view-all-certs/view-all-certs.component';
 import { ViewSentRequestsComponent } from './view-sent-requests/view-sent-requests.component';
 import { ViewReceivedRequestsComponent } from './view-received-requests/view-received-requests.component';
+import { AdminMainComponent } from './admin-main/admin-main.component';
+import { ViewAllRequestsComponent } from './view-all-requests/view-all-requests.component';
 
 const routes: Routes = [
   {path: "", component: LoginComponent},
@@ -18,12 +20,14 @@ const routes: Routes = [
   {path: "reset-password", component: ResetPasswordComponent},
   {path: "activate", component: VerifyEmailComponent},
   {path: "user-main", component: UserMainComponent},
+  {path: "admin-main", component: AdminMainComponent},
   {path: "sms-validation", component: SmsValidationComponent},
   {path: "check-cert-validity", component: CheckCertValidityComponent},
   {path: "request-cert", component: RequestCertComponent},
   {path: "view-all-certs", component: ViewAllCertsComponent},
   {path: "view-sent-requests", component: ViewSentRequestsComponent},
-  {path: "view-received-requests", component: ViewReceivedRequestsComponent}
+  {path: "view-received-requests", component: ViewReceivedRequestsComponent},
+  {path: "view-all-requests", component: ViewAllRequestsComponent}
 ];
 
 @NgModule({

@@ -23,7 +23,7 @@
       <input type="radio" value="phoneValidation" name="validationType" formControlName="validationType"> Verify with SMS
       <br>
       <br>
-      <button type="submit">Register</button>
+      <button type="submit" (keydown.enter)="register()">Register</button>
       <p class="small mb-5 pb-lg-2"> Already have account? <a class="text-white-50" [routerLink]="['']">Log in</a></p>
     </form>
     

@@ -23,6 +23,7 @@ import { ViewReceivedRequestsComponent } from './view-received-requests/view-rec
 import { InputReasonComponent } from './input-reason/input-reason.component';
 import {MatDialogModule} from "@angular/material/dialog";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ViewAllRequestsComponent } from './view-all-requests/view-all-requests.component';
 
 
 @NgModule({
@@ -40,7 +41,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     ViewAllCertsComponent,
     ViewSentRequestsComponent,
     ViewReceivedRequestsComponent,
-    InputReasonComponent
+    InputReasonComponent,
+    ViewAllRequestsComponent
   ],
   imports: [
     BrowserModule,

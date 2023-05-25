@@ -19,6 +19,10 @@ export class CertificateRequestService {
     return this.http.get(environment.apiUrl+`/cert/request/sent/view`);
   }
 
+  getAll():Observable<any>{
+    return this.http.get(environment.apiUrl+`/cert/request/view`);
+  }
+
   accept(id: number):Observable<any> {
     return this.http.put(environment.apiUrl+`/cert/request/accept/${id}`, null);
   }

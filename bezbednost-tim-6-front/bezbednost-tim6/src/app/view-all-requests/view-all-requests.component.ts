@@ -6,15 +6,15 @@ import { InputReasonComponent } from '../input-reason/input-reason.component';
 import { CertificateRequestDTO } from '../view-received-requests/view-received-requests.component';
 
 @Component({
-  selector: 'app-view-sent-requests',
-  templateUrl: './view-sent-requests.component.html',
-  styleUrls: ['./view-sent-requests.component.css']
+  selector: 'app-view-all-requests',
+  templateUrl: './view-all-requests.component.html',
+  styleUrls: ['./view-all-requests.component.css']
 })
-export class ViewSentRequestsComponent implements OnInit {
-  class_card="blue";
+export class ViewAllRequestsComponent implements OnInit {
 
   @Output() request!:CertificateRequestDTO;
   requests!: CertificateRequestDTO[];
+
 
   constructor(private router: Router, private service: CertificateRequestService) { }
 
@@ -23,7 +23,7 @@ export class ViewSentRequestsComponent implements OnInit {
   }
 
   private getAllReceivedRequests() {
-    this.service.getSent()
+    this.service.getAll()
     .subscribe(data => {
       console.log(data);
         this.requests = data.results;

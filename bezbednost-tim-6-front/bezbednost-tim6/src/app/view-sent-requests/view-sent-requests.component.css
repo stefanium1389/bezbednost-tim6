@@ -41,7 +41,7 @@
   .redBtn {
     background: #dc4436;
     backdrop-filter: blur(2px);
-    color: #485162;
+    color: #000000;
     position: center;
     border-radius: 15px;
     border-color: #485162;
@@ -59,45 +59,7 @@
     width: 49%;
   }
   
-  input{
-    width: 80%;
-    text-align: center;
-    position: center;
-  }
-  
-  .input1{
-    height: 3rem;
-    width: 90%;
-    text-align: center;
-    border-color: black;
-    border-radius: 15px;
-    position: center;
-    margin: 1rem;
-  }
-  
-  
-  .active1{
-    width:2rem;
-    height: 2rem;
-    background-color: #BFDC36;
-    border-color: #EBE8D7;
-    border-style: double;
-    border-radius: 50%;
-    float: right;
-    margin-right: 2rem;
-  }
-  
-  .active2{
-    width:2rem;
-    height: 2rem;
-    background-color: #DC7C36;
-    border-color: #EBE8D7;
-    border-style: double;
-    border-radius: 50%;
-    float: right;
-    margin-right: 2rem;
-  }
-  
+
   .card-up{
     margin-top: 1rem;
   }
@@ -114,23 +76,3 @@
     justify-items: center;
     width: 100%;
   }
-
-  .position1{
-    display: grid;
-    place-items: end;
-  }
-
-  .newGreen{
-    background: #BFDC36;
-    backdrop-filter: blur(2px);
-    color: #485162;
-    position: center;
-    border-radius: 2rem;
-    border-style: none;
-    width: fit-content;
-    padding: 1rem;
-    margin-right: 1rem;
-  }
-  
-  
-  

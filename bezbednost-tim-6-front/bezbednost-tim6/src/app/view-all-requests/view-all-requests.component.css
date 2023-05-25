@@ -1,5 +1,4 @@
 .form-container {
-    color: #000001;
     padding: 1rem;
     font-family: Arial, Helvetica, sans-serif;
     font-family: Georgia, 'Times New Roman', Times, serif;
@@ -7,7 +6,7 @@
   }
 
   body {
-    background: #66bfe0;
+    background-color: #66bfe0;
   }
   
   h2{
@@ -59,7 +58,7 @@
     border-color: #485162;
     width: 49%;
   }
-
+  
   
   .card-up{
     margin-top: 1rem;
@@ -78,6 +77,3 @@
     width: 100%;
   }
 
-  
-  
-  

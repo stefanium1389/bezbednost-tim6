@@ -38,10 +38,9 @@ export class LoginComponent implements OnInit {
         if(this.jwtService.getRole() === 'ROLE_USER')
         {this.router.navigate(['user-main']);}
 
-        // PAZI !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         else if(this.jwtService.getRole() === 'ROLE_ADMIN')
-        //{this.router.navigate(['admin-main']);}
-        {this.router.navigate(['user-main']);}
+        {this.router.navigate(['admin-main']);}
+        //{this.router.navigate(['user-main']);}
         else {console.log(this.jwtService.getRole())}
       },
       error: error => {

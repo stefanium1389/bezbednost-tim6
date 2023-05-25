@@ -1,12 +1,17 @@
-<p>View all certificates</p>
-<div >
-    <div *ngFor="let x of lista">
-        SN: {{x.serialNumber}}<br>
-        CN: {{x.commonName}}<br>
-        cert type: {{x.certificateType}} <br>
-        owner: {{x.userEmail}}<br>
-        valid from: {{x.validFrom}}<br>
-        valid to: {{x.validTo}}<br>
-        <button (click)="download(x.serialNumber)">Download</button>
-    </div> 
-</div>
+<div class="form-container">
+    <h2 class="mb-4">View all certificates</h2>
+    <div class="card" *ngFor="let x of lista">
+      <div class="card-body">
+        <h3>SN: {{x.serialNumber}}</h3>
+        <h4>CN: {{x.commonName}}</h4>
+        <h4>cert type: {{x.certificateType}}</h4>
+        <h4>owner: {{x.userEmail}}</h4>
+        <h4>valid from: {{x.validFrom}}</h4>
+        <h4>valid to: {{x.validTo}}</h4>
+        <div class="buttondiv">
+            <button type="button" class="btn redBtn text-uppercase wide-btn" (click)="revoke(x.serialNumber)">Revoke</button>
+            <button type="button" class="btn greenBtn text-uppercase wide-btn" (click)="download(x.serialNumber)">Download</button>
+        </div>
+    </div>
+    </div>
+  </div>
