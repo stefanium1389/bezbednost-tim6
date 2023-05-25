@@ -10,6 +10,7 @@ import bezbednosttim6.model.User;
 import bezbednosttim6.service.CertificateRequestService;
 import bezbednosttim6.service.CertificateService;
 import bezbednosttim6.service.CertificateValidationService;
+import bezbednosttim6.service.DownloadFileService;
 import bezbednosttim6.service.UserService;
 import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
@@ -18,7 +19,10 @@ import org.bouncycastle.asn1.x500.style.IETFUtils;
 import org.bouncycastle.operator.OperatorCreationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +30,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.security.auth.x500.X500Principal;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.file.Files;
@@ -56,6 +62,9 @@ public class CertificateController {
 
 	@Autowired
 	private CertificateRequestService certificateRequestService;
+	
+	@Autowired
+	private DownloadFileService downloadService;
 
 
 	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
@@ -159,8 +168,6 @@ public class CertificateController {
 		}
 		
 	}
-	
-
 
 	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 	@PostMapping ("request/reject/{requestId}")
@@ -181,6 +188,26 @@ public class CertificateController {
 		try {
 			CertificateRequest newRequest = certificateRequestService.acceptRequest(requestId, principal);
 			return new ResponseEntity<>(new CertificateRequestResponseDTO(newRequest), HttpStatus.OK);
+		} catch (Exception e)
+		{
+			ErrorDTO error = new ErrorDTO(e.getMessage());
+			return new ResponseEntity<ErrorDTO>(error,HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+	@PostMapping ("download/{serialNumber}")
+	public ResponseEntity<?> downloadCertificate (@PathVariable("serialNumber") Long serialNumber, Principal principal) {
+				
+		try {
+			byte[] zipBytes = downloadService.getZipBytes(serialNumber, principal);
+			HttpHeaders headers = new HttpHeaders();
+	        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=certificate.zip");
+
+	        return ResponseEntity.ok()
+	                .headers(headers)
+	                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+	                .body(new InputStreamResource(new ByteArrayInputStream(zipBytes)));
 		} catch (Exception e)
 		{
 			ErrorDTO error = new ErrorDTO(e.getMessage());

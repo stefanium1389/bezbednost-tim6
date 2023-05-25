@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { CertificateDTO } from '../dtos/CertificateDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -18,5 +19,9 @@ export class CertificateService {
 
   checkIsValidFIle(formData: FormData) {
     return this.http.post(environment.apiUrl+'/cert/isValidFile', formData);
+  }
+
+  getAllCertificates():Observable<Array<CertificateDTO>>{
+    return this.http.get<Array<CertificateDTO>>(environment.apiUrl+'/cert/getAll');
   }
 }
