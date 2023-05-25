@@ -1,15 +1,12 @@
 package bezbednosttim6.model;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
@@ -20,36 +17,39 @@ public class Certificate implements Serializable {
 	@Id
 	@Column(nullable = false, updatable = false, unique = true)
 	public Long serialNumber;
-	public String SignatureAlgorithm;
-    public Long Issuer;
-    public Date ValidFrom;
-    public Date ValidTo;
+	public String signatureAlgorithm;
+    public Long issuer;
+    public Date validFrom;
+    public Date validTo;
 	@Enumerated(EnumType.STRING)
-    public CertificateStatus Status;
+    public CertificateStatus status;
 	@Enumerated(EnumType.STRING)
-    public CertificateType CertificateType;
+    public CertificateType certificateType;
 
 	@Enumerated(EnumType.STRING)
-	public CertificateRevocationStatus CertificateRevocationStatus;
+	public CertificateRevocationStatus certificateRevocationStatus;
 	@ManyToOne
     public User user;
 	
 	public String commonName;
 
+	public String revocationReason;
+
 	public Certificate(Long serialNumber, String signatureAlgorithm, Long issuer, Date validFrom,
 					   Date validTo, CertificateStatus status, bezbednosttim6.model.CertificateType certificateType, CertificateRevocationStatus certificateRevocationStatus,
-					   User user, String commonName) {
+					   User user, String commonName, String revocationReason) {
 		super();
 		this.serialNumber = serialNumber;
-		SignatureAlgorithm = signatureAlgorithm;
-		Issuer = issuer;
-		ValidFrom = validFrom;
-		ValidTo = validTo;
-		Status = status;
-		CertificateType = certificateType;
-		this.CertificateRevocationStatus = certificateRevocationStatus;
+		this.signatureAlgorithm = signatureAlgorithm;
+		this.issuer = issuer;
+		this.validFrom = validFrom;
+		this.validTo = validTo;
+		this.status = status;
+		this.certificateType = certificateType;
+		this.certificateRevocationStatus = certificateRevocationStatus;
 		this.user = user;
 		this.commonName = commonName;
+		this.revocationReason = revocationReason;
 	}
 
 	public Certificate() {
@@ -63,28 +63,28 @@ public class Certificate implements Serializable {
 		this.serialNumber = serialNumber;
 	}
 	public String getSignatureAlgorithm() {
-		return SignatureAlgorithm;
+		return signatureAlgorithm;
 	}
 	public void setSignatureAlgorithm(String signatureAlgorithm) {
-		SignatureAlgorithm = signatureAlgorithm;
+		this.signatureAlgorithm = signatureAlgorithm;
 	}
 	public Long getIssuer() {
-		return Issuer;
+		return issuer;
 	}
 	public void setIssuer(Long issuer) {
-		Issuer = issuer;
+		this.issuer = issuer;
 	}
 	public CertificateStatus getStatus() {
-		return Status;
+		return status;
 	}
 	public void setStatus(CertificateStatus status) {
-		Status = status;
+		this.status = status;
 	}
 	public CertificateType getCertificateType() {
-		return CertificateType;
+		return certificateType;
 	}
 	public void setCertificateType(CertificateType certificateType) {
-		CertificateType = certificateType;
+		this.certificateType = certificateType;
 	}
 	public User getUser() {
 		return user;
@@ -94,27 +94,27 @@ public class Certificate implements Serializable {
 	}
 
 	public Date getValidFrom() {
-		return ValidFrom;
+		return validFrom;
 	}
 
 	public void setValidFrom(Date validFrom) {
-		ValidFrom = validFrom;
+		this.validFrom = validFrom;
 	}
 
 	public Date getValidTo() {
-		return ValidTo;
+		return validTo;
 	}
 
 	public void setValidTo(Date validTo) {
-		ValidTo = validTo;
+		this.validTo = validTo;
 	}
 
 	public CertificateRevocationStatus getCertificateRevocationStatus() {
-		return CertificateRevocationStatus;
+		return certificateRevocationStatus;
 	}
 
 	public void setCertificateRevocationStatus(CertificateRevocationStatus certificateRevocationStatus) {
-		CertificateRevocationStatus = certificateRevocationStatus;
+		this.certificateRevocationStatus = certificateRevocationStatus;
 	}
 
 	public String getCommonName() {
@@ -123,5 +123,13 @@ public class Certificate implements Serializable {
 
 	public void setCommonName(String commonName) {
 		this.commonName = commonName;
+	}
+
+	public String getRevocationReason() {
+		return revocationReason;
+	}
+
+	public void setRevocationReason(String revocationReason) {
+		this.revocationReason = revocationReason;
 	}
 }

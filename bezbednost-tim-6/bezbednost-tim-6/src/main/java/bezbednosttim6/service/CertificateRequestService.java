@@ -3,21 +3,15 @@ package bezbednosttim6.service;
 import bezbednosttim6.dto.CertificateRequestDTO;
 import bezbednosttim6.dto.CertificateRequestResponseDTO;
 import bezbednosttim6.dto.DTOList;
-import bezbednosttim6.dto.ReasonDTO;
 import bezbednosttim6.exception.*;
 import bezbednosttim6.model.*;
 import bezbednosttim6.repository.CertificateRepository;
 import bezbednosttim6.repository.CertificateRequestRepository;
 import bezbednosttim6.repository.UserRepository;
-import org.bouncycastle.operator.OperatorCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.security.Principal;
-import java.security.cert.CertificateException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -82,7 +76,7 @@ public class CertificateRequestService {
             } 
             else {
 //                fromCertificate = certificateOpt.get();
-                newRequest = new CertificateRequest(requestedType, certificateRequestDTO.getIssuerCertificateId(), null, user.getId(), requestStatus, now, duration, certificateRequestDTO.getCommonName(), null);
+                newRequest = new CertificateRequest(requestedType, certificateRequestDTO.getIssuerCertificateId(), null, user.getId(), user.getEmail(), requestStatus, now, duration, certificateRequestDTO.getCommonName(), null);
                 newRequest = certificateRequestRepo.save(newRequest);
                 // automatsko odobravanje
                 // admin trazi novi sertifikat
@@ -92,14 +86,14 @@ public class CertificateRequestService {
             }
         } else {
             fromCertificate = certificateOpt.get();
-            if (fromCertificate.CertificateType == CertificateType.END) {
+            if (fromCertificate.certificateType == CertificateType.END) {
                 throw new TypePermissionException("Cannot make certificate from an end certificate");
             }
             if (!checkIfValidDuration(fromCertificate,duration))
             {
                 throw new InvalidArgumentException("Requested duration is longer than possible");
             }
-            newRequest = new CertificateRequest(requestedType, certificateRequestDTO.getIssuerCertificateId(), fromCertificate.getUser().getId(), user.getId(), requestStatus, now, duration, certificateRequestDTO.getCommonName(), null);
+            newRequest = new CertificateRequest(requestedType, certificateRequestDTO.getIssuerCertificateId(), fromCertificate.getUser().getId(), user.getId(), user.getEmail(), requestStatus, now, duration, certificateRequestDTO.getCommonName(), null);
             newRequest = certificateRequestRepo.save(newRequest);
 
             // automatsko odobravanje
@@ -113,7 +107,7 @@ public class CertificateRequestService {
 //        newRequest = new CertificateRequest(requestedType, certificateRequestDTO.getIssuerCertificateId(), fromCertificate.getUser().getId(), user.getId(), requestStatus, now, duration, certificateRequestDTO.getCommonName(), null);
 
 
-        return new CertificateRequestResponseDTO(newRequest.getId(), certificateRequestDTO.getCertificateType(), certificateRequestDTO.getIssuerCertificateId(),user.getId(),now, newRequest.getCommonName(), newRequest.getStatus().toString(), null);
+        return new CertificateRequestResponseDTO(newRequest.getId(), certificateRequestDTO.getCertificateType(), certificateRequestDTO.getIssuerCertificateId(),user.getId(), user.getEmail(), now, newRequest.getCommonName(), newRequest.getStatus().toString(), null);
 
     }
 

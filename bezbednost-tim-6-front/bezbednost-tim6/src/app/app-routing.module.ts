@@ -9,6 +9,8 @@ import { SmsValidationComponent } from './sms-validation/sms-validation.componen
 import { CheckCertValidityComponent } from './check-cert-validity/check-cert-validity.component';
 import { RequestCertComponent } from './request-cert/request-cert.component';
 import { ViewAllCertsComponent } from './view-all-certs/view-all-certs.component';
+import { ViewSentRequestsComponent } from './view-sent-requests/view-sent-requests.component';
+import { ViewReceivedRequestsComponent } from './view-received-requests/view-received-requests.component';
 
 const routes: Routes = [
   {path: "", component: LoginComponent},
@@ -19,7 +21,9 @@ const routes: Routes = [
   {path: "sms-validation", component: SmsValidationComponent},
   {path: "check-cert-validity", component: CheckCertValidityComponent},
   {path: "request-cert", component: RequestCertComponent},
-  {path: "view-all-certs", component: ViewAllCertsComponent}
+  {path: "view-all-certs", component: ViewAllCertsComponent},
+  {path: "view-sent-requests", component: ViewSentRequestsComponent},
+  {path: "view-received-requests", component: ViewReceivedRequestsComponent}
 ];
 
 @NgModule({
