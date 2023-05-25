@@ -1,0 +1,10 @@
+<div class="fc">
+    <form class="img1">
+      <label for="noteDriver">Input reason for rejection:</label>
+      <textarea #rejection id="rejection" name="rejection" rows="5" cols="40" placeholder="Leave a reason for rejecting request..." [(ngModel)]="data.reason" name="rejection"></textarea>
+      <div class="buttondiv">
+        <button class="redBtn" (click)="onCloseDialog()">Cancel</button>
+        <button class="greenBtn" (click)="onConfirm()" [mat-dialog-close]="data" cdkFocusInitial>Confirm</button>
+      </div>
+    </form>
+  </div>

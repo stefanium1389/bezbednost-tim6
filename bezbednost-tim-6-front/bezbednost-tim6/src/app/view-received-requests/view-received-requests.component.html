@@ -1,0 +1,17 @@
+<div class="form-container">
+    <h2 class="mb-4">RECEIVED CERTIFICATE REQUESTS</h2>
+    <div class="card" *ngFor="let request of requests">
+      <div class="card-body">
+        <h3>{{"Request id: " + request.id}}</h3>
+        <h4>Type: {{request.certificateType}}</h4>
+        <h4>Issuer: {{request.issuerCertificateId}}</h4>
+        <h4>Requester: {{request.userEmail}}</h4>
+        <h4>Time of Request: {{request.timeOfRequest}}</h4>
+        <h4>Common Name: {{request.commonName}}</h4>
+        <div class="buttondiv">
+            <button type="button" class="btn redBtn text-uppercase wide-btn" (click)="reject(request.id)">Reject</button>
+            <button type="button" class="btn greenBtn text-uppercase wide-btn" (click)="accept(request.id)">Accept</button>
+        </div>
+    </div>
+    </div>
+  </div>

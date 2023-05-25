@@ -25,6 +25,8 @@ public class CertificateRequest {
 
     private Long userId;
 
+    private String userEmail;
+
     private Duration duration;
 
     @Enumerated(EnumType.STRING)
@@ -37,11 +39,12 @@ public class CertificateRequest {
     private String rejection;
 
 
-    public CertificateRequest(CertificateType certificateType, Long issuerCertificateId, Long issuerId, Long userId, RequestStatus status, LocalDateTime timeOfRequest, Duration duration, String commonName, String rejection) {
+    public CertificateRequest(CertificateType certificateType, Long issuerCertificateId, Long issuerId, Long userId, String userEmail, RequestStatus status, LocalDateTime timeOfRequest, Duration duration, String commonName, String rejection) {
         this.certificateType = certificateType;
         this.issuerCertificateId = issuerCertificateId;
         this.issuerId = issuerId;
         this.userId = userId;
+        this.userEmail = userEmail;
         this.status = status;
         this.timeOfRequest = timeOfRequest;
         this.duration = duration;
@@ -131,5 +134,13 @@ public class CertificateRequest {
 
     public void setRejection(String rejection) {
         this.rejection = rejection;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 }

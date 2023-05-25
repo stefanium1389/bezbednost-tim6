@@ -1,0 +1,77 @@
+mat-slider {
+    width: 85%;
+  }
+  
+  hr{
+    color: #EBE8D7;
+  }
+  
+  
+  
+  .fc {
+    background: #051f4f;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    color: #485162;
+    padding: 1rem;
+    height: 100%;
+    display: block;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+  }
+  
+  label {
+    color: #EBE8D7;
+    font-weight: bolder;
+    font-style: normal;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    margin-bottom: 3px;
+  }
+  
+  textarea {
+    border-style: none;
+    border-color: #EBE8D7;
+    border-radius: 0.3rem;
+    width: 95%;
+    height: 100%;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+  }
+  
+  .greenBtn {
+    background: #3edc36;
+    backdrop-filter: blur(2px);
+    border-style: none;
+    color: #ffffff;
+    position: center;
+    border-radius: 5px;
+    width: 45%;
+    margin: 0.3rem;
+    font-style: normal;
+    justify-items: center;
+    font-family: "Carter One";
+  }
+  
+  .redBtn{
+    background: #9b8d8c;
+    box-sizing: border-box;
+    font-weight: none;
+    color: #000000;
+    position: center;
+    border: 1px solid #485162;
+    border-radius: 5px;
+    width: 45%;
+    margin: 0.3rem;
+    font-style: normal;
+    justify-items: center;
+    font-family: "Carter One";
+  }
+  
+  
+
+  
+  .buttondiv {
+    display: inline-flex;
+    place-items: center;
+    align-content: center;
+    justify-items: center;
+    width: 100%;
+  }
+  
