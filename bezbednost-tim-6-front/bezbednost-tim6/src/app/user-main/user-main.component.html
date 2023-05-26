@@ -1,5 +1,5 @@
 <div class="user-main">
-    <h1>Welcome</h1>
+    <h1>Menu</h1>
   
     <ul>
       <li>
@@ -20,6 +20,10 @@
   
       <li>
         <a href="view-received-requests">View Received Requests</a>
+      </li>
+
+      <li>
+        <a *ngIf="isAdmin" href="view-all-requests">View All Requests</a>
       </li>
   
     </ul>

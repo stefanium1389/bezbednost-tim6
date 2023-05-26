@@ -4,7 +4,7 @@ import { CertificateService } from '../backend-services/certificate.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import {MatDialog} from "@angular/material/dialog";
 import { InputReasonComponent } from '../input-reason/input-reason.component';
-import { Reason, createReason } from '../view-received-requests/view-received-requests.component';
+import { Reason, createReason } from '../view-received-requests/view-received-requests.component'; 
 
 @Component({
   selector: 'app-view-all-certs',
@@ -44,32 +44,35 @@ export class ViewAllCertsComponent implements OnInit {
 
   reason!: string;
   rejection!: Reason;
-  revoke(id:number) {
-    let obj: Reason;
-
-    const dialogRef = this.dialog.open(InputReasonComponent, {
-      data: {reason: this.reason},
-      panelClass: 'my-dialog-container-class',
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result.reason != undefined ) {
-        obj = {
-          "reason": result.reason
-        }
+  async revoke(id: number) {
+    try {
+      const obj: Reason = {
+        reason: ''
+      };
+  
+      const dialogRef = this.dialog.open(InputReasonComponent, {
+        data: { reason: this.reason },
+        panelClass: 'my-dialog-container-class',
+      });
+  
+      const result = await dialogRef.afterClosed().toPromise();
+      if (result?.reason !== undefined) {
+        obj.reason = result.reason;
         this.rejection = createReason(result.reason);
-         
-        this.certService.revoke(id, this.rejection)
-        .subscribe(data => {
-            alert("Successfully revoked");
-            this.getAll();
-        }
-      , error => {
-        console.log(error.error.message);
-        alert(error.error.message);
+  
+        await this.certService.revoke(id, this.rejection).toPromise();
+        alert("Successfully revoked");
+        await this.getAll();
       }
-    );
+    } catch (error: any) {
+      console.log(error);
+      const errorMessage = (error?.error?.message) || 'An error occurred.';
+      console.log(errorMessage);
+      alert(errorMessage);
     }
-  });
-}
+  }
+  
+  
+  
 
 }

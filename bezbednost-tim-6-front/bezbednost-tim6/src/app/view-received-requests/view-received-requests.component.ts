@@ -75,6 +75,13 @@ export class ViewReceivedRequestsComponent implements OnInit {
 }
 }
 
+export interface Reason {
+  reason: string;
+}
+export function createReason(reason: string): Reason {
+  return {reason};
+}
+
 export interface CertificateRequestDTO {
   id : number;
   certificateType : string;
@@ -85,12 +92,4 @@ export interface CertificateRequestDTO {
   status: string;
   commonName: string;
   rejection: string;
-}
-
-
-export interface Reason {
-  reason: string;
-}
-export function createReason(reason: string): Reason {
-  return {reason};
 }

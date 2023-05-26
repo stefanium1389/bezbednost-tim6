@@ -1,0 +1,24 @@
+.container {
+    display: flex;
+  }
+  
+  .left {
+    width: 20%;
+  }
+  
+  .vertical-line {
+    width: 2px;
+    background-color: #f1f1f1;
+    height: 700px;
+  }
+  
+  .right {
+    flex: 1;
+    margin: 0 10px;
+  }
+
+  body, html {
+    height: 100vh;
+    margin: 0;
+  }
+  

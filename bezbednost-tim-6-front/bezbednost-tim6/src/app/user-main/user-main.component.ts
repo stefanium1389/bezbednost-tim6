@@ -10,8 +10,11 @@ import { Route, Router } from '@angular/router';
 export class UserMainComponent implements OnInit {
 
   constructor(private jwtService: JwtService,private router: Router) { }
+  isAdmin: boolean = false;
 
   ngOnInit(): void {
+    if(this.jwtService.getRole() === 'ROLE_ADMIN')
+        {this.isAdmin = true;}
   }
   logout():void{
     this.jwtService.logout();

@@ -11,8 +11,6 @@ import { CertificateRequestDTO } from '../view-received-requests/view-received-r
   styleUrls: ['./view-sent-requests.component.css']
 })
 export class ViewSentRequestsComponent implements OnInit {
-  class_card="blue";
-
   @Output() request!:CertificateRequestDTO;
   requests!: CertificateRequestDTO[];
 

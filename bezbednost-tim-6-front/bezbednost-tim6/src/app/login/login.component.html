@@ -18,9 +18,10 @@
                     </div>
 
                     <p class="small mb-5 pb-lg-2"><a class="text-white-50" [routerLink]="['/reset-password']">Forgot password?</a></p>
-                    <p class="small mb-5 pb-lg-2"><a class="text-white-50" [routerLink]="['/register']">Sign up</a></p>
 
                     <button class="btn btn-outline-light btn-lg btn-block px-5" type="submit" id="logInButton" (keydown.enter)="login()">Login</button>
+
+                    <p class="small mb-5 pb-lg-2"> Don't have account? <a class="text-white-50" [routerLink]="['/register']">Sign up</a></p>
                 </div>
     </form>
 </div>

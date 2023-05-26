@@ -23,6 +23,7 @@ export class LoginComponent implements OnInit {
     });
   }
 
+  /*
   login(){
 
     const email = this.loginForm.get('email')?.value;
@@ -38,10 +39,34 @@ export class LoginComponent implements OnInit {
         if(this.jwtService.getRole() === 'ROLE_USER')
         {this.router.navigate(['user-main']);}
 
+        // PAZI !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         else if(this.jwtService.getRole() === 'ROLE_ADMIN')
         {this.router.navigate(['admin-main']);}
         //{this.router.navigate(['user-main']);}
         else {console.log(this.jwtService.getRole())}
+      },
+      error: error => {
+        alert(error.error.message);
+      }
+    })
+  }
+  */
+
+  login(){
+
+    const email = this.loginForm.get('email')?.value;
+    const password = this.loginForm.get('password')?.value;
+    const body: LoginRequest = {
+      email: email,
+      password: password
+    }
+    this.userService.login(body).subscribe({
+      next: result => {
+        this.jwtService.setAccessToken(result.accessToken);
+        this.jwtService.setRefreshToken(result.refreshToken);
+        if(this.jwtService.getRole() === 'ROLE_USER' || this.jwtService.getRole() === 'ROLE_ADMIN') {
+          this.router.navigate(['main']);
+        } else {console.log(this.jwtService.getRole())}
       },
       error: error => {
         alert(error.error.message);

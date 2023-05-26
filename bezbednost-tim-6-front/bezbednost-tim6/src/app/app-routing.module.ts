@@ -11,7 +11,6 @@ import { RequestCertComponent } from './request-cert/request-cert.component';
 import { ViewAllCertsComponent } from './view-all-certs/view-all-certs.component';
 import { ViewSentRequestsComponent } from './view-sent-requests/view-sent-requests.component';
 import { ViewReceivedRequestsComponent } from './view-received-requests/view-received-requests.component';
-import { AdminMainComponent } from './admin-main/admin-main.component';
 import { ViewAllRequestsComponent } from './view-all-requests/view-all-requests.component';
 
 const routes: Routes = [
@@ -19,8 +18,7 @@ const routes: Routes = [
   {path: "register", component: RegisterComponent},
   {path: "reset-password", component: ResetPasswordComponent},
   {path: "activate", component: VerifyEmailComponent},
-  {path: "user-main", component: UserMainComponent},
-  {path: "admin-main", component: AdminMainComponent},
+  {path: "main", component: UserMainComponent},
   {path: "sms-validation", component: SmsValidationComponent},
   {path: "check-cert-validity", component: CheckCertValidityComponent},
   {path: "request-cert", component: RequestCertComponent},

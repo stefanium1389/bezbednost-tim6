@@ -221,7 +221,7 @@ public class CertificateController {
 	public ResponseEntity<?> revokeCertificate (@PathVariable("serialNumber") Long serialNumber, @RequestBody ReasonDTO reasonDTO, Principal principal) {
 		try {
 			certificateService.revokeCertificate(serialNumber, principal, reasonDTO.getReason());
-			return new ResponseEntity<>("Revoked successfully", HttpStatus.OK);
+			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e)
 		{
 			ErrorDTO error = new ErrorDTO(e.getMessage());
