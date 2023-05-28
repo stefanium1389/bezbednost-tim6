@@ -20,7 +20,7 @@ export class AppComponent {
           this.showNavbar = false;
         } else {
           this.showNavbar = !url.includes('/register') && !url.includes('/main') &&
-          !url.includes('/reset-password')
+          !url.includes('/reset-password') && !url.includes('/renew-password')
           ;
         }
       }

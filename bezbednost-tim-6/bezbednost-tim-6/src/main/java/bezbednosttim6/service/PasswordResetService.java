@@ -1,6 +1,7 @@
 package bezbednosttim6.service;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -85,7 +86,7 @@ public class PasswordResetService {
 		if(user == null) {
 			throw new ObjectNotFoundException("User does not exist!");
 		}
-		if(dto.getNewPassword() != dto.getRepeatPassword()) {
+		if(!Objects.equals(dto.getNewPassword(), dto.getRepeatPassword())) {
 			throw new ConditionNotMetException("Passwords not matching!");
 		}
 		String password = encoder.encode(dto.getNewPassword());

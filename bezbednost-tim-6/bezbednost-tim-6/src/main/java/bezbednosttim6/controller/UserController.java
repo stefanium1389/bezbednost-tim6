@@ -7,11 +7,10 @@ import bezbednosttim6.exception.ObjectNotFoundException;
 import bezbednosttim6.exception.ResourceConflictException;
 import bezbednosttim6.mapper.UserDTOwithPasswordMapper;
 import bezbednosttim6.model.CertificateType;
+import bezbednosttim6.model.PasswordRenew;
 import bezbednosttim6.model.User;
 import bezbednosttim6.security.TokenUtils;
-import bezbednosttim6.service.ActivationService;
-import bezbednosttim6.service.PasswordResetService;
-import bezbednosttim6.service.RoleService;
+import bezbednosttim6.service.*;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,14 +31,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import bezbednosttim6.service.UserService;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.KeyPair;
 import java.security.Principal;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Optional;
 
 
 @RestController
@@ -58,6 +56,8 @@ public class UserController {
 
 	@Autowired
 	private ActivationService activationService;
+	@Autowired
+	private PasswordRenewService passwordRenewService;
 		
 	
 	@PostMapping ("login")
@@ -68,6 +68,13 @@ public class UserController {
 		UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(loginRequestDTO.getEmail(),
 				loginRequestDTO.getPassword());
 		Authentication auth = authenticationManager.authenticate(authReq);
+
+		String email = loginRequestDTO.getEmail();
+		Optional<PasswordRenew> lastRenewOpt = passwordRenewService.findByLatestTimestamp(email);
+		if (lastRenewOpt.isEmpty()) {
+//			passwordRenewService.postPasswordRenew(email);
+			return new ResponseEntity<>(HttpStatus.TEMPORARY_REDIRECT);
+		}
 
 		SecurityContext sc = SecurityContextHolder.getContext();
 		sc.setAuthentication(auth);

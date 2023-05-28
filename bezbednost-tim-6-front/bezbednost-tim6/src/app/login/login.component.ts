@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { LoginService } from '../backend-services/login.service';
 import { LoginRequest } from '../dtos/LoginDtos';
 import { JwtService } from '../jwt.service';
+import { UserdataService } from '../backend-services/userdata.service';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +15,7 @@ export class LoginComponent implements OnInit {
 
   loginForm!: FormGroup;
 
-  constructor(private jwtService: JwtService, private userService:LoginService, private router:Router) { }
+  constructor(private jwtService: JwtService, private userService:LoginService, private router:Router, private users:UserdataService) { }
 
   ngOnInit(): void {
     this.loginForm = new FormGroup({
@@ -69,9 +70,24 @@ export class LoginComponent implements OnInit {
         } else {console.log(this.jwtService.getRole())}
       },
       error: error => {
-        alert(error.error.message);
+        if (error?.error?.message != undefined) {
+          alert(error?.error?.message);
+        }
+        if (error?.status == 307) {
+            console.log('idemoo');
+            this.router.navigate(["renew-password"]);
+            this.sendRenew();
+        }
+        
       }
     })
 
   }
+
+  sendRenew(){
+    this.users.sendPasswordRenewEmail({email:this.loginForm.get('email')?.value}).subscribe({
+        next: () => {
+        }
+      })
+  };
 }

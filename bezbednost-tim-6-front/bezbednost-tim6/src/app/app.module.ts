@@ -24,6 +24,7 @@ import { InputReasonComponent } from './input-reason/input-reason.component';
 import {MatDialogModule} from "@angular/material/dialog";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ViewAllRequestsComponent } from './view-all-requests/view-all-requests.component';
+import { RenewPasswordComponent } from './renew-password/renew-password.component';
 
 
 @NgModule({
@@ -42,7 +43,8 @@ import { ViewAllRequestsComponent } from './view-all-requests/view-all-requests.
     ViewSentRequestsComponent,
     ViewReceivedRequestsComponent,
     InputReasonComponent,
-    ViewAllRequestsComponent
+    ViewAllRequestsComponent,
+    RenewPasswordComponent
   ],
   imports: [
     BrowserModule,

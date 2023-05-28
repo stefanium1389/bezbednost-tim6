@@ -67,8 +67,9 @@ export class ViewAllCertsComponent implements OnInit {
     } catch (error: any) {
       console.log(error);
       const errorMessage = (error?.error?.message) || 'An error occurred.';
+      const errorStatus = (error?.error?.status) || '400';
       console.log(errorMessage);
-      alert(errorMessage);
+      alert(errorMessage + " " + errorStatus);
     }
   }
   

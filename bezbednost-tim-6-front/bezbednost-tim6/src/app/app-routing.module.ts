@@ -12,11 +12,13 @@ import { ViewAllCertsComponent } from './view-all-certs/view-all-certs.component
 import { ViewSentRequestsComponent } from './view-sent-requests/view-sent-requests.component';
 import { ViewReceivedRequestsComponent } from './view-received-requests/view-received-requests.component';
 import { ViewAllRequestsComponent } from './view-all-requests/view-all-requests.component';
+import { RenewPasswordComponent } from './renew-password/renew-password.component';
 
 const routes: Routes = [
   {path: "", component: LoginComponent},
   {path: "register", component: RegisterComponent},
   {path: "reset-password", component: ResetPasswordComponent},
+  {path: "renew-password", component: RenewPasswordComponent},
   {path: "activate", component: VerifyEmailComponent},
   {path: "main", component: UserMainComponent},
   {path: "sms-validation", component: SmsValidationComponent},

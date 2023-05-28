@@ -40,4 +40,9 @@ public class MailingService {
 		String body = "To change your password click on the following link http://localhost:4200/reset-password?token="+token;
 		sendEmail(email,"IB Projekat Tim6 Reset Password",body);
 	}
+
+	public void sendPasswordRenewMail(String email, String token) throws MessagingException {
+		String body = "To renew your password click on the following link http://localhost:4200/renew-password?token="+token;
+		sendEmail(email,"IB Projekat Tim6 Renew Password",body);
+	}
 }

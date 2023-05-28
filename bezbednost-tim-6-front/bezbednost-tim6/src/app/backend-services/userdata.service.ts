@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
 import { SuccessDTO } from '../dtos/MessageDtos';
 import { CodeAndPasswordDTO, PasswordResetRequestDTO } from '../dtos/ResetPasswordDtos';
+import { CodeAndRenewPasswordsDTO, PasswordRenewRequestDTO } from '../dtos/RenewPasswordDTOs';
 
 @Injectable({
   providedIn: 'root'
@@ -25,5 +26,13 @@ export class UserdataService {
   }
   activateUser(activationId: string):Observable<any>{
     return this.http.get(environment.apiUrl+`/user/activate/${activationId}`);
+  }
+
+  checkRenewPassword(dto: CodeAndRenewPasswordsDTO):Observable<SuccessDTO>{
+    return this.http.put<SuccessDTO>(environment.apiUrl+`/user/renewPassword`,dto);
+  }
+
+  sendPasswordRenewEmail(dto: PasswordRenewRequestDTO):Observable<SuccessDTO> {
+    return this.http.post<SuccessDTO>(environment.apiUrl+`/user/renewPassword`,dto);
   }
 }
