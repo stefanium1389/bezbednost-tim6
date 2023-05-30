@@ -5,6 +5,7 @@ import { LoginService } from '../backend-services/login.service';
 import { LoginRequest } from '../dtos/LoginDtos';
 import { JwtService } from '../jwt.service';
 import { UserdataService } from '../backend-services/userdata.service';
+import { CredentialResponse, PromptMomentNotification } from 'google-one-tap';
 
 @Component({
   selector: 'app-login',
@@ -22,6 +23,26 @@ export class LoginComponent implements OnInit {
       email: new FormControl('',Validators.required),
       password: new FormControl('', Validators.required)
     });
+
+    //@ts-ignore
+    window.onGoogleLibraryLoad = () => {
+      //@ts-ignore
+      google.accounts.id.initialize({
+        client_id:"157255898883-5r581em5hin572chhilc6h4k40b0gd3t.apps.googleusercontent.com",
+        callback: this.handleCredentialResponse.bind(this),
+        auto_select: false,
+        cancel_on_tap_outside: true
+      });
+      //@ts-ignore
+      google.accounts.id.renderButton(
+        //@ts-ignore
+        document.getElementById("googleButtonDiv"),
+        {theme: 'outline', size: 'large', width:'100%'}
+      );
+      //@ts-ignore
+      google.accounts.id.prompt((notification:PromptMomentNotification) => {})
+
+    }
   }
 
   /*
@@ -90,4 +111,27 @@ export class LoginComponent implements OnInit {
         }
       })
   };
+
+  handleCredentialResponse(response: CredentialResponse){
+    this.userService.loginWithGoogle(response.credential).subscribe({
+      next: result => {
+        this.jwtService.setAccessToken(result.accessToken);
+        this.jwtService.setRefreshToken(result.refreshToken);
+        if(this.jwtService.getRole() === 'ROLE_USER' || this.jwtService.getRole() === 'ROLE_ADMIN') {
+          this.router.navigate(['main']);
+        } else {console.log(this.jwtService.getRole())}
+      },
+      error: error => {
+        if (error?.error?.message != undefined) {
+          alert(error?.error?.message);
+        }
+        if (error?.status == 307) {
+            console.log('idemoo');
+            this.router.navigate(["renew-password"]);
+            this.sendRenew();
+        }
+        
+      }
+    })
+  }
 }
