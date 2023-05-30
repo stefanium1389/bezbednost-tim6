@@ -25,6 +25,7 @@ import {MatDialogModule} from "@angular/material/dialog";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ViewAllRequestsComponent } from './view-all-requests/view-all-requests.component';
 import { RenewPasswordComponent } from './renew-password/renew-password.component';
+import { MatSelectModule } from '@angular/material/select';
 
 
 @NgModule({
@@ -53,7 +54,8 @@ import { RenewPasswordComponent } from './renew-password/renew-password.componen
     HttpClientModule,
     MatDialogModule,
     FormsModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    MatSelectModule
   ],
   providers: [
     {

@@ -1,1 +1,31 @@
-<p>request-cert works!</p>
+<div class="div">
+    <h1>Request certificate</h1>
+    <form
+      method="POST"
+      [formGroup]="requestForm" 
+      (ngSubmit)="request()"
+    >
+
+    <label for="typeOption">Choose certificate type:</label>
+    <select #typeOption class="element" name="typeOption" formControlName="typeOption">
+        <option *ngFor="let option of typeOptions;let i = 'index';" [value]="option">{{option}}</option>
+    </select>
+      <br>
+
+      <label for="issuer">Choose certificate issuer:</label>
+      <select #issuer class="element" name="issuer" formControlName="issuer">
+          <option *ngFor="let option of issuers;let i = 'index';" [value]="option">{{option}}</option>
+      </select>
+        <br>
+        <label for="duration">Durarion [in days]:</label><br>
+      <input #duration class="element" id="duration" name="duration" placeholder="Days of duration" formControlName="duration">
+
+      <br>
+        <label for="commonName">Common name:</label><br>
+      <input #commonName class="element" id="commonName" name="commonName" placeholder="Common name" formControlName="commonName">
+
+      <button type="submit" (keydown.enter)="request()">Request</button>
+    </form>
+    
+  </div>
+  

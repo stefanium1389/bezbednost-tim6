@@ -69,12 +69,12 @@ public class UserController {
 				loginRequestDTO.getPassword());
 		Authentication auth = authenticationManager.authenticate(authReq);
 
-		String email = loginRequestDTO.getEmail();
-		Optional<PasswordRenew> lastRenewOpt = passwordRenewService.findByLatestTimestamp(email);
-		if (lastRenewOpt.isEmpty()) {
-//			passwordRenewService.postPasswordRenew(email);
-			return new ResponseEntity<>(HttpStatus.TEMPORARY_REDIRECT);
-		}
+//		String email = loginRequestDTO.getEmail();
+//		Optional<PasswordRenew> lastRenewOpt = passwordRenewService.findByLatestTimestamp(email);
+//		if (lastRenewOpt.isEmpty()) {
+////			passwordRenewService.postPasswordRenew(email);
+//			return new ResponseEntity<>(HttpStatus.TEMPORARY_REDIRECT);
+//		}
 
 		SecurityContext sc = SecurityContextHolder.getContext();
 		sc.setAuthentication(auth);

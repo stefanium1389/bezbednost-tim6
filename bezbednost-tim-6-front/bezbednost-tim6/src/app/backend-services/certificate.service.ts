@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { CertificateDTO } from '../dtos/CertificateDTO';
 import { Reason } from '../view-received-requests/view-received-requests.component';
+import { RequestCertificateDTO } from '../dtos/RequestCertificateDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +34,10 @@ export class CertificateService {
 
   revoke(id: number, reason: Reason):Observable<any> {
     return this.http.put(environment.apiUrl+`/cert/revoke/${id}`, reason);
+  }
+
+  request(dto: RequestCertificateDTO): Observable<any> {
+    return this.http.post(environment.apiUrl+'/cert/request', dto);
   }
   
 }

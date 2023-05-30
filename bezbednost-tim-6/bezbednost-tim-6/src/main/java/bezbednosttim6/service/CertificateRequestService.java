@@ -47,7 +47,7 @@ public class CertificateRequestService {
 
         // resavamo root
         if (requestedType == CertificateType.ROOT && certificateRequestDTO.getIssuerCertificateId() != null) {
-            throw new TypePermissionException("Root certificate is self-signed and issuer field should be empty");
+            throw new TypePermissionException("Root certificate is self-signed and issuer field should be None");
         }
 
         if (requestedType == CertificateType.ROOT && user.getRole().getName().equals("ROLE_USER"))
