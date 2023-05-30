@@ -26,6 +26,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ViewAllRequestsComponent } from './view-all-requests/view-all-requests.component';
 import { RenewPasswordComponent } from './renew-password/renew-password.component';
 import { MatSelectModule } from '@angular/material/select';
+import { RecaptchaV3Module, RECAPTCHA_V3_SITE_KEY } from 'ng-recaptcha';
+import { environment } from 'src/environments/environment';
 
 
 @NgModule({
@@ -55,7 +57,8 @@ import { MatSelectModule } from '@angular/material/select';
     MatDialogModule,
     FormsModule,
     BrowserAnimationsModule,
-    MatSelectModule
+    MatSelectModule,
+    RecaptchaV3Module
   ],
   providers: [
     {
@@ -67,6 +70,10 @@ import { MatSelectModule } from '@angular/material/select';
     provide: HTTP_INTERCEPTORS,
     useClass: JwtInterceptorService,
     multi: true
+    },
+    {
+      provide: RECAPTCHA_V3_SITE_KEY,
+      useValue: environment.recaptcha.siteKey,
     }
   ],
   bootstrap: [AppComponent]

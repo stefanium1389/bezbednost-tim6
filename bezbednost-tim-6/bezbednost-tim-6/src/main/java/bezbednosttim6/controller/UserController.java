@@ -120,7 +120,8 @@ public class UserController {
 			return new ResponseEntity<>(new RegisterResponseDTO(newUser) , HttpStatus.CREATED);
 		}
 		catch(RuntimeException e) {
-			return new ResponseEntity<>(new ResourceConflictException(userRequest.getId(), "Username already exists").getMessage(), HttpStatus.BAD_REQUEST);
+			ErrorDTO dto = new ErrorDTO(e.getMessage());
+			return new ResponseEntity<ErrorDTO>(dto, HttpStatus.BAD_REQUEST);
 		}
 	}  
 	
@@ -158,6 +159,22 @@ public class UserController {
 	@PostMapping("")
 	public ResponseEntity<?> createRoot(Principal principal) {
 		return new ResponseEntity<>(principal.getName(), HttpStatus.OK);
+	}
+
+	@PostMapping("recaptcha")
+	public ResponseEntity<?> captcha(@RequestBody RecaptchaToken dto){
+		try {
+			if (userService.isValidCaptcha(dto.getToken())) {
+				return new ResponseEntity<>(HttpStatus.OK);
+			} else {
+				ErrorDTO error = new ErrorDTO("BACK OFF ROBOT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+				return new ResponseEntity<ErrorDTO>(error, HttpStatus.BAD_REQUEST);
+			}
+		}
+		catch(RuntimeException e){
+			ErrorDTO error = new ErrorDTO(e.getMessage());
+			return new ResponseEntity<ErrorDTO>(error, HttpStatus.NOT_EXTENDED);
+		}
 	}
 
 }

@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { SuccessDTO } from '../dtos/MessageDtos';
 import { CodeAndPasswordDTO, PasswordResetRequestDTO } from '../dtos/ResetPasswordDtos';
 import { CodeAndRenewPasswordsDTO, PasswordRenewRequestDTO } from '../dtos/RenewPasswordDTOs';
+import { ApiResponse } from '../dtos/RecaptchaApiResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -34,5 +35,9 @@ export class UserdataService {
 
   sendPasswordRenewEmail(dto: PasswordRenewRequestDTO):Observable<SuccessDTO> {
     return this.http.post<SuccessDTO>(environment.apiUrl+`/user/renewPassword`,dto);
+  }
+
+  recaptcha(dto: ApiResponse):Observable<SuccessDTO> {
+    return this.http.post<SuccessDTO>(environment.apiUrl+`/user/recaptcha`,dto);
   }
 }

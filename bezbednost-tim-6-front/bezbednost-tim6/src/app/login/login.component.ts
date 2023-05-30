@@ -5,6 +5,8 @@ import { LoginService } from '../backend-services/login.service';
 import { LoginRequest } from '../dtos/LoginDtos';
 import { JwtService } from '../jwt.service';
 import { UserdataService } from '../backend-services/userdata.service';
+import { ReCaptchaV3Service } from 'ng-recaptcha';
+import { ApiResponse } from '../dtos/RecaptchaApiResponse';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +17,7 @@ export class LoginComponent implements OnInit {
 
   loginForm!: FormGroup;
 
-  constructor(private jwtService: JwtService, private userService:LoginService, private router:Router, private users:UserdataService) { }
+  constructor(private jwtService: JwtService, private userService:LoginService, private router:Router, private users:UserdataService, private recaptchaV3Service: ReCaptchaV3Service) { }
 
   ngOnInit(): void {
     this.loginForm = new FormGroup({
@@ -61,28 +63,46 @@ export class LoginComponent implements OnInit {
       email: email,
       password: password
     }
-    this.userService.login(body).subscribe({
-      next: result => {
-        this.jwtService.setAccessToken(result.accessToken);
-        this.jwtService.setRefreshToken(result.refreshToken);
-        if(this.jwtService.getRole() === 'ROLE_USER' || this.jwtService.getRole() === 'ROLE_ADMIN') {
-          this.router.navigate(['main']);
-        } else {console.log(this.jwtService.getRole())}
-      },
-      error: error => {
-        if (error?.error?.message != undefined) {
-          alert(error?.error?.message);
+    this.recaptchaV3Service.execute('importantAction')
+      .subscribe((token) => {
+        let tokenDTO: ApiResponse = {
+            token: token,
         }
-        if (error?.status == 307) {
-            console.log('idemoo');
-            //this.router.navigate(["renew-password"]);
-            //this.sendRenew();
-        }
-        
-      }
-    })
+        this.users.recaptcha(tokenDTO).subscribe({
+          next: result => {
+            console.log("jej");
+            this.userService.login(body).subscribe({
+              next: result => {
+                this.jwtService.setAccessToken(result.accessToken);
+                this.jwtService.setRefreshToken(result.refreshToken);
+                if(this.jwtService.getRole() === 'ROLE_USER' || this.jwtService.getRole() === 'ROLE_ADMIN') {
+                  this.router.navigate(['main']);
+                } else {console.log(this.jwtService.getRole())}
+              },
+              error: error => {
+                if (error?.error?.message != undefined) {
+                  alert(error?.error?.message);
+                }
+                if (error?.status == 307) {
+                    console.log('idemoo');
+                    //this.router.navigate(["renew-password"]);
+                    //this.sendRenew();
+                }
+                
+              }
+            })
+          },
+          error: e =>
+          {console.log(e.message);
+          alert(e.message);
+          this.loginForm.reset();
+          }
+        })
+      });
 
   }
+
+
 
   sendRenew(){
     this.users.sendPasswordRenewEmail({email:this.loginForm.get('email')?.value}).subscribe({

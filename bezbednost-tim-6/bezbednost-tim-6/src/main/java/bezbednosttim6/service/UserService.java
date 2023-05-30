@@ -5,8 +5,10 @@ import java.util.Date;
 import java.util.List;
 
 
+import bezbednosttim6.dto.RecaptchaResponse;
 import bezbednosttim6.mapper.UserDTOwithPasswordMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +24,7 @@ import bezbednosttim6.model.User;
 import bezbednosttim6.repository.UserRepository;
 import bezbednosttim6.security.TokenUtils;
 import jakarta.mail.MessagingException;
+import org.springframework.web.client.RestTemplate;
 
 
 @Service
@@ -50,6 +53,9 @@ public class UserService {
 	
 	@Autowired
 	private TokenUtils jwtTokenUtils;
+
+	@Value("${google.recaptcha.key.secret}")
+	private String recaptchaSecretKey;
 	
 	public User addUser(User User) 
 	{
@@ -84,7 +90,7 @@ public class UserService {
 	{
 		User existUser = findUserByEmail(userRequest.getEmail());
 		if (existUser != null) {
-			throw new RuntimeException();
+			throw new RuntimeException("Username already exists");
 		}
 
 		User user = mapper.fromDTOtoUser(userRequest);
@@ -144,6 +150,13 @@ public class UserService {
 		String token = jwtTokenUtils.generateToken(jwtTokenUtils.getUsernameFromToken(refreshToken));
 		return token;
 		
+	}
+
+	public boolean isValidCaptcha(String token) {
+		RestTemplate restTemplate = new RestTemplate();
+		String url = "https://www.google.com/recaptcha/api/siteverify?secret=" + recaptchaSecretKey +"&response=" + token;
+		RecaptchaResponse response = restTemplate.getForObject(url, RecaptchaResponse.class);
+		return response != null && response.isSuccess() && response.getScore() >= 0.5;
 	}
 	
 }
