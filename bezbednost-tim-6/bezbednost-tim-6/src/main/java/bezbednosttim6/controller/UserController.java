@@ -14,6 +14,7 @@ import bezbednosttim6.service.*;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -87,6 +88,19 @@ public class UserController {
 		}
 		catch(AuthenticationException e)
 		{
+			ErrorDTO error = new ErrorDTO(e.getMessage());
+			return new ResponseEntity<ErrorDTO>(error,HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PostMapping("loginWithGoogle")
+	public ResponseEntity<?> postGoogleLogin(@RequestBody String credential){
+		try {
+			String token = credential.replace("\"", "");
+			LoginResponseDTO response = userService.loginWithGoogle(token);
+			return new ResponseEntity<LoginResponseDTO>(response, HttpStatus.OK);
+		}
+		catch(Exception e) {
 			ErrorDTO error = new ErrorDTO(e.getMessage());
 			return new ResponseEntity<ErrorDTO>(error,HttpStatus.BAD_REQUEST);
 		}

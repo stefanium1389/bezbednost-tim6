@@ -18,6 +18,6 @@ export class UserMainComponent implements OnInit {
   }
   logout():void{
     this.jwtService.logout();
-    this.router.navigate(['']);
+    this.router.navigate(['']).then(()=>{location.reload();});;
   }
 }

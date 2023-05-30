@@ -75,7 +75,7 @@ public class WebSecurityConfig {
         // sve neautentifikovane zahteve obradi uniformno i posalji 401 gresku
         http.authorizeHttpRequests() //.requestMatchers("/api/**", "/socket/**").permitAll()
         .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
-        .requestMatchers("/api/user/register","/api/user/login","/api/user/activate/*","/api/user/activate/resend/*","/api/user/resetPassword","/api/user/refreshToken", "/api/user/renewPassword", "/api/user/recaptcha").permitAll()		// /auth/**
+        .requestMatchers("/api/user/register","/api/user/login","/api/user/loginWithGoogle","/api/user/activate/*","/api/user/activate/resend/*","/api/user/resetPassword","/api/user/refreshToken", "/api/user/renewPassword", "/api/user/recaptcha").permitAll()		// /auth/**
 			// ukoliko ne zelimo da koristimo @PreAuthorize anotacije nad metodama kontrolera, moze se iskoristiti hasRole() metoda da se ogranici
 			// koji tip korisnika moze da pristupi odgovarajucoj ruti. Npr. ukoliko zelimo da definisemo da ruti 'admin' moze da pristupi
 			// samo korisnik koji ima rolu 'ADMIN', navodimo na sledeci nacin: 

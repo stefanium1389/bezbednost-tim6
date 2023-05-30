@@ -1,6 +1,9 @@
 package bezbednosttim6.service;
 
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -13,6 +16,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.gson.GsonFactory;
 
 import bezbednosttim6.dto.LoginResponseDTO;
 import bezbednosttim6.dto.RegisterRequestDTO;
@@ -56,6 +65,9 @@ public class UserService {
 
 	@Value("${google.recaptcha.key.secret}")
 	private String recaptchaSecretKey;
+	
+	@Value("${google.client.id}")
+	private String APP_ID;
 	
 	public User addUser(User User) 
 	{
@@ -157,6 +169,47 @@ public class UserService {
 		String url = "https://www.google.com/recaptcha/api/siteverify?secret=" + recaptchaSecretKey +"&response=" + token;
 		RecaptchaResponse response = restTemplate.getForObject(url, RecaptchaResponse.class);
 		return response != null && response.isSuccess() && response.getScore() >= 0.5;
+	}
+	public LoginResponseDTO loginWithGoogle(String credential) throws IOException, GeneralSecurityException {
+		
+		
+		
+		NetHttpTransport transport = new NetHttpTransport();
+		JsonFactory jsonFactory = new GsonFactory();
+
+		GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
+		  .setAudience(Collections.singletonList(APP_ID))
+		  .build();
+
+		GoogleIdToken idToken = GoogleIdToken.parse(verifier.getJsonFactory(), credential);
+		boolean tokenIsValid = (idToken != null) && verifier.verify(idToken);
+		
+		if(tokenIsValid) {
+			GoogleIdToken.Payload payload = idToken.getPayload();
+			String email = payload.getEmail();
+			
+			User u = userRepo.findUserByEmail(email);
+			
+			if(u == null) {
+				User newU = new User();
+				newU.setEmail(email);
+				newU.setPassword(null);
+				newU.setTelephoneNumber(null);
+				newU.setActivated(true);
+				newU.setName(null);
+				newU.setSurname(null);
+				newU.setRole(roleService.findById(2));
+				userRepo.save(newU);
+				userRepo.flush();
+			}
+			
+			String accessToken = jwtTokenUtils.generateToken(email);
+			String refreshToken = jwtTokenUtils.generateRefreshToken(email);
+			LoginResponseDTO lr = new LoginResponseDTO(accessToken, refreshToken);
+			return lr;
+		}
+		
+		return null;
 	}
 	
 }
