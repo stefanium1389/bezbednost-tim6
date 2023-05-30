@@ -177,6 +177,7 @@ public class UserService {
 			String email = payload.getEmail();
 			
 			User u = userRepo.findUserByEmail(email);
+			
 			if(u == null) {
 				User newU = new User();
 				newU.setEmail(email);
@@ -185,6 +186,7 @@ public class UserService {
 				newU.setActivated(true);
 				newU.setName(null);
 				newU.setSurname(null);
+				newU.setRole(roleService.findById(2));
 				userRepo.save(newU);
 				userRepo.flush();
 			}
