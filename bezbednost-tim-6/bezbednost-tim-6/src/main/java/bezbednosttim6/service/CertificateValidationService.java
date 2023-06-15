@@ -97,7 +97,7 @@ public class CertificateValidationService {
 		
 		try {
 			certificate.checkValidity(); //proverava datume	
-			if(db_certificate.getIssuer() != null) { //ako nije root
+			if(db_certificate.getIssuer().longValue() != db_certificate.getSerialNumber().longValue()) { //ako nije root
 				parent = getCertificate(db_certificate.getIssuer());
 				certificate.verify(parent.getPublicKey()); //verifikijue potpis sa kljucem roditelja
 				try {
