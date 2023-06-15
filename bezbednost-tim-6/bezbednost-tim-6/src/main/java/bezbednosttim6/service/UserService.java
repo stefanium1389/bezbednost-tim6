@@ -111,7 +111,7 @@ public class UserService {
 			String token = activationService.generateActivation(userRequest.getEmail());
 			try {
 				mailService.sendActivationEmail(userRequest.getEmail(), token);
-			} catch (MessagingException e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -135,9 +135,9 @@ public class UserService {
 		List<String> lista = activationService.regenerateActivation(id);
 		try {
 			mailService.sendActivationEmail(lista.get(1), lista.get(0)); //lista[1] je mail, a lista[0] je token
-		} catch (MessagingException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		} 
 		return new SuccessDTO("Successfully resent activation!");
 	}
 
