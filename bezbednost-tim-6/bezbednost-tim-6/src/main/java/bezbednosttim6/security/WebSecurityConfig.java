@@ -68,34 +68,24 @@ public class WebSecurityConfig {
 	@Autowired
 	private TokenUtils tokenUtils;
 	// Definisemo prava pristupa za zahteve ka odredjenim URL-ovima/rutama
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-//        http.csrf().disable();
-        // sve neautentifikovane zahteve obradi uniformno i posalji 401 gresku
-        http.authorizeHttpRequests() //.requestMatchers("/api/**", "/socket/**").permitAll()
-        .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
-        .requestMatchers("/api/user/register","/api/user/login","/api/user/loginWithGoogle","/api/user/activate/*","/api/user/activate/resend/*","/api/user/resetPassword","/api/user/refreshToken", "/api/user/renewPassword", "/api/user/recaptcha").permitAll()		// /auth/**
-			// ukoliko ne zelimo da koristimo @PreAuthorize anotacije nad metodama kontrolera, moze se iskoristiti hasRole() metoda da se ogranici
-			// koji tip korisnika moze da pristupi odgovarajucoj ruti. Npr. ukoliko zelimo da definisemo da ruti 'admin' moze da pristupi
-			// samo korisnik koji ima rolu 'ADMIN', navodimo na sledeci nacin: 
-			// .antMatchers("/admin").hasRole("ADMIN") ili .antMatchers("/admin").hasAuthority("ROLE_ADMIN")
-			
-			// za svaki drugi zahtev korisnik mora biti autentifikovan
-			.anyRequest().authenticated()
-				.and()
-			// za development svrhe ukljuci konfiguraciju za CORS iz WebConfig klase
-			.cors().and()
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	    http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+	    http.authorizeRequests()
+	        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+	        .requestMatchers("/api/user/register", "/api/user/login", "/api/user/loginWithGoogle", "/api/user/activate/*", "/api/user/activate/resend/*", "/api/user/resetPassword", "/api/user/refreshToken", "/api/user/renewPassword", "/api/user/recaptcha").permitAll()
+	        .anyRequest().authenticated()
+	        .and()
+	        .cors().and()
+	        .addFilterBefore(new TokenAuthenticationFilter(tokenUtils, userDetailsService()), BasicAuthenticationFilter.class);
 
-			// umetni custom filter TokenAuthenticationFilter kako bi se vrsila provera JWT tokena umesto cistih korisnickog imena i lozinke (koje radi BasicAuthenticationFilter)
-			.addFilterBefore(new TokenAuthenticationFilter(tokenUtils,  userDetailsService()), BasicAuthenticationFilter.class);
-		// zbog jednostavnosti primera ne koristimo Anti-CSRF token (https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html)
-		http.csrf().disable();
-		http.headers().frameOptions().disable();
-		// ulancavanje autentifikacije
-        http.authenticationProvider(authenticationProvider());
-		return http.build();
-    }
+	    http.csrf().disable();
+	    http.headers().frameOptions().disable();
+	    http.authenticationProvider(authenticationProvider());
+
+	    return http.build();
+	}
+
 	// metoda u kojoj se definisu putanje za igorisanje autentifikacije
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
