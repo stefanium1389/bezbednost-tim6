@@ -1,5 +1,6 @@
 package bezbednosttim6.service;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
@@ -66,7 +67,7 @@ public class PasswordResetService {
 		try {
 			mailService.sendPasswordResetMail(email, token);
 		} 
-		catch (MessagingException e) {
+		catch (IOException e) {
 			throw new ConditionNotMetException("Problem with email sending!");
 		}
 		return new SuccessDTO("Successfully sent email!");

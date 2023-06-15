@@ -1,5 +1,6 @@
 package bezbednosttim6.service;
 
+import java.io.IOException;
 import java.util.*;
 
 import bezbednosttim6.dto.CodeAndRenewPasswordsDTO;
@@ -64,7 +65,7 @@ public class PasswordRenewService {
         try {
             mailService.sendPasswordRenewMail(email, token);
         }
-        catch (MessagingException e) {
+        catch (IOException e) {
             throw new ConditionNotMetException("Problem with email sending!");
         }
         return new SuccessDTO("Successfully sent email!");
