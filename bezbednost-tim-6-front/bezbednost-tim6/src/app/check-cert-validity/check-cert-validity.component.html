@@ -1,27 +1,30 @@
-<p>Check certificate validty</p>
-<div>
-    
+<div class="container">
+    <p class="title">Check certificate validity</p>
+    <div>
+      <label>
         <input type="radio" name="mode" [formControl]="selectModeForm" value="serial">Enter SN
+      </label>
+      <label>
         <input type="radio" name="mode" [formControl]="selectModeForm" value="upload">Upload certificate
-    
-</div>
-
-
-<div *ngIf="selectModeForm.value == 'serial'">
-    <label>Serial Number certificate checker</label>
-    <br>
-    <input type="text" [formControl]="serialNumber">
-    <br>
-    <button (click)="checkSerial()">Check</button>
-</div>
-
-<div *ngIf="selectModeForm.value == 'upload'">
-    <label>File upload certificate checker</label>
-    <br>
-    <input type="file" (change)="onFileSelected($event)">
-    <br>
-    <button (click)="checkFile()">Check</button>
-</div>
-<div *ngIf="responded == true">
-    <p>Certificate status: {{certificateStatus}}</p>
-</div>
+      </label>
+    </div>
+  
+    <div *ngIf="selectModeForm.value == 'serial'" class="certificate-checker">
+      <label>Serial Number certificate checker</label>
+      <input type="text" [formControl]="serialNumber">
+    </div>
+  
+    <div *ngIf="selectModeForm.value == 'upload'" class="certificate-checker">
+      <label>File upload certificate checker</label>
+      <input type="file" (change)="onFileSelected($event)">
+    </div>
+  
+    <div class="button-container">
+      <button (click)="checkSerial()" class="check-button">Check</button>
+    </div>
+  
+    <div *ngIf="responded == true" class="certificate-status">
+      <p>Certificate status: {{certificateStatus}}</p>
+    </div>
+  </div>
+  
