@@ -28,7 +28,7 @@ public class PasswordResetController {
 	private ResponseEntity<?> sendResetPasswordEmail(@RequestBody PasswordResetRequestDTO dto){
 		
 		try {
-			SuccessDTO success = passwordResetService.postPasswordReset(dto.getEmail());
+			SuccessDTO success = passwordResetService.postPasswordReset(dto);
 			return new ResponseEntity<SuccessDTO>(success,HttpStatus.NO_CONTENT);
 		}
 		catch(ObjectNotFoundException e){

@@ -15,7 +15,7 @@ export class UserdataService {
 
   constructor(private http: HttpClient) { }
 
-  sendPasswordResetEmail(dto: PasswordResetRequestDTO):Observable<SuccessDTO> {
+  sendPasswordReset(dto: PasswordResetRequestDTO):Observable<SuccessDTO> {
     return this.http.post<SuccessDTO>(environment.apiUrl+`/user/resetPassword`,dto);
   }
   checkResetPassword(dto: CodeAndPasswordDTO):Observable<SuccessDTO>{

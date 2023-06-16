@@ -46,3 +46,5 @@ bezbednost-tim-6/bezbednost-tim-6/src/main/resources/application.properties
 bezbednost-tim-6/bezbednost-tim-6/src/main/resources/springbootIB.p12
 *.p12
 *.pem
+*.key
+*.cer

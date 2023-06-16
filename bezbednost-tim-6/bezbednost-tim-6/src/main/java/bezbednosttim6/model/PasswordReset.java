@@ -21,13 +21,15 @@ public class PasswordReset {
 	private String email;
 	private Date timestamp;
 	private Date expires;
-	public PasswordReset(Long id, String token, String email, Date timestamp, Date expires) {
+	private String mode;
+	public PasswordReset(Long id, String token, String email, Date timestamp, Date expires, String mode) {
 		super();
 		this.id = id;
 		this.token = token;
 		this.email = email;
 		this.timestamp = timestamp;
 		this.expires = expires;
+		this.mode = mode;
 	}
 	public PasswordReset() {
 		super();
@@ -62,6 +64,12 @@ public class PasswordReset {
 	}
 	public void setExpires(Date expires) {
 		this.expires = expires;
+	}
+	public String getMode() {
+		return mode;
+	}
+	public void setMode(String mode) {
+		this.mode = mode;
 	}
 	
 	

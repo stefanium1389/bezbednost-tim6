@@ -1,9 +1,6 @@
 package bezbednosttim6.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +36,11 @@ public class SMSService {
 	}
 	
 	public void sendActivationSMS(String toNumber, String code) {		
-		String body = "Your account activation code: "+code;
+		String body = "Your IB account activation code: " + code;
+		sendSMS(toNumber,body);
+	}
+	public void sendPasswordResetSMS(String toNumber, String code) {		
+		String body = "Your password reset code: " + code;
 		sendSMS(toNumber,body);
 	}
 
