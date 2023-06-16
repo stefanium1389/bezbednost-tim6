@@ -44,17 +44,17 @@ public class MailingService {
 	}
 	
 	public void sendActivationEmail(String email, String token) throws IOException {		
-		String body = "To verify your email click on the following link http://localhost:4200/activate?token="+token;
+		String body = "To verify your email click on the following link https://localhost:4200/activate?token="+token;
 		sendEmail(email,"IB Projekat Tim6 Email Validation",body);
 	}
 	
 	public void sendPasswordResetMail(String email, String token) throws IOException {
-		String body = "To change your password click on the following link http://localhost:4200/reset-password?token="+token;
+		String body = "To change your password click on the following link https://localhost:4200/reset-password?token="+token;
 		sendEmail(email,"IB Projekat Tim6 Reset Password",body);
 	}
 
 	public void sendPasswordRenewMail(String email, String token) throws IOException {
-		String body = "To renew your password click on the following link http://localhost:4200/renew-password?token="+token;
+		String body = "To renew your password click on the following link https://localhost:4200/renew-password?token="+token;
 		sendEmail(email,"IB Projekat Tim6 Renew Password",body);
 	}
 }
