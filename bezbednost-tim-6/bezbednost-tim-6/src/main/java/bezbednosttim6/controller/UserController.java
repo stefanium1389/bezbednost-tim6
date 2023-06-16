@@ -68,27 +68,16 @@ public class UserController {
                     loginRequestDTO.getPassword());
             Authentication auth = authenticationManager.authenticate(authReq);
 
-//		String email = loginRequestDTO.getEmail();
-//		Optional<PasswordRenew> lastRenewOpt = passwordRenewService.findByLatestTimestamp(email);
-//		if (lastRenewOpt.isEmpty()) {
-////			passwordRenewService.postPasswordRenew(email);
-//			return new ResponseEntity<>(HttpStatus.TEMPORARY_REDIRECT);
-//		}
-
             SecurityContext sc = SecurityContextHolder.getContext();
             sc.setAuthentication(auth);
 
-            // Generate verification code and send it
-            User user = userService.findUserByEmail(loginRequestDTO.getEmail());
-            String verificationCode = userService.generateVerificationCode();
-            user.setVerificationCode(verificationCode);
-            userService.sendVerificationCode(user.getId());
+            LoginCreateCodeDTO response = userService.loginStepOne(loginRequestDTO);
 
-            String token = jwtTokenUtil.generateToken(loginRequestDTO.getEmail());
+            /*String token = jwtTokenUtil.generateToken(loginRequestDTO.getEmail());
             String refreshToken = jwtTokenUtil.generateRefreshToken(loginRequestDTO.getEmail());
-            LoginResponseDTO response = new LoginResponseDTO(token, refreshToken);
+            LoginResponseDTO response = new LoginResponseDTO(token, refreshToken);*/
 
-            return new ResponseEntity<LoginResponseDTO>(response, HttpStatus.OK);
+            return new ResponseEntity<LoginCreateCodeDTO>(response, HttpStatus.OK);
         } catch (AuthenticationException e) {
             ErrorDTO error = new ErrorDTO(e.getMessage());
             return new ResponseEntity<ErrorDTO>(error, HttpStatus.BAD_REQUEST);

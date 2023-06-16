@@ -3,14 +3,16 @@ package bezbednosttim6.service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
-import bezbednosttim6.dto.RecaptchaResponse;
+import bezbednosttim6.dto.*;
 import bezbednosttim6.exception.TypeNotFoundException;
+import bezbednosttim6.exception.UserNotFoundException;
 import bezbednosttim6.mapper.UserDTOwithPasswordMapper;
+import bezbednosttim6.model.Activation;
+import bezbednosttim6.model.TwoFactorAuth;
+import bezbednosttim6.repository.TwoFactorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -24,10 +26,6 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 
-import bezbednosttim6.dto.LoginResponseDTO;
-import bezbednosttim6.dto.RegisterRequestDTO;
-import bezbednosttim6.dto.RegisterResponseDTO;
-import bezbednosttim6.dto.SuccessDTO;
 import bezbednosttim6.exception.ObjectNotFoundException;
 import bezbednosttim6.exception.ResourceConflictException;
 import bezbednosttim6.model.User;
@@ -35,7 +33,6 @@ import bezbednosttim6.repository.UserRepository;
 import bezbednosttim6.security.TokenUtils;
 import jakarta.mail.MessagingException;
 import org.springframework.web.client.RestTemplate;
-import java.util.Random;
 
 
 @Service
@@ -61,6 +58,9 @@ public class UserService {
 	
 	@Autowired
 	private ActivationService activationService;
+
+	@Autowired
+	private TwoFactorRepository tfaRepo;
 	
 	@Autowired
 	private TokenUtils jwtTokenUtils;
@@ -230,11 +230,9 @@ public class UserService {
 		return String.valueOf(code);
 	}
 
-	public void sendVerificationCode(Long userId) {
+	public void sendVerificationCode(Long userId, String verificationCode) {
 		User user = userRepo.findById(userId).orElse(null);
 		if (user != null) {
-			String verificationCode = generateVerificationCode();
-			user.setVerificationCode(verificationCode);
 			userRepo.save(user);
 
 			if (user.isVerifyWithMail()) {
@@ -248,5 +246,26 @@ public class UserService {
 			}
 		}
 	}
-	
+
+	public LoginCreateCodeDTO loginStepOne(LoginRequestDTO loginRequestDTO) {
+
+		User user =  userRepo.findUserByEmail(loginRequestDTO.getEmail());
+		if (user == null)
+		{
+			throw new UserNotFoundException("Korisnik nije pronađen");
+		}
+		String verificationCode = generateVerificationCode();
+		sendVerificationCode(user.getId(),verificationCode);
+		TwoFactorAuth tfa = new TwoFactorAuth(generateToken(), verificationCode,loginRequestDTO.getEmail(),new Date(System.currentTimeMillis()),new Date(System.currentTimeMillis()+(60*60*1000)));
+		tfaRepo.save(tfa);
+		tfaRepo.flush();
+
+		return new LoginCreateCodeDTO(tfa.getToken());
+	}
+
+	private String generateToken() {
+		UUID uuid = UUID.randomUUID();
+		String token = uuid.toString();
+		return token;
+	}
 }

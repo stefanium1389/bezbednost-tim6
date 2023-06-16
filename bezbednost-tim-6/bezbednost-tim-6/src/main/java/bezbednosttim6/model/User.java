@@ -27,7 +27,6 @@ public class User implements UserDetails, Serializable {
 	private String password;
 	private boolean verifyWithMail;
 	private boolean activated;
-	private String verificationCode;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonManagedReference
@@ -42,7 +41,7 @@ public class User implements UserDetails, Serializable {
 	}
 
 	public User(Long id, String name, String surname, String telephoneNumber, String email,
-				String password, boolean verifyWithMail, boolean activated, String verificationCode, Role role) {
+				String password, boolean verifyWithMail, boolean activated, Role role) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -52,7 +51,6 @@ public class User implements UserDetails, Serializable {
 		this.password = password;
 		this.verifyWithMail = verifyWithMail;
 		this.activated = activated;
-		this.verificationCode = verificationCode;
 		this.role = role;
 	}
 
@@ -141,14 +139,6 @@ public class User implements UserDetails, Serializable {
 
 	public void setRole(Role role) {
 		this.role = role;
-	}
-
-	public String getVerificationCode() {
-		return verificationCode;
-	}
-
-	public void setVerificationCode(String verificationCode) {
-		this.verificationCode = verificationCode;
 	}
 
 	/******************************************************/
