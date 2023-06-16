@@ -7,8 +7,7 @@ import java.util.*;
 
 
 import bezbednosttim6.dto.*;
-import bezbednosttim6.exception.TypeNotFoundException;
-import bezbednosttim6.exception.UserNotFoundException;
+import bezbednosttim6.exception.*;
 import bezbednosttim6.mapper.UserDTOwithPasswordMapper;
 import bezbednosttim6.model.Activation;
 import bezbednosttim6.model.TwoFactorAuth;
@@ -17,6 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +29,6 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 
-import bezbednosttim6.exception.ObjectNotFoundException;
-import bezbednosttim6.exception.ResourceConflictException;
 import bezbednosttim6.model.User;
 import bezbednosttim6.repository.UserRepository;
 import bezbednosttim6.security.TokenUtils;
@@ -267,5 +268,30 @@ public class UserService {
 		UUID uuid = UUID.randomUUID();
 		String token = uuid.toString();
 		return token;
+	}
+
+	public LoginResponseDTO loginStepTwo(LoginSecondStepRequestDTO loginSecondStepRequestDTO) {
+
+		Optional<TwoFactorAuth> tfaOpt = tfaRepo.findAuthByToken(loginSecondStepRequestDTO.getToken());
+		if (tfaOpt.isEmpty())
+		{
+			throw new ObjectNotFoundException("tfa objekat nije pronađen!");
+		}
+
+		TwoFactorAuth tfa = tfaOpt.get();
+
+		Date currentDate = new Date();
+		if(currentDate.after(tfa.getExpires()))
+		{
+			throw new ObjectExpiredException("tfa je istekao!");
+		}
+
+		User user =  userRepo.findUserByEmail(tfa.getEmail());
+
+		String token = jwtTokenUtils.generateToken(user.getEmail());
+		String refreshToken = jwtTokenUtils.generateRefreshToken(user.getEmail());
+		LoginResponseDTO response = new LoginResponseDTO(token, refreshToken);
+
+		return new LoginResponseDTO();
 	}
 }

@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface TwoFactorRepository extends JpaRepository<TwoFactorAuth, Long>{
-	Optional<TwoFactorAuth> findActivationByToken(String token);
+	Optional<TwoFactorAuth> findAuthByToken(String token);
 
 }

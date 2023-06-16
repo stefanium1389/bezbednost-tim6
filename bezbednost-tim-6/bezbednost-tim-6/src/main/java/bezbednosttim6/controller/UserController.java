@@ -61,7 +61,7 @@ public class UserController {
     private PasswordRenewService passwordRenewService;
 
 
-    @PostMapping("login")
+    @PostMapping("login/first")
     public ResponseEntity<?> postLogin(@RequestBody LoginRequestDTO loginRequestDTO) {
         try {
             UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(loginRequestDTO.getEmail(),
@@ -73,12 +73,21 @@ public class UserController {
 
             LoginCreateCodeDTO response = userService.loginStepOne(loginRequestDTO);
 
-            /*String token = jwtTokenUtil.generateToken(loginRequestDTO.getEmail());
-            String refreshToken = jwtTokenUtil.generateRefreshToken(loginRequestDTO.getEmail());
-            LoginResponseDTO response = new LoginResponseDTO(token, refreshToken);*/
-
             return new ResponseEntity<LoginCreateCodeDTO>(response, HttpStatus.OK);
         } catch (AuthenticationException e) {
+            ErrorDTO error = new ErrorDTO(e.getMessage());
+            return new ResponseEntity<ErrorDTO>(error, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("login/second")
+    public ResponseEntity<?> postLoginStepTwo(@RequestBody LoginSecondStepRequestDTO loginSecondStepRequestDTO) {
+        try {
+
+            LoginResponseDTO response = userService.loginStepTwo(loginSecondStepRequestDTO);
+
+            return new ResponseEntity<LoginResponseDTO>(response, HttpStatus.OK);
+        } catch (Exception e) {
             ErrorDTO error = new ErrorDTO(e.getMessage());
             return new ResponseEntity<ErrorDTO>(error, HttpStatus.BAD_REQUEST);
         }
