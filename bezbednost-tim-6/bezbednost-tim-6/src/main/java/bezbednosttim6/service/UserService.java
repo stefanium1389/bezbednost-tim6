@@ -243,7 +243,7 @@ public class UserService {
 					e.printStackTrace();
 				}
 			} else {
-				smsService.sendVerificationCode(user.getTelephoneNumber(), verificationCode);
+				smsService.sendVerificationCode("+381"+user.getTelephoneNumber(), verificationCode);
 			}
 		}
 	}
