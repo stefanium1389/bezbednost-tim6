@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoginService } from '../backend-services/login.service';
 import { LoginRequest } from '../dtos/LoginDtos';
@@ -17,14 +17,18 @@ import { CredentialResponse, PromptMomentNotification } from 'google-one-tap';
 export class LoginComponent implements OnInit {
 
   loginForm!: FormGroup;
+  isDisabled: boolean = true;
 
-  constructor(private jwtService: JwtService, private userService:LoginService, private router:Router, private users:UserdataService, private recaptchaV3Service: ReCaptchaV3Service) { }
+  constructor(private jwtService: JwtService, private userService:LoginService, private router:Router, private users:UserdataService, private recaptchaV3Service: ReCaptchaV3Service) { 
+    this.check = this.check.bind(this);
+  }
 
   ngOnInit(): void {
     this.loginForm = new FormGroup({
       email: new FormControl('',Validators.required),
-      password: new FormControl('', Validators.required)
-    });
+      password: new FormControl('', Validators.required)},
+      { validators: this.check },
+    );
 
     //@ts-ignore
     window.onGoogleLibraryLoad = () => {
@@ -154,4 +158,24 @@ export class LoginComponent implements OnInit {
       }
     })
   }
+
+  check(control: AbstractControl) {
+    const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>])(?=.*[^\s]).{8,}$/;
+    const password = control.get('password');
+    const isValidPassword = passwordRegex.test(password?.value);
+    const cmail = control.get('email');
+    const isValidEmail = emailRegex.test(cmail?.value);
+    if (isValidEmail && isValidPassword) {
+      this.isDisabled = false;
+    } else {
+      this.isDisabled = true;
+    }
+    return {
+          validEmail: !isValidEmail,
+          validPassword :!isValidPassword
+          };
+    
+  }
+
 }
