@@ -71,6 +71,7 @@ public class UserController {
             SecurityContext sc = SecurityContextHolder.getContext();
             sc.setAuthentication(auth);
 
+            System.out.println("lmaoo");
             LoginCreateCodeDTO response = userService.loginStepOne(loginRequestDTO);
 
             return new ResponseEntity<LoginCreateCodeDTO>(response, HttpStatus.OK);

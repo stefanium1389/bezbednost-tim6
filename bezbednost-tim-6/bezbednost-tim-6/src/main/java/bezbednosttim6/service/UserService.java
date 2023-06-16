@@ -286,12 +286,17 @@ public class UserService {
 			throw new ObjectExpiredException("tfa je istekao!");
 		}
 
+		if (!loginSecondStepRequestDTO.getCode().equals(tfa.getCode()))
+		{
+			throw new WrongCodeException("Pogrešan kod!");
+		}
+
 		User user =  userRepo.findUserByEmail(tfa.getEmail());
 
 		String token = jwtTokenUtils.generateToken(user.getEmail());
 		String refreshToken = jwtTokenUtils.generateRefreshToken(user.getEmail());
 		LoginResponseDTO response = new LoginResponseDTO(token, refreshToken);
 
-		return new LoginResponseDTO();
+		return response;
 	}
 }

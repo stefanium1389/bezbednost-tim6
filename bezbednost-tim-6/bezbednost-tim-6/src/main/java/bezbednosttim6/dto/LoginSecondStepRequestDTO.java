@@ -24,4 +24,7 @@ public class LoginSecondStepRequestDTO {
 		this.token = token;
 		this.code = code;
 	}
+
+	public LoginSecondStepRequestDTO() {
+	}
 }
