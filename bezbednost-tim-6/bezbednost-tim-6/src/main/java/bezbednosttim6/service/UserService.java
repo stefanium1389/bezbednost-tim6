@@ -288,7 +288,7 @@ public class UserService {
 
 		if (!loginSecondStepRequestDTO.getCode().equals(tfa.getCode()))
 		{
-			throw new WrongCodeException("Pogrešan kod!");
+			throw new WrongCodeException("Verification code is not valid.");
 		}
 
 		User user =  userRepo.findUserByEmail(tfa.getEmail());

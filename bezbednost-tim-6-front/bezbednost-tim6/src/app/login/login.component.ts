@@ -8,6 +8,7 @@ import { UserdataService } from '../backend-services/userdata.service';
 import { ReCaptchaV3Service } from 'ng-recaptcha';
 import { ApiResponse } from '../dtos/RecaptchaApiResponse';
 import { CredentialResponse, PromptMomentNotification } from 'google-one-tap';
+import { TfaServiceService } from '../tfa-service.service';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +19,7 @@ export class LoginComponent implements OnInit {
 
   loginForm!: FormGroup;
 
-  constructor(private jwtService: JwtService, private userService:LoginService, private router:Router, private users:UserdataService, private recaptchaV3Service: ReCaptchaV3Service) { }
+  constructor(private jwtService: JwtService, private userService:LoginService, private router:Router, private users:UserdataService, private recaptchaV3Service: ReCaptchaV3Service, private tfaService : TfaServiceService) { }
 
   ngOnInit(): void {
     this.loginForm = new FormGroup({
@@ -65,11 +66,8 @@ export class LoginComponent implements OnInit {
           next: result => {
             this.userService.loginStepOne(body).subscribe({
               next: result => {
-                this.jwtService.setAccessToken(result.accessToken);
-                this.jwtService.setRefreshToken(result.refreshToken);
-                if(this.jwtService.getRole() === 'ROLE_USER' || this.jwtService.getRole() === 'ROLE_ADMIN') {
-                  this.router.navigate(['main']);
-                } else {console.log(this.jwtService.getRole())}
+                this.tfaService.setToken(result.token);
+                this.router.navigate(['verify-code']);
               },
               error: error => {
                 if (error?.error?.message != undefined) {

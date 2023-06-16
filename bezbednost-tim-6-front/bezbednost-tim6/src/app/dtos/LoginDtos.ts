@@ -12,6 +12,6 @@ export interface LoginCreateCode {
 }
 
 export interface LoginSecondStepRequest {
-    token: string,
+    token: string|null,
     code: string
 }

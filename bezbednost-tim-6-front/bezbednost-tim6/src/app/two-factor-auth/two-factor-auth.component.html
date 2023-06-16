@@ -10,10 +10,11 @@
                     <p>We sent you verification code to your device. Please enter it down below:</p>
 
                     <div class="form-outline form-white mb-4">
-                        <input type="text" id="verification_code_input" name="verification_code" class="form-control form-control-lg" formControlName="verification_code_field"/>
+                        <input type="number" id="verification_code_input" name="code" class="form-control form-control-lg" formControlName="code"/>
                     </div>
 
-                    <button class="btn btn-outline-light btn-lg btn-block px-5" type="submit" id="submitButton" (keydown.enter)="submitCode()">Submit</button>
+                    <button class="btn btn-outline-light btn-lg btn-block px-5" type="submit" id="submitButton" (keydown.enter)="submitCode()" [disabled]="!tfaForm.valid">Submit</button>
+
 
                 </div>
     </form>
