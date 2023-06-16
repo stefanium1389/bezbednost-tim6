@@ -6,3 +6,12 @@ export interface LoginRequest {
     email: string,
     password: string
 }
+
+export interface LoginCreateCode {
+    token: string
+}
+
+export interface LoginSecondStepRequest {
+    token: string|null,
+    code: string
+}

@@ -3,17 +3,23 @@ package bezbednosttim6.service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
-import bezbednosttim6.dto.RecaptchaResponse;
+import bezbednosttim6.dto.*;
+import bezbednosttim6.exception.*;
 import bezbednosttim6.mapper.UserDTOwithPasswordMapper;
+import bezbednosttim6.model.Activation;
+import bezbednosttim6.model.TwoFactorAuth;
+import bezbednosttim6.repository.TwoFactorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,12 +29,6 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 
-import bezbednosttim6.dto.LoginResponseDTO;
-import bezbednosttim6.dto.RegisterRequestDTO;
-import bezbednosttim6.dto.RegisterResponseDTO;
-import bezbednosttim6.dto.SuccessDTO;
-import bezbednosttim6.exception.ObjectNotFoundException;
-import bezbednosttim6.exception.ResourceConflictException;
 import bezbednosttim6.model.User;
 import bezbednosttim6.repository.UserRepository;
 import bezbednosttim6.security.TokenUtils;
@@ -59,6 +59,9 @@ public class UserService {
 	
 	@Autowired
 	private ActivationService activationService;
+
+	@Autowired
+	private TwoFactorRepository tfaRepo;
 	
 	@Autowired
 	private TokenUtils jwtTokenUtils;
@@ -110,6 +113,18 @@ public class UserService {
 		user.setEmail(userRequest.getEmail());
 		user.setPassword(this.passwordEncoder.encode(userRequest.getPassword()));
 		user.setRole(roleService.findById(2));
+		if (userRequest.getValidationType().equals("emailValidation"))
+		{
+			user.setVerifyWithMail(true);
+		}
+		else if (userRequest.getValidationType().equals("phoneValidation"))
+		{
+			user.setVerifyWithMail(false);
+		}
+		else
+		{
+			throw new TypeNotFoundException("tip validacije nije prepoznat!");
+		}
 
 		user = addUser(user);
 		if(userRequest.getValidationType().equals("emailValidation")) {
@@ -171,9 +186,7 @@ public class UserService {
 		return response != null && response.isSuccess() && response.getScore() >= 0.5;
 	}
 	public LoginResponseDTO loginWithGoogle(String credential) throws IOException, GeneralSecurityException {
-		
-		
-		
+
 		NetHttpTransport transport = new NetHttpTransport();
 		JsonFactory jsonFactory = new GsonFactory();
 
@@ -211,5 +224,79 @@ public class UserService {
 		
 		return null;
 	}
-	
+
+	public String generateVerificationCode() {
+		Random random = new Random();
+		int code = random.nextInt(900000) + 100000;
+		return String.valueOf(code);
+	}
+
+	public void sendVerificationCode(Long userId, String verificationCode) {
+		User user = userRepo.findById(userId).orElse(null);
+		if (user != null) {
+			userRepo.save(user);
+
+			if (user.isVerifyWithMail()) {
+				try {
+					mailService.sendVerificationCode(user.getEmail(), verificationCode);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			} else {
+				smsService.sendVerificationCode("+381"+user.getTelephoneNumber(), verificationCode);
+			}
+		}
+	}
+
+	public LoginCreateCodeDTO loginStepOne(LoginRequestDTO loginRequestDTO) {
+
+		User user =  userRepo.findUserByEmail(loginRequestDTO.getEmail());
+		if (user == null)
+		{
+			throw new UserNotFoundException("Korisnik nije pronađen");
+		}
+		String verificationCode = generateVerificationCode();
+		sendVerificationCode(user.getId(),verificationCode);
+		TwoFactorAuth tfa = new TwoFactorAuth(generateToken(), verificationCode,loginRequestDTO.getEmail(),new Date(System.currentTimeMillis()),new Date(System.currentTimeMillis()+(60*60*1000)));
+		tfaRepo.save(tfa);
+		tfaRepo.flush();
+
+		return new LoginCreateCodeDTO(tfa.getToken());
+	}
+
+	private String generateToken() {
+		UUID uuid = UUID.randomUUID();
+		String token = uuid.toString();
+		return token;
+	}
+
+	public LoginResponseDTO loginStepTwo(LoginSecondStepRequestDTO loginSecondStepRequestDTO) {
+
+		Optional<TwoFactorAuth> tfaOpt = tfaRepo.findAuthByToken(loginSecondStepRequestDTO.getToken());
+		if (tfaOpt.isEmpty())
+		{
+			throw new ObjectNotFoundException("tfa objekat nije pronađen!");
+		}
+
+		TwoFactorAuth tfa = tfaOpt.get();
+
+		Date currentDate = new Date();
+		if(currentDate.after(tfa.getExpires()))
+		{
+			throw new ObjectExpiredException("tfa je istekao!");
+		}
+
+		if (!loginSecondStepRequestDTO.getCode().equals(tfa.getCode()))
+		{
+			throw new WrongCodeException("Verification code is not valid.");
+		}
+
+		User user =  userRepo.findUserByEmail(tfa.getEmail());
+
+		String token = jwtTokenUtils.generateToken(user.getEmail());
+		String refreshToken = jwtTokenUtils.generateRefreshToken(user.getEmail());
+		LoginResponseDTO response = new LoginResponseDTO(token, refreshToken);
+
+		return response;
+	}
 }

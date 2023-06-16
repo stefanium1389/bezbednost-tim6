@@ -16,7 +16,7 @@ export class AppComponent {
         // Gledamo na kojoj smo putanji i prikazujemo navbar u skladu sa tim
         const navigationEndEvent = event as NavigationEnd;
         const url = navigationEndEvent.url;
-        if (url === '' || url === '/') {
+        if (url === '' || url === '/' || url ==='/verify-code') {
           this.showNavbar = false;
         } else {
           this.showNavbar = !url.includes('/register') && !url.includes('/main') &&

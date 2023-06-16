@@ -57,4 +57,9 @@ public class MailingService {
 		String body = "To renew your password click on the following link https://localhost:4200/renew-password?token="+token;
 		sendEmail(email,"IB Projekat Tim6 Renew Password",body);
 	}
+
+	public void sendVerificationCode(String email, String verificationCode) throws IOException {
+		String body = "Here is your verification code: "+verificationCode;
+		sendEmail(email,"IB Projekat Tim6 Login Verification",body);
+	}
 }

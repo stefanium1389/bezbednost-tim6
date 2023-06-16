@@ -25,6 +25,7 @@ public class User implements UserDetails, Serializable {
 	private String telephoneNumber;
 	private String email;
 	private String password;
+	private boolean verifyWithMail;
 	private boolean activated;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -40,7 +41,7 @@ public class User implements UserDetails, Serializable {
 	}
 
 	public User(Long id, String name, String surname, String telephoneNumber, String email,
-			String password, boolean activated, Role role) {
+				String password, boolean verifyWithMail, boolean activated, Role role) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -48,6 +49,7 @@ public class User implements UserDetails, Serializable {
 		this.telephoneNumber = telephoneNumber;
 		this.email = email;
 		this.password = password;
+		this.verifyWithMail = verifyWithMail;
 		this.activated = activated;
 		this.role = role;
 	}
@@ -117,12 +119,19 @@ public class User implements UserDetails, Serializable {
 		this.activated = activated;
 	}
 
+	public boolean isVerifyWithMail() {
+		return verifyWithMail;
+	}
+
+	public void setVerifyWithMail(boolean verifyWithMail) {
+		this.verifyWithMail = verifyWithMail;
+	}
+
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", name=" + name + ", surname=" + surname + ", email=" + email + ", password="
 				+ password + ", role=" + role.toString() + ", accessToken=" + accessToken + "]";
 	}
-
 
 	public Role getRole() {
 		return role;

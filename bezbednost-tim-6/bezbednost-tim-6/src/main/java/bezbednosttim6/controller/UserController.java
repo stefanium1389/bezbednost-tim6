@@ -45,80 +45,79 @@ import java.util.Optional;
 @RequestMapping("api/user/")
 public class UserController {
 
-	@Autowired
-	private UserService userService;
+    @Autowired
+    private UserService userService;
 
-	
-	@Autowired
-	private AuthenticationManager authenticationManager;
-	
-	@Autowired
-	private TokenUtils jwtTokenUtil;
 
-	@Autowired
-	private ActivationService activationService;
-	@Autowired
-	private PasswordRenewService passwordRenewService;
-		
-	
-	@PostMapping ("login")
-	public ResponseEntity<?> postLogin (@RequestBody LoginRequestDTO loginRequestDTO)
-	{
-		try
-		{
-		UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(loginRequestDTO.getEmail(),
-				loginRequestDTO.getPassword());
-		Authentication auth = authenticationManager.authenticate(authReq);
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-//		String email = loginRequestDTO.getEmail();
-//		Optional<PasswordRenew> lastRenewOpt = passwordRenewService.findByLatestTimestamp(email);
-//		if (lastRenewOpt.isEmpty()) {
-////			passwordRenewService.postPasswordRenew(email);
-//			return new ResponseEntity<>(HttpStatus.TEMPORARY_REDIRECT);
-//		}
+    @Autowired
+    private TokenUtils jwtTokenUtil;
 
-		SecurityContext sc = SecurityContextHolder.getContext();
-		sc.setAuthentication(auth);
+    @Autowired
+    private ActivationService activationService;
+    @Autowired
+    private PasswordRenewService passwordRenewService;
 
-		String token = jwtTokenUtil.generateToken(loginRequestDTO.getEmail());
-		String refreshToken = jwtTokenUtil.generateRefreshToken(loginRequestDTO.getEmail());
-		LoginResponseDTO response = new LoginResponseDTO(token, refreshToken);
-				
-		return new ResponseEntity<LoginResponseDTO>(response,HttpStatus.OK);
-		}
-		catch(AuthenticationException e)
-		{
-			ErrorDTO error = new ErrorDTO(e.getMessage());
-			return new ResponseEntity<ErrorDTO>(error,HttpStatus.BAD_REQUEST);
-		}
-	}
-	
-	@PostMapping("loginWithGoogle")
-	public ResponseEntity<?> postGoogleLogin(@RequestBody String credential){
-		try {
-			String token = credential.replace("\"", "");
-			LoginResponseDTO response = userService.loginWithGoogle(token);
-			return new ResponseEntity<LoginResponseDTO>(response, HttpStatus.OK);
-		}
-		catch(Exception e) {
-			ErrorDTO error = new ErrorDTO(e.getMessage());
-			return new ResponseEntity<ErrorDTO>(error,HttpStatus.BAD_REQUEST);
-		}
-	}
 
-	@PostMapping("refreshToken")
-	public ResponseEntity<?> postRefresh(@RequestBody LoginResponseDTO dto){
-		try {
-			SuccessDTO new_token = new SuccessDTO(userService.refreshToken(dto));
-			return new ResponseEntity<>(new_token, HttpStatus.OK);
-		}
-		catch(RuntimeException e){
-			ErrorDTO error = new ErrorDTO(e.getMessage());
-			return new ResponseEntity<ErrorDTO>(error, HttpStatus.NOT_EXTENDED);
-		}
-	}
-	
-	//@PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("login/first")
+    public ResponseEntity<?> postLogin(@RequestBody LoginRequestDTO loginRequestDTO) {
+        try {
+            UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(loginRequestDTO.getEmail(),
+                    loginRequestDTO.getPassword());
+            Authentication auth = authenticationManager.authenticate(authReq);
+
+            SecurityContext sc = SecurityContextHolder.getContext();
+            sc.setAuthentication(auth);
+
+            System.out.println("lmaoo");
+            LoginCreateCodeDTO response = userService.loginStepOne(loginRequestDTO);
+
+            return new ResponseEntity<LoginCreateCodeDTO>(response, HttpStatus.OK);
+        } catch (AuthenticationException e) {
+            ErrorDTO error = new ErrorDTO(e.getMessage());
+            return new ResponseEntity<ErrorDTO>(error, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("login/second")
+    public ResponseEntity<?> postLoginStepTwo(@RequestBody LoginSecondStepRequestDTO loginSecondStepRequestDTO) {
+        try {
+
+            LoginResponseDTO response = userService.loginStepTwo(loginSecondStepRequestDTO);
+
+            return new ResponseEntity<LoginResponseDTO>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            ErrorDTO error = new ErrorDTO(e.getMessage());
+            return new ResponseEntity<ErrorDTO>(error, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("loginWithGoogle")
+    public ResponseEntity<?> postGoogleLogin(@RequestBody String credential) {
+        try {
+            String token = credential.replace("\"", "");
+            LoginResponseDTO response = userService.loginWithGoogle(token);
+            return new ResponseEntity<LoginResponseDTO>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            ErrorDTO error = new ErrorDTO(e.getMessage());
+            return new ResponseEntity<ErrorDTO>(error, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("refreshToken")
+    public ResponseEntity<?> postRefresh(@RequestBody LoginResponseDTO dto) {
+        try {
+            SuccessDTO new_token = new SuccessDTO(userService.refreshToken(dto));
+            return new ResponseEntity<>(new_token, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            ErrorDTO error = new ErrorDTO(e.getMessage());
+            return new ResponseEntity<ErrorDTO>(error, HttpStatus.NOT_EXTENDED);
+        }
+    }
+
+    //@PreAuthorize("hasRole('ADMIN')")
 //	@GetMapping("proba")
 //	public ResponseEntity<?> proba (Principal principal)
 //	{
@@ -126,69 +125,65 @@ public class UserController {
 //	}
 
 
-	@PostMapping("register")
-	public ResponseEntity<?> register(@RequestBody RegisterRequestDTO userRequest) throws UnsupportedEncodingException {
-		
-		try {
-			User newUser = userService.registerUser(userRequest);
-			return new ResponseEntity<>(new RegisterResponseDTO(newUser) , HttpStatus.CREATED);
-		}
-		catch(RuntimeException e) {
-			ErrorDTO dto = new ErrorDTO(e.getMessage());
-			return new ResponseEntity<ErrorDTO>(dto, HttpStatus.BAD_REQUEST);
-		}
-	}  
-	
-	@GetMapping("/activate/{activationId}")
-    public ResponseEntity<?> activatePassenger(@PathVariable("activationId") String id)
-    {
-    	try {
-    		SuccessDTO dto = activationService.activatePassenger(id);
-            return new ResponseEntity<SuccessDTO>(dto, HttpStatus.OK);
-    	}
-    	catch(ObjectNotFoundException e) {
-    		ErrorDTO dto = new ErrorDTO(e.getMessage());
-            return new ResponseEntity<ErrorDTO>(dto, HttpStatus.NOT_FOUND);
-    	}
-    	catch(ActionExpiredException e) {
-    		ErrorDTO dto = new ErrorDTO(e.getMessage());
-            return new ResponseEntity<ErrorDTO>(dto, HttpStatus.BAD_REQUEST);
-    	}
-    	
-    }
-    @GetMapping("/activate/resend/{activationId}")
-    public ResponseEntity<?> activatePassengerResend(@PathVariable("activationId") String id)
-    {
-    	try {
-    		SuccessDTO dto = userService.resendActivation(id);
-            return new ResponseEntity<SuccessDTO>(dto, HttpStatus.OK);
-    	}
-    	catch(ObjectNotFoundException e) {
-    		ErrorDTO dto = new ErrorDTO(e.getMessage());
-            return new ResponseEntity<ErrorDTO>(dto, HttpStatus.NOT_FOUND);
-    	}    	
-    }    
-    
-	@PreAuthorize("hasRole('ADMIN')")
-	@PostMapping("")
-	public ResponseEntity<?> createRoot(Principal principal) {
-		return new ResponseEntity<>(principal.getName(), HttpStatus.OK);
-	}
+    @PostMapping("register")
+    public ResponseEntity<?> register(@RequestBody RegisterRequestDTO userRequest) throws UnsupportedEncodingException {
 
-	@PostMapping("recaptcha")
-	public ResponseEntity<?> captcha(@RequestBody RecaptchaToken dto){
-		try {
-			if (userService.isValidCaptcha(dto.getToken())) {
-				return new ResponseEntity<>(HttpStatus.OK);
-			} else {
-				ErrorDTO error = new ErrorDTO("BACK OFF ROBOT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-				return new ResponseEntity<ErrorDTO>(error, HttpStatus.BAD_REQUEST);
-			}
-		}
-		catch(RuntimeException e){
-			ErrorDTO error = new ErrorDTO(e.getMessage());
-			return new ResponseEntity<ErrorDTO>(error, HttpStatus.NOT_EXTENDED);
-		}
-	}
+        try {
+            System.out.println(userRequest.getValidationType());
+            User newUser = userService.registerUser(userRequest);
+            return new ResponseEntity<>(new RegisterResponseDTO(newUser), HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            ErrorDTO dto = new ErrorDTO(e.getMessage());
+            return new ResponseEntity<ErrorDTO>(dto, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/activate/{activationId}")
+    public ResponseEntity<?> activatePassenger(@PathVariable("activationId") String id) {
+        try {
+            SuccessDTO dto = activationService.activatePassenger(id);
+            return new ResponseEntity<SuccessDTO>(dto, HttpStatus.OK);
+        } catch (ObjectNotFoundException e) {
+            ErrorDTO dto = new ErrorDTO(e.getMessage());
+            return new ResponseEntity<ErrorDTO>(dto, HttpStatus.NOT_FOUND);
+        } catch (ActionExpiredException e) {
+            ErrorDTO dto = new ErrorDTO(e.getMessage());
+            return new ResponseEntity<ErrorDTO>(dto, HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+    @GetMapping("/activate/resend/{activationId}")
+    public ResponseEntity<?> activatePassengerResend(@PathVariable("activationId") String id) {
+        try {
+            SuccessDTO dto = userService.resendActivation(id);
+            return new ResponseEntity<SuccessDTO>(dto, HttpStatus.OK);
+        } catch (ObjectNotFoundException e) {
+            ErrorDTO dto = new ErrorDTO(e.getMessage());
+            return new ResponseEntity<ErrorDTO>(dto, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("")
+    public ResponseEntity<?> createRoot(Principal principal) {
+        return new ResponseEntity<>(principal.getName(), HttpStatus.OK);
+    }
+
+    @PostMapping("recaptcha")
+    public ResponseEntity<?> captcha(@RequestBody RecaptchaToken dto) {
+        try {
+            if (userService.isValidCaptcha(dto.getToken())) {
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                ErrorDTO error = new ErrorDTO("BACK OFF ROBOT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                return new ResponseEntity<ErrorDTO>(error, HttpStatus.BAD_REQUEST);
+            }
+        } catch (RuntimeException e) {
+            ErrorDTO error = new ErrorDTO(e.getMessage());
+            return new ResponseEntity<ErrorDTO>(error, HttpStatus.NOT_EXTENDED);
+        }
+    }
+
 
 }

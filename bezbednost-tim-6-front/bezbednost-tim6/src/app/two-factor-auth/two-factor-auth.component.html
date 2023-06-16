@@ -1,0 +1,21 @@
+<div class="xdddd">
+    <form
+        method="POST"
+        [formGroup]="tfaForm" 
+        (ngSubmit)="submitCode()"
+        fxLayout="row"
+        fxLayoutAlign="space-between center">
+            <div class="mb-md-5 mt-md-4 pb-5">
+
+                    <p>We sent you verification code to your device. Please enter it down below:</p>
+
+                    <div class="form-outline form-white mb-4">
+                        <input type="number" id="verification_code_input" name="code" class="form-control form-control-lg" formControlName="code"/>
+                    </div>
+
+                    <button class="btn btn-outline-light btn-lg btn-block px-5" type="submit" id="submitButton" (keydown.enter)="submitCode()" [disabled]="!tfaForm.valid">Submit</button>
+
+
+                </div>
+    </form>
+</div>

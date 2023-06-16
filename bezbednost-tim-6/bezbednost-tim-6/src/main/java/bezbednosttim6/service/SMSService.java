@@ -43,7 +43,12 @@ public class SMSService {
 		String body = "Your password reset code: " + code;
 		sendSMS(toNumber,body);
 	}
-	
+
+	public void sendVerificationCode(String telephoneNumber, String verificationCode) {
+		String body = "Here is your verification code: "+verificationCode;
+		sendSMS(telephoneNumber,body);
+	}
+
 //	public void sendPasswordResetMail(String email, String token) throws MessagingException {
 //		String body = "To change your password click on the following link http://localhost:4200/reset-password?token="+token;
 //		sendEmail(email,"IB Projekat Tim6 Reset Password",body);

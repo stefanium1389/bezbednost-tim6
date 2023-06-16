@@ -13,6 +13,7 @@ import { ViewSentRequestsComponent } from './view-sent-requests/view-sent-reques
 import { ViewReceivedRequestsComponent } from './view-received-requests/view-received-requests.component';
 import { ViewAllRequestsComponent } from './view-all-requests/view-all-requests.component';
 import { RenewPasswordComponent } from './renew-password/renew-password.component';
+import { TwoFactorAuthComponent } from './two-factor-auth/two-factor-auth.component';
 
 const routes: Routes = [
   {path: "", component: LoginComponent},
@@ -27,6 +28,7 @@ const routes: Routes = [
   {path: "view-all-certs", component: ViewAllCertsComponent},
   {path: "view-sent-requests", component: ViewSentRequestsComponent},
   {path: "view-received-requests", component: ViewReceivedRequestsComponent},
+  {path: "verify-code", component: TwoFactorAuthComponent},
   {path: "view-all-requests", component: ViewAllRequestsComponent}
 ];
 
