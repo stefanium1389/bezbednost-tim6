@@ -87,7 +87,7 @@ public class PasswordResetService {
 		if(user == null) {
 			throw new ObjectNotFoundException("User does not exist!");
 		}
-		if(!Objects.equals(dto.getNewPassword(), dto.getRepeatPassword())) {
+		if(!dto.getNewPassword().equals(dto.getRepeatPassword())) {
 			throw new ConditionNotMetException("Passwords not matching!");
 		}
 		String password = encoder.encode(dto.getNewPassword());
