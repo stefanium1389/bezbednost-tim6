@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, Validators, ValidatorFn } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RegistrationDTO } from '../dtos/RegistrationDtos';
 import { UserdataService } from '../backend-services/userdata.service';
@@ -15,9 +15,12 @@ import { ApiResponse } from '../dtos/RecaptchaApiResponse';
 })
 export class RegisterComponent implements OnInit {
 
-  constructor(private userData: UserdataService,private router: Router, private recaptchaV3Service: ReCaptchaV3Service) { }
+  constructor(private userData: UserdataService,private router: Router, private recaptchaV3Service: ReCaptchaV3Service) {
+    this.check = this.check.bind(this);
+   }
 
   registerForm!: FormGroup;
+  isDisabled: boolean = true;
 
   ngOnInit(): void {
     this.registerForm = new FormGroup({
@@ -27,9 +30,18 @@ export class RegisterComponent implements OnInit {
       name: new FormControl('', Validators.required),
       surname: new FormControl('', Validators.required),
       phone: new FormControl('', Validators.required),
-      validationType: new FormControl('', Validators.required)},
-      { validators: matchPasswords }
+      validationType: new FormControl('', Validators.required),
+      btn: new FormControl("")},
+      { validators: this.check },
     );
+  }
+
+  	customEmailValidator(control: AbstractControl) {
+      const custom = control.get('email');
+      if (custom?.value == "hej") {
+        return { email: true };
+      }
+      return null;
   }
 
   register(){
@@ -85,6 +97,40 @@ export class RegisterComponent implements OnInit {
         })
       });
   }
+
+   check(control: AbstractControl) {
+    const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>])(?=.*[^\s]).{8,}$/;
+    const lettersOnlyRegex = /^[A-Za-z]+$/;
+    const numbersOnlyRegex = /^\d+$/;
+    const password = control.get('password');
+    const isValidPassword = passwordRegex.test(password?.value);
+    const confirmPassword = control.get('repeatPassword');
+    const isValidRepeatPassword = passwordRegex.test(confirmPassword?.value);
+    const passwordMatch = password?.value !== confirmPassword?.value;
+    const cmail = control.get('email');
+    const isValidEmail = emailRegex.test(cmail?.value);
+    const name = control.get('name');
+    const isValidName = lettersOnlyRegex.test(name?.value);
+    const surname = control.get('surname');
+    const isValidSurname = lettersOnlyRegex.test(surname?.value);
+    const phoneNumber = control.get('phone');
+    const isPhoneValid = numbersOnlyRegex.test(phoneNumber?.value);
+    if (isValidEmail && isValidPassword && isValidRepeatPassword && !passwordMatch && isValidName && isValidSurname && isPhoneValid) {
+      this.isDisabled = false;
+    } else {
+      this.isDisabled = true;
+    }
+    return { notSame: passwordMatch,
+          validEmail: !isValidEmail,
+          validPassword :!isValidPassword,
+          validRepeatPassword: !isValidRepeatPassword,
+          validName: !isValidName,
+          validSurname: !isValidSurname,
+          validPN: !isPhoneValid
+          };
+    
+  }
 }
 
 
@@ -96,3 +142,40 @@ export function matchPasswords(control: AbstractControl) {
   }
   return null;
 }
+
+// export function check(control: AbstractControl) {
+//   const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+//   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>])(?=.*[^\s]).{8,}$/;
+//   const lettersOnlyRegex = /^[A-Za-z]+$/;
+//   const numbersOnlyRegex = /^\d+$/;
+//   const password = control.get('password');
+//   const isValidPassword = passwordRegex.test(password?.value);
+//   const confirmPassword = control.get('repeatPassword');
+//   const isValidRepeatPassword = passwordRegex.test(confirmPassword?.value);
+//   const passwordMatch = password?.value !== confirmPassword?.value;
+//   const cmail = control.get('email');
+//   const isValidEmail = emailRegex.test(cmail?.value);
+//   const name = control.get('name');
+//   const isValidName = lettersOnlyRegex.test(name?.value);
+//   const surname = control.get('surname');
+//   const isValidSurname = lettersOnlyRegex.test(surname?.value);
+//   const phoneNumber = control.get('phone');
+//   const isPhoneValid = numbersOnlyRegex.test(phoneNumber?.value);
+//   const btnControl = control.get('btn');
+//   // if (btnControl && isValidEmail && isValidPassword && isValidRepeatPassword && passwordMatch && isValidName && isValidSurname && isPhoneValid) {
+//   //   const btnElement: HTMLButtonElement = btnControl.value;
+//   //   btnElement.disabled = false;
+//   // } else if (btnControl && !(isValidEmail && isValidPassword && isValidRepeatPassword && passwordMatch && isValidName && isValidSurname && isPhoneValid) ) {
+//   //   const btnElement: HTMLButtonElement = btnControl.value;
+//   //   btnElement.disabled = true;
+//   // }
+//   return { notSame: passwordMatch,
+//         validEmail: !isValidEmail,
+//         validPassword :!isValidPassword,
+//         validRepeatPassword: !isValidRepeatPassword,
+//         validName: !isValidName,
+//         validSurname: !isValidSurname,
+//         validPN: !isPhoneValid
+//         };
+  
+// }

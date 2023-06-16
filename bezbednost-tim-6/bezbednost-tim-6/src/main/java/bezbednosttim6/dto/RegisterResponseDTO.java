@@ -2,10 +2,8 @@ package bezbednosttim6.dto;
 
 import bezbednosttim6.model.User;
 import jakarta.validation.constraints.Email;
-import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
-@Data
 public class RegisterResponseDTO {
     private Long id;
     @Length(max = 100)
@@ -41,7 +39,44 @@ public class RegisterResponseDTO {
         this.email           = user.getEmail();
     }
 
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public String getTelephoneNumber() {
+        return telephoneNumber;
+    }
+
+    public void setTelephoneNumber(String telephoneNumber) {
+        this.telephoneNumber = telephoneNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }
 

@@ -5,7 +5,7 @@ import { CertificateService } from '../backend-services/certificate.service';
 @Component({
   selector: 'app-check-cert-validity',
   templateUrl: './check-cert-validity.component.html',
-  styleUrls: ['./check-cert-validity.component.scss']
+  styleUrls: ['./check-cert-validity.component.css']
 })
 export class CheckCertValidityComponent implements OnInit {
 
