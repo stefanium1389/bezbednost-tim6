@@ -20,7 +20,7 @@ export class RegisterComponent implements OnInit {
    }
 
   registerForm!: FormGroup;
-  isDisabled: boolean = true;
+  isDisabled: boolean = false;
 
   ngOnInit(): void {
     this.registerForm = new FormGroup({
@@ -99,6 +99,7 @@ export class RegisterComponent implements OnInit {
   }
 
    check(control: AbstractControl) {
+    // return 
     const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>])(?=.*[^\s]).{8,}$/;
     const lettersOnlyRegex = /^[A-Za-z]+$/;
@@ -121,15 +122,29 @@ export class RegisterComponent implements OnInit {
     } else {
       this.isDisabled = true;
     }
-    return { notSame: passwordMatch,
-          validEmail: !isValidEmail,
-          validPassword :!isValidPassword,
-          validRepeatPassword: !isValidRepeatPassword,
-          validName: !isValidName,
-          validSurname: !isValidSurname,
-          validPN: !isPhoneValid
-          };
-    
+    const errors: { [key: string]: any } = {};
+    if (!matchPasswords) {
+      errors['notSame'] = true;
+    }
+    if (!isValidEmail) {
+      errors['validEmail'] = true;
+    }
+    if (!isValidPassword) {
+      errors['validPassword'] = true;
+    }
+    if (!isValidRepeatPassword) {
+      errors['validRepeatPassword'] = true;
+    }
+    if (!isValidName) {
+      errors['validName'] = true;
+    }
+    if (!isValidSurname) {
+      errors['validSurname'] = true;
+    }
+    if (!isPhoneValid) {
+      errors['validPN'] = true;
+    }
+   return Object.keys(errors).length > 0 ? errors : null;
   }
 }
 

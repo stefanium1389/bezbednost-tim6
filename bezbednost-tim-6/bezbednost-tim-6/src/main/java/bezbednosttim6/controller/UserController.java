@@ -40,6 +40,8 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @RestController
 @RequestMapping("api/user/")
@@ -48,10 +50,10 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 
-	
+
 	@Autowired
 	private AuthenticationManager authenticationManager;
-	
+
 	@Autowired
 	private TokenUtils jwtTokenUtil;
 
@@ -59,8 +61,10 @@ public class UserController {
 	private ActivationService activationService;
 	@Autowired
 	private PasswordRenewService passwordRenewService;
-		
-	
+
+	private static final Logger logger = LogManager.getLogger(UserController.class);
+
+
 	@PostMapping ("login")
 	public ResponseEntity<?> postLogin (@RequestBody LoginRequestDTO loginRequestDTO)
 	{
@@ -83,7 +87,7 @@ public class UserController {
 		String token = jwtTokenUtil.generateToken(loginRequestDTO.getEmail());
 		String refreshToken = jwtTokenUtil.generateRefreshToken(loginRequestDTO.getEmail());
 		LoginResponseDTO response = new LoginResponseDTO(token, refreshToken);
-				
+
 		return new ResponseEntity<LoginResponseDTO>(response,HttpStatus.OK);
 		}
 		catch(AuthenticationException e)
@@ -92,7 +96,7 @@ public class UserController {
 			return new ResponseEntity<ErrorDTO>(error,HttpStatus.BAD_REQUEST);
 		}
 	}
-	
+
 	@PostMapping("loginWithGoogle")
 	public ResponseEntity<?> postGoogleLogin(@RequestBody String credential){
 		try {
@@ -117,7 +121,7 @@ public class UserController {
 			return new ResponseEntity<ErrorDTO>(error, HttpStatus.NOT_EXTENDED);
 		}
 	}
-	
+
 	//@PreAuthorize("hasRole('ADMIN')")
 //	@GetMapping("proba")
 //	public ResponseEntity<?> proba (Principal principal)
@@ -128,7 +132,7 @@ public class UserController {
 
 	@PostMapping("register")
 	public ResponseEntity<?> register(@RequestBody RegisterRequestDTO userRequest) throws UnsupportedEncodingException {
-		
+
 		try {
 			User newUser = userService.registerUser(userRequest);
 			return new ResponseEntity<>(new RegisterResponseDTO(newUser) , HttpStatus.CREATED);
@@ -137,8 +141,8 @@ public class UserController {
 			ErrorDTO dto = new ErrorDTO(e.getMessage());
 			return new ResponseEntity<ErrorDTO>(dto, HttpStatus.BAD_REQUEST);
 		}
-	}  
-	
+	}
+
 	@GetMapping("/activate/{activationId}")
     public ResponseEntity<?> activatePassenger(@PathVariable("activationId") String id)
     {
@@ -154,7 +158,7 @@ public class UserController {
     		ErrorDTO dto = new ErrorDTO(e.getMessage());
             return new ResponseEntity<ErrorDTO>(dto, HttpStatus.BAD_REQUEST);
     	}
-    	
+
     }
     @GetMapping("/activate/resend/{activationId}")
     public ResponseEntity<?> activatePassengerResend(@PathVariable("activationId") String id)
@@ -166,9 +170,9 @@ public class UserController {
     	catch(ObjectNotFoundException e) {
     		ErrorDTO dto = new ErrorDTO(e.getMessage());
             return new ResponseEntity<ErrorDTO>(dto, HttpStatus.NOT_FOUND);
-    	}    	
-    }    
-    
+    	}
+    }
+
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("")
 	public ResponseEntity<?> createRoot(Principal principal) {
@@ -189,6 +193,12 @@ public class UserController {
 			ErrorDTO error = new ErrorDTO(e.getMessage());
 			return new ResponseEntity<ErrorDTO>(error, HttpStatus.NOT_EXTENDED);
 		}
+	}
+
+	@GetMapping("hello")
+	public String hello() {
+		logger.info("bla");
+		return "prosao";
 	}
 
 }

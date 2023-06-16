@@ -171,10 +171,14 @@ export class LoginComponent implements OnInit {
     } else {
       this.isDisabled = true;
     }
-    return {
-          validEmail: !isValidEmail,
-          validPassword :!isValidPassword
-          };
+    const errors: { [key: string]: any } = {};
+    if (!isValidEmail) {
+      errors['validEmail'] = true;
+    }
+    if (!isValidPassword) {
+      errors['validPassword'] = true;
+    }
+    return Object.keys(errors).length > 0 ? errors : null;
     
   }
 
