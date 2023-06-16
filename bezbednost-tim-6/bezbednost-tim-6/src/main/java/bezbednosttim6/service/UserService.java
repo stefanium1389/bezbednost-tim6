@@ -9,6 +9,7 @@ import java.util.List;
 
 
 import bezbednosttim6.dto.RecaptchaResponse;
+import bezbednosttim6.exception.TypeNotFoundException;
 import bezbednosttim6.mapper.UserDTOwithPasswordMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -110,6 +111,18 @@ public class UserService {
 		user.setEmail(userRequest.getEmail());
 		user.setPassword(this.passwordEncoder.encode(userRequest.getPassword()));
 		user.setRole(roleService.findById(2));
+		if (userRequest.getValidationType().equals("emailValidation"))
+		{
+			user.setVerifyWithMail(true);
+		}
+		else if (userRequest.getValidationType().equals("phoneValidation"))
+		{
+			user.setVerifyWithMail(false);
+		}
+		else
+		{
+			throw new TypeNotFoundException("tip validacije nije prepoznat!");
+		}
 
 		user = addUser(user);
 		if(userRequest.getValidationType().equals("emailValidation")) {

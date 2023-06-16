@@ -130,6 +130,7 @@ public class UserController {
 	public ResponseEntity<?> register(@RequestBody RegisterRequestDTO userRequest) throws UnsupportedEncodingException {
 		
 		try {
+			System.out.println(userRequest.getValidationType());
 			User newUser = userService.registerUser(userRequest);
 			return new ResponseEntity<>(new RegisterResponseDTO(newUser) , HttpStatus.CREATED);
 		}
@@ -189,6 +190,11 @@ public class UserController {
 			ErrorDTO error = new ErrorDTO(e.getMessage());
 			return new ResponseEntity<ErrorDTO>(error, HttpStatus.NOT_EXTENDED);
 		}
+	}
+
+	@GetMapping("hello")
+	public String hello() {
+		return "hello";
 	}
 
 }

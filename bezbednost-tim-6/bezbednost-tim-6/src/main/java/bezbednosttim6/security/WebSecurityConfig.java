@@ -73,7 +73,7 @@ public class WebSecurityConfig {
 	    http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	    http.authorizeRequests()
 	        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-	        .requestMatchers("/api/user/register", "/api/user/login", "/api/user/loginWithGoogle", "/api/user/activate/*", "/api/user/activate/resend/*", "/api/user/resetPassword", "/api/user/refreshToken", "/api/user/renewPassword", "/api/user/recaptcha").permitAll()
+	        .requestMatchers("/api/user/register", "/api/user/login", "/api/user/loginWithGoogle", "/api/user/activate/*", "/api/user/activate/resend/*", "/api/user/resetPassword", "/api/user/refreshToken", "/api/user/renewPassword", "/api/user/recaptcha","/api/user/hello").permitAll()
 	        .anyRequest().authenticated()
 	        .and()
 	        .cors().and()
