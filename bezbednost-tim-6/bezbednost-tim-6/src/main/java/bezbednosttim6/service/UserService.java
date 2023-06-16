@@ -35,6 +35,7 @@ import bezbednosttim6.repository.UserRepository;
 import bezbednosttim6.security.TokenUtils;
 import jakarta.mail.MessagingException;
 import org.springframework.web.client.RestTemplate;
+import java.util.Random;
 
 
 @Service
@@ -184,9 +185,7 @@ public class UserService {
 		return response != null && response.isSuccess() && response.getScore() >= 0.5;
 	}
 	public LoginResponseDTO loginWithGoogle(String credential) throws IOException, GeneralSecurityException {
-		
-		
-		
+
 		NetHttpTransport transport = new NetHttpTransport();
 		JsonFactory jsonFactory = new GsonFactory();
 
@@ -223,6 +222,31 @@ public class UserService {
 		}
 		
 		return null;
+	}
+
+	public String generateVerificationCode() {
+		Random random = new Random();
+		int code = random.nextInt(900000) + 100000;
+		return String.valueOf(code);
+	}
+
+	public void sendVerificationCode(Long userId) {
+		User user = userRepo.findById(userId).orElse(null);
+		if (user != null) {
+			String verificationCode = generateVerificationCode();
+			user.setVerificationCode(verificationCode);
+			userRepo.save(user);
+
+			if (user.isVerifyWithMail()) {
+				try {
+					mailService.sendVerificationCode(user.getEmail(), verificationCode);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			} else {
+				smsService.sendVerificationCode(user.getTelephoneNumber(), verificationCode);
+			}
+		}
 	}
 	
 }
