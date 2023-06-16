@@ -91,7 +91,6 @@ export class LoginComponent implements OnInit {
         }
         this.users.recaptcha(tokenDTO).subscribe({
           next: result => {
-            console.log("jej");
             this.userService.login(body).subscribe({
               next: result => {
                 this.jwtService.setAccessToken(result.accessToken);
