@@ -9,6 +9,7 @@ import bezbednosttim6.mapper.UserDTOwithPasswordMapper;
 import bezbednosttim6.model.CertificateType;
 import bezbednosttim6.model.PasswordRenew;
 import bezbednosttim6.model.User;
+import bezbednosttim6.security.LogIdUtil;
 import bezbednosttim6.security.TokenUtils;
 import bezbednosttim6.service.*;
 import org.bouncycastle.operator.OperatorCreationException;
@@ -43,6 +44,7 @@ import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+
 @RestController
 @RequestMapping("api/user/")
 public class UserController {
@@ -63,6 +65,7 @@ public class UserController {
 	private PasswordRenewService passwordRenewService;
 
 	private static final Logger logger = LogManager.getLogger(UserController.class);
+	private LogIdUtil util = new LogIdUtil();
 
 
 	@PostMapping ("login")
@@ -197,6 +200,7 @@ public class UserController {
 
 	@GetMapping("hello")
 	public String hello() {
+		util.getNewLogId();
 		logger.info("bla");
 		return "prosao";
 	}
