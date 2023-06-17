@@ -8,8 +8,10 @@
         <h4>owner: {{x.userEmail}}</h4>
         <h4>valid from: {{x.validFrom}}</h4>
         <h4>valid to: {{x.validTo}}</h4>
+        <h4>revocation status: {{x.revokationStatus}}</h4>
+        <h4>validity status: {{x.isValid}}</h4>
         <div class="buttondiv">
-            <button type="button" class="btn redBtn text-uppercase wide-btn" (click)="revoke(x.serialNumber)">Revoke</button>
+            <button *ngIf="!(x.revokationStatus=='REVOKED') || !(x.isValid=='NOTVALID')"  type="button" class="btn redBtn text-uppercase wide-btn" (click)="revoke(x.serialNumber)">Revoke</button>
             <button type="button" class="btn greenBtn text-uppercase wide-btn" (click)="download(x.serialNumber)">Download</button>
         </div>
     </div>

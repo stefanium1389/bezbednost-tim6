@@ -13,6 +13,10 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import bezbednosttim6.controller.CertificateController;
+import bezbednosttim6.security.LogIdUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +38,8 @@ public class DownloadFileService {
 	
 	@Autowired
 	UserRepository userRepo;
+	private static final Logger logger = LogManager.getLogger(DownloadFileService.class);
+	private LogIdUtil util = new LogIdUtil();
 	
 	static private String FILE_PATH = "src/main/resources/certificates" ;
 
@@ -52,7 +58,8 @@ public class DownloadFileService {
         ZipOutputStream zipOut = new ZipOutputStream(baos); 						//inicajlizuj zip
         
 		if(db_certificate.get().getUser().getEmail().equals(username) || isAdmin) { //ako trazim svoj ili ako sam admin
-			
+			util.getNewLogId();
+			logger.info("Admin or certificate owner downloaded both public and private part of the certificate");
 			String public_fileName = serialNumber+".cer";
 			String public_path = FILE_PATH+"/public/"+public_fileName;
 	        addToZip(zipOut, public_path, public_fileName);
@@ -61,6 +68,8 @@ public class DownloadFileService {
 	        addToZip(zipOut, private_path, private_fileName);
 		}
 		else { 																		//ako trazim tudji sertifikat
+			util.getNewLogId();
+			logger.info("Non-Admin or non-certificate owner downloaded the public part certificate");
 			String public_fileName = serialNumber+".cer";
 			String public_path = FILE_PATH+"/public/"+public_fileName;
 	        addToZip(zipOut, public_path, public_fileName);

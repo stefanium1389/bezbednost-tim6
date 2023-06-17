@@ -2,9 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { CertificateDTO } from '../dtos/CertificateDTO';
 import { Reason } from '../view-received-requests/view-received-requests.component';
 import { RequestCertificateDTO } from '../dtos/RequestCertificateDTO';
+import { CertificateDTO } from '../view-all-certs/view-all-certs.component';
 
 @Injectable({
   providedIn: 'root'

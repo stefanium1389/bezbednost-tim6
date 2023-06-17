@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { CertificateDTO } from '../dtos/CertificateDTO';
 import { CertificateService } from '../backend-services/certificate.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import {MatDialog} from "@angular/material/dialog";
@@ -76,4 +75,16 @@ export class ViewAllCertsComponent implements OnInit {
   
   
 
+}
+
+export interface CertificateDTO {
+  certificateType:string,
+userId:number,
+validFrom: string,
+  userEmail: string,
+  serialNumber: number,
+  validTo: string,
+  commonName: string,
+  revokationStatus: string,
+  isValid: string
 }

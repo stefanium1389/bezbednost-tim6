@@ -91,6 +91,8 @@ public class CertificateController {
 		//TODO: napisati ovo lepše xd
 		catch (Exception e)
 		{
+			util.getNewLogId();
+			logger.error("Error occurred while requesting a certificate: " + e.getMessage());
 			ErrorDTO error = new ErrorDTO(e.getMessage());
 			return new ResponseEntity<ErrorDTO>(error,HttpStatus.BAD_REQUEST);
 		}
@@ -108,6 +110,8 @@ public class CertificateController {
 		//TODO: napisati ovo lepše xd
 		catch (Exception e)
 		{
+			util.getNewLogId();
+			logger.error("Error occurred while viewing sent requests: " + e.getMessage());
 			ErrorDTO error = new ErrorDTO(e.getMessage());
 			return new ResponseEntity<ErrorDTO>(error,HttpStatus.BAD_REQUEST);
 		}
@@ -125,6 +129,8 @@ public class CertificateController {
 		//TODO: napisati ovo lepše xd
 		catch (Exception e)
 		{
+			util.getNewLogId();
+			logger.error("Error occurred while viewing received: " + e.getMessage());
 			ErrorDTO error = new ErrorDTO(e.getMessage());
 			return new ResponseEntity<ErrorDTO>(error,HttpStatus.BAD_REQUEST);
 		}
@@ -133,15 +139,21 @@ public class CertificateController {
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("request/view")
 	public ResponseEntity<?> getAllCertificateRequests() {
+		util.getNewLogId();
+		logger.info("Admin requested all certificate requests");
+		util.getNewLogId();
+		logger.info("Returned successfully");
 		return new ResponseEntity<>(this.certificateRequestService.getAll(), HttpStatus.OK);
 	}
 
 	
 	@GetMapping("getAll")
 	public ResponseEntity<?> getAllCertificates() {
-		
+		util.getNewLogId();
+		logger.info("All certificates requested");
+		util.getNewLogId();
+		logger.info("Returned successfully");
 		return new ResponseEntity<>(this.certificateService.getAllCertificateDTOs(), HttpStatus.OK);
-		
 	}
 	
 	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
@@ -153,9 +165,13 @@ public class CertificateController {
 			return new ResponseEntity<>(HttpStatus.OK);
 		}
 		catch(ObjectNotFoundException e) {
+			util.getNewLogId();
+			logger.error("Error occurred checking certificate validity: " + e.getMessage());
 			return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
 		}
 		catch(Exception e) {
+			util.getNewLogId();
+			logger.error("Error occurred checking certificate validity: " + e.getMessage());
 			return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -168,9 +184,13 @@ public class CertificateController {
 			return new ResponseEntity<>(HttpStatus.OK);
 		}
 		catch(ObjectNotFoundException e) {
+			util.getNewLogId();
+			logger.error("Error occurred checking certificate validity: " + e.getMessage());
 			return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
 		}
 		catch(Exception e) {
+			util.getNewLogId();
+			logger.error("Error occurred checking certificate validity: " + e.getMessage());
 			return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
 		}
 		
@@ -184,6 +204,8 @@ public class CertificateController {
 			return new ResponseEntity<>(new CertificateRequestResponseDTO(newRequest), HttpStatus.OK);
 		} catch (Exception e)
 		{
+			util.getNewLogId();
+			logger.error("Error occurred while rejecting request " + requestId.toString() + " : " + e.getMessage());
 			ErrorDTO error = new ErrorDTO(e.getMessage());
 			return new ResponseEntity<ErrorDTO>(error,HttpStatus.NOT_FOUND);
 		}
@@ -197,6 +219,8 @@ public class CertificateController {
 			return new ResponseEntity<>(new CertificateRequestResponseDTO(newRequest), HttpStatus.OK);
 		} catch (Exception e)
 		{
+			util.getNewLogId();
+			logger.error("Error occurred while accepting request " + requestId.toString() + " : " + e.getMessage());
 			ErrorDTO error = new ErrorDTO(e.getMessage());
 			return new ResponseEntity<ErrorDTO>(error,HttpStatus.NOT_FOUND);
 		}
@@ -205,7 +229,8 @@ public class CertificateController {
 	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 	@GetMapping ("download/{serialNumber}")
 	public ResponseEntity<?> downloadCertificate (@PathVariable("serialNumber") Long serialNumber, Principal principal) {
-				
+		util.getNewLogId();
+		logger.info("User requested a certificate " + serialNumber.toString() + " as a file");
 		try {
 			byte[] zipBytes = downloadService.getZipBytes(serialNumber, principal);
 			HttpHeaders headers = new HttpHeaders();
@@ -217,6 +242,8 @@ public class CertificateController {
 	                .body(zipBytes);
 		} catch (Exception e)
 		{
+			util.getNewLogId();
+			logger.error("Error occurred while downloading certificate: " + e.getMessage());
 			ErrorDTO error = new ErrorDTO(e.getMessage());
 			return new ResponseEntity<ErrorDTO>(error,HttpStatus.NOT_FOUND);
 		}
@@ -230,6 +257,8 @@ public class CertificateController {
 			return new ResponseEntity<>(HttpStatus.OK);
 		} catch (Exception e)
 		{
+			util.getNewLogId();
+			logger.error("Error occurred while revoking certificate with serial number " + serialNumber.toString() + ": " + e.getMessage());
 			ErrorDTO error = new ErrorDTO(e.getMessage());
 			return new ResponseEntity<ErrorDTO>(error,HttpStatus.BAD_REQUEST);
 		}

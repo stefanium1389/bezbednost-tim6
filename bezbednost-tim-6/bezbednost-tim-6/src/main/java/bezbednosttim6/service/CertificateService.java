@@ -1,6 +1,7 @@
 package bezbednosttim6.service;
 
 
+import bezbednosttim6.controller.CertificateController;
 import bezbednosttim6.dto.*;
 import bezbednosttim6.exception.*;
 import bezbednosttim6.model.*;
@@ -12,6 +13,9 @@ import bezbednosttim6.model.User;
 import bezbednosttim6.repository.CertificateRepository;
 import bezbednosttim6.repository.CertificateRequestRepository;
 import bezbednosttim6.repository.UserRepository;
+import bezbednosttim6.security.LogIdUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x500.style.IETFUtils;
@@ -78,6 +82,9 @@ public class CertificateService {
 
 	@Autowired
 	private CertificateRequestRepository certificateRequestRepo;
+
+	private static final Logger logger = LogManager.getLogger(CertificateService.class);
+	private LogIdUtil util = new LogIdUtil();
 
 //	private X509Certificate root;
 
@@ -274,7 +281,7 @@ public class CertificateService {
 	}
 	
 	public List<CertificateDTO> getAllCertificateDTOs() {
-		List<Certificate> lista = certificateRepo.findByCertificateRevocationStatus(CertificateRevocationStatus.GOOD);
+		List<Certificate> lista = certificateRepo.findAll();
 		List<CertificateDTO> dtos = new ArrayList<CertificateDTO>();
 		for(Certificate c : lista) {
 			dtos.add(new CertificateDTO(c));
@@ -283,15 +290,20 @@ public class CertificateService {
 	}
 
 	public void createRoot(User user, String commonName, Duration duration) throws CertificateException, OperatorCreationException, IOException {
+		util.getNewLogId();
+		logger.info("Create root certificate with commonName: " + commonName + " for user: " + user.getId().toString());
 		KeyPair keyPair = generateKeyPair();
 		long days = duration.toDays();
 		X509Certificate certificate = generateCA(keyPair, "SHA256WithRSAEncryption", commonName, days);
 //		this.root = certificate;
 		exportCertificate(certificate, keyPair.getPrivate(), "src/main/resources/certificates/", CertificateType.ROOT, user, null);
+		util.getNewLogId();
+		logger.info("Root certificate successfully created");
 	}
 
 	public void createIntermediate(User user, Long serialNumber, String commonName, Duration duration) throws GeneralSecurityException, OperatorCreationException, IOException {
-
+		util.getNewLogId();
+		logger.info("Create intermediate certificate with commonName: " + commonName + " for user: " + user.getId().toString());
 		Optional<Certificate> certificateOpt = getBySerialNumber(serialNumber);
 
 		if(certificateOpt.isEmpty()) {
@@ -323,10 +335,13 @@ public class CertificateService {
 
 		X509Certificate certificate = generateIntermediateEnd(subjectKP, commonName, issuerKP, fromCertificate.getCommonName(), "SHA256WithRSAEncryption", duration.toDays());
 		exportCertificate(certificate, subjectKP.getPrivate(), "src/main/resources/certificates/", CertificateType.INTERMEDIATE, user, fromCertificate.getSerialNumber());
+		util.getNewLogId();
+		logger.info("Intermediate certificate successfully created");
 	}
 
 	public void createEnd(User user, Long serialNumber, String commonName, Duration duration) throws GeneralSecurityException, OperatorCreationException, IOException {
-
+		util.getNewLogId();
+		logger.info("Create end certificate with commonName: " + commonName + " for user: " + user.getId().toString());
 		Optional<Certificate> certificateOpt = getBySerialNumber(serialNumber);
 
 		if(certificateOpt.isEmpty()) {
@@ -358,11 +373,15 @@ public class CertificateService {
 
 		X509Certificate certificate = generateIntermediateEnd(subjectKP, commonName, issuerKP, fromCertificate.getCommonName(), "SHA256WithRSAEncryption", 750);
 		exportCertificate(certificate, subjectKP.getPrivate(), "src/main/resources/certificates/", CertificateType.END, user, fromCertificate.getSerialNumber());
+		util.getNewLogId();
+		logger.info("End certificate successfully created");
 	}
 
 
 	public void revokeCertificate(Long serialNumber, Principal principal, String reason) {
 		User user = userRepo.findUserByEmail(principal.getName());
+		util.getNewLogId();
+		logger.warn("User with id " + user.getId().toString() +" wants to revoke certificate with serial number " + serialNumber.toString());
 		boolean isAdmin = user.getRole().getId() == 1;
 		Optional<Certificate> db_certificateOpt = certificateRepo.findBySerialNumber(serialNumber);
 
@@ -379,11 +398,17 @@ public class CertificateService {
 			throw new ConditionNotMetException("You don't have the permission to revoke this certificate");
 		}
 
+		if (db_certificate.getCertificateRevocationStatus() == CertificateRevocationStatus.REVOKED) {
+			throw new ConditionNotMetException("Already revocated");
+		}
+
 		// rekurzija koja nadam se radi
 		revokeCertificate(db_certificate, reason);
 	}
 
 	private void revokeCertificate(Certificate certificate, String reason) {
+		util.getNewLogId();
+		logger.warn("Revoking certificate with serial number " + certificate.getSerialNumber().toString());
 		if (certificate.getCertificateType()!=CertificateType.END) {
 			List<Certificate> children = certificateRepo.findByIssuer(certificate.getSerialNumber());
 			for (Certificate child : children) {
@@ -399,6 +424,8 @@ public class CertificateService {
 		certificate.setStatus(CertificateStatus.NOTVALID);
 		certificateRepo.save(certificate);
 		certificateRepo.flush();
+		util.getNewLogId();
+		logger.warn("Successfully revoked certificate with serial number " + certificate.getSerialNumber().toString());
 	}
 
 }

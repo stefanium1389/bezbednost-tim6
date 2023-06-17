@@ -9,7 +9,11 @@ import java.security.cert.X509Certificate;
 import java.util.Objects;
 import java.util.Optional;
 
+import bezbednosttim6.controller.CertificateController;
 import bezbednosttim6.model.CertificateRevocationStatus;
+import bezbednosttim6.security.LogIdUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,8 +29,12 @@ public class CertificateValidationService {
 	
 	@Autowired
 	private CertificateRepository repo;
+	private static final Logger logger = LogManager.getLogger(CertificateValidationService.class);
+	private LogIdUtil util = new LogIdUtil();
 	
 	public void isValidFromFile(MultipartFile file) throws Exception {
+		util.getNewLogId();
+		logger.info("Check validity of certificate by uploaded file");
 		
 		if(file.getSize() > 1024 && !(file.getName().endsWith(".cer") || file.getName().endsWith(".crt"))) {
 			throw new ObjectNotFoundException("Invalid file");
@@ -36,6 +44,8 @@ public class CertificateValidationService {
         X509Certificate cert = (X509Certificate) cf.generateCertificate((InputStream) new ByteArrayInputStream(file.getBytes()));
         
 		try {
+			util.getNewLogId();
+			logger.warn("File is valid, checking certificate");
 			isValid(cert);
 		}
 		catch(ObjectNotFoundException e) {
@@ -52,7 +62,8 @@ public class CertificateValidationService {
 	}
 	
 	public void isValidFromSerial(Long serialNumber) throws Exception {
-		
+		util.getNewLogId();
+		logger.info("Check validity of certificate by serial number");
 		X509Certificate cert = getCertificate(serialNumber);
 		try {
 			isValid(cert);

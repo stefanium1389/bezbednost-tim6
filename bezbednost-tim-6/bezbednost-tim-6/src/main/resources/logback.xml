@@ -55,5 +55,25 @@
         <appender-ref ref="console" />
     </logger>
 
+    <logger name="bezbednosttim6.service.CertificateService" level="all">
+        <appender-ref ref="file" />
+        <appender-ref ref="console" />
+    </logger>
+
+    <logger name="bezbednosttim6.service.CertificateRequestService" level="all">
+        <appender-ref ref="file" />
+        <appender-ref ref="console" />
+    </logger>
+
+    <logger name="bezbednosttim6.service.CertificateValidationService" level="all">
+        <appender-ref ref="file" />
+        <appender-ref ref="console" />
+    </logger>
+
+    <logger name="bezbednosttim6.service.DownloadFileService" level="all">
+        <appender-ref ref="file" />
+        <appender-ref ref="console" />
+    </logger>
+
 
 </configuration>
