@@ -7,11 +7,14 @@ import bezbednosttim6.model.Certificate;
 import bezbednosttim6.model.CertificateRequest;
 import bezbednosttim6.model.CertificateType;
 import bezbednosttim6.model.User;
+import bezbednosttim6.security.LogIdUtil;
 import bezbednosttim6.service.CertificateRequestService;
 import bezbednosttim6.service.CertificateService;
 import bezbednosttim6.service.CertificateValidationService;
 import bezbednosttim6.service.DownloadFileService;
 import bezbednosttim6.service.UserService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.BCStyle;
@@ -66,6 +69,9 @@ public class CertificateController {
 	
 	@Autowired
 	private DownloadFileService downloadService;
+
+	private static final Logger logger = LogManager.getLogger(CertificateController.class);
+	private LogIdUtil util = new LogIdUtil();
 
 
 	@PreAuthorize("hasAnyRole('USER', 'ADMIN')")
@@ -227,6 +233,13 @@ public class CertificateController {
 			ErrorDTO error = new ErrorDTO(e.getMessage());
 			return new ResponseEntity<ErrorDTO>(error,HttpStatus.BAD_REQUEST);
 		}
+	}
+
+	@GetMapping("hello")
+	public String hello() {
+		util.getNewLogId();
+		logger.info("bla");
+		return "prosao";
 	}
 
 }

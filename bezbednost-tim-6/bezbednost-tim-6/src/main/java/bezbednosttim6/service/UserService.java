@@ -12,6 +12,9 @@ import bezbednosttim6.mapper.UserDTOwithPasswordMapper;
 import bezbednosttim6.model.Activation;
 import bezbednosttim6.model.TwoFactorAuth;
 import bezbednosttim6.repository.TwoFactorRepository;
+import bezbednosttim6.security.LogIdUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -71,6 +74,9 @@ public class UserService {
 	
 	@Value("${google.client.id}")
 	private String APP_ID;
+
+	private static final Logger logger = LogManager.getLogger(UserService.class);
+	private LogIdUtil util = new LogIdUtil();
 	
 	public User addUser(User User) 
 	{
@@ -123,6 +129,8 @@ public class UserService {
 		}
 		else
 		{
+			util.getNewLogId();
+			logger.error("Tip validacije nije prepoznat " + user.getId().toString());
 			throw new TypeNotFoundException("tip validacije nije prepoznat!");
 		}
 
@@ -132,6 +140,8 @@ public class UserService {
 			try {
 				mailService.sendActivationEmail(userRequest.getEmail(), token);
 			} catch (IOException e) {
+				util.getNewLogId();
+				logger.error(e.getMessage());
 				e.printStackTrace();
 			}
 		}
@@ -141,11 +151,13 @@ public class UserService {
 			try {
 				smsService.sendSMS("+381"+userRequest.getTelephoneNumber(), code);
 			}
-			catch (Exception e) {
+			catch (Exception e) {util.getNewLogId();
+				logger.error(e.getMessage());
 				e.printStackTrace();
 			}
 		}
-		
+		util.getNewLogId();
+		logger.info("User sucessfully registeres");
 		return user;
 		
 	}	

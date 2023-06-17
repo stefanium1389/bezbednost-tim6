@@ -70,6 +70,8 @@ public class UserController {
     @PostMapping("login/first")
     public ResponseEntity<?> postLogin(@RequestBody LoginRequestDTO loginRequestDTO) {
         try {
+            util.getNewLogId();
+            logger.info("Somebody is trying to log in");
             UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(loginRequestDTO.getEmail(),
                     loginRequestDTO.getPassword());
             Authentication auth = authenticationManager.authenticate(authReq);
@@ -77,18 +79,34 @@ public class UserController {
             SecurityContext sc = SecurityContextHolder.getContext();
             sc.setAuthentication(auth);
 
-            System.out.println("lmaoo");
+//            System.out.println("lmaoo");
 
             String email = loginRequestDTO.getEmail();
+            User user = userService.findUserByEmail(email);
             Optional<PasswordRenew> lastRenewOpt = passwordRenewService.findByLatestTimestamp(email);
             if (lastRenewOpt.isEmpty()) {
+                util.getNewLogId();
+                logger.warn("Password should be renewed before logging in for user: " + user.getId().toString());
                 passwordRenewService.postPasswordRenew(email);
+                util.getNewLogId();
+                logger.info("Password renewal email was successful sent to user: " + user.getId().toString());
                 return new ResponseEntity<>(HttpStatus.TEMPORARY_REDIRECT);
             } else {
+                util.getNewLogId();
+                logger.warn("Two-factor authentication is required for user: " + user.getId());
                 LoginCreateCodeDTO response = userService.loginStepOne(loginRequestDTO);
+                util.getNewLogId();
+                logger.info("TFA email was successfully sent to user: " + user.getId().toString());
                 return new ResponseEntity<LoginCreateCodeDTO>(response, HttpStatus.OK);
             }
         } catch (AuthenticationException e) {
+            util.getNewLogId();
+            logger.error("Login failed: " + e.getMessage());
+            ErrorDTO error = new ErrorDTO(e.getMessage());
+            return new ResponseEntity<ErrorDTO>(error, HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            util.getNewLogId();
+            logger.error("Login failed: " + e.getMessage());
             ErrorDTO error = new ErrorDTO(e.getMessage());
             return new ResponseEntity<ErrorDTO>(error, HttpStatus.BAD_REQUEST);
         }
@@ -97,11 +115,14 @@ public class UserController {
     @PostMapping("login/second")
     public ResponseEntity<?> postLoginStepTwo(@RequestBody LoginSecondStepRequestDTO loginSecondStepRequestDTO) {
         try {
-
+            util.getNewLogId();
+            logger.info("User is required to enter valid code and thus confirm their identity");
             LoginResponseDTO response = userService.loginStepTwo(loginSecondStepRequestDTO);
-
+            util.getNewLogId();
+            logger.info("User successfully confirmed their identity");
             return new ResponseEntity<LoginResponseDTO>(response, HttpStatus.OK);
         } catch (Exception e) {
+            logger.error("User failed to confirm identity");
             ErrorDTO error = new ErrorDTO(e.getMessage());
             return new ResponseEntity<ErrorDTO>(error, HttpStatus.BAD_REQUEST);
         }
@@ -110,10 +131,16 @@ public class UserController {
     @PostMapping("loginWithGoogle")
     public ResponseEntity<?> postGoogleLogin(@RequestBody String credential) {
         try {
+            util.getNewLogId();
+            logger.info("User is trying to login using google services");
             String token = credential.replace("\"", "");
             LoginResponseDTO response = userService.loginWithGoogle(token);
+            util.getNewLogId();
+            logger.info("Logging using google services was successful");
             return new ResponseEntity<LoginResponseDTO>(response, HttpStatus.OK);
         } catch (Exception e) {
+            util.getNewLogId();
+            logger.error("Logging in using google failed");
             ErrorDTO error = new ErrorDTO(e.getMessage());
             return new ResponseEntity<ErrorDTO>(error, HttpStatus.BAD_REQUEST);
         }
@@ -122,9 +149,15 @@ public class UserController {
     @PostMapping("refreshToken")
     public ResponseEntity<?> postRefresh(@RequestBody LoginResponseDTO dto) {
         try {
+            util.getNewLogId();
+            logger.info("User session has expired and is requested to be refreshed");
             SuccessDTO new_token = new SuccessDTO(userService.refreshToken(dto));
+            util.getNewLogId();
+            logger.info("Successfully refreshed session");
             return new ResponseEntity<>(new_token, HttpStatus.OK);
         } catch (RuntimeException e) {
+            util.getNewLogId();
+            logger.error("Failed to automatically give user a new session");
             ErrorDTO error = new ErrorDTO(e.getMessage());
             return new ResponseEntity<ErrorDTO>(error, HttpStatus.NOT_EXTENDED);
         }
@@ -140,12 +173,16 @@ public class UserController {
 
     @PostMapping("register")
     public ResponseEntity<?> register(@RequestBody RegisterRequestDTO userRequest) throws UnsupportedEncodingException {
-
         try {
+            util.getNewLogId();
+            logger.info("Somebody tried to register to the system");
             System.out.println(userRequest.getValidationType());
             User newUser = userService.registerUser(userRequest);
+//            logger.info("New user with id: " + userRequest.getId().toString() + " successfully registered to the system");
             return new ResponseEntity<>(new RegisterResponseDTO(newUser), HttpStatus.CREATED);
         } catch (RuntimeException e) {
+            util.getNewLogId();
+            logger.error("User failed to register " + e.getMessage());
             ErrorDTO dto = new ErrorDTO(e.getMessage());
             return new ResponseEntity<ErrorDTO>(dto, HttpStatus.BAD_REQUEST);
         }
@@ -154,9 +191,15 @@ public class UserController {
     @GetMapping("/activate/{activationId}")
     public ResponseEntity<?> activatePassenger(@PathVariable("activationId") String id) {
         try {
+            util.getNewLogId();
+            logger.info("User is trying to activate account through email or phone number");
             SuccessDTO dto = activationService.activatePassenger(id);
+            util.getNewLogId();
+            logger.info("User successfully activated account");
             return new ResponseEntity<SuccessDTO>(dto, HttpStatus.OK);
         } catch (ObjectNotFoundException e) {
+            util.getNewLogId();
+            logger.info("Account activation " + id + "filed activated account");
             ErrorDTO dto = new ErrorDTO(e.getMessage());
             return new ResponseEntity<ErrorDTO>(dto, HttpStatus.NOT_FOUND);
         } catch (ActionExpiredException e) {
@@ -186,13 +229,21 @@ public class UserController {
     @PostMapping("recaptcha")
     public ResponseEntity<?> captcha(@RequestBody RecaptchaToken dto) {
         try {
+            util.getNewLogId();
+            logger.warn("Recaptcha toke is being read");
             if (userService.isValidCaptcha(dto.getToken())) {
+                util.getNewLogId();
+                logger.info("Recaptcha token is successful");
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
+                util.getNewLogId();
+                logger.error("Recaptcha token is ivalid");
                 ErrorDTO error = new ErrorDTO("BACK OFF ROBOT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 return new ResponseEntity<ErrorDTO>(error, HttpStatus.BAD_REQUEST);
             }
         } catch (RuntimeException e) {
+            util.getNewLogId();
+            logger.error("Recaptcha token is ivalid");
             ErrorDTO error = new ErrorDTO(e.getMessage());
             return new ResponseEntity<ErrorDTO>(error, HttpStatus.NOT_EXTENDED);
         }

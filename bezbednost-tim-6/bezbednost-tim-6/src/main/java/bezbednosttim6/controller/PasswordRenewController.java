@@ -1,7 +1,10 @@
 package bezbednosttim6.controller;
 
 import bezbednosttim6.dto.*;
+import bezbednosttim6.security.LogIdUtil;
 import bezbednosttim6.service.PasswordRenewService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +23,9 @@ public class PasswordRenewController {
 
     @Autowired
     private PasswordRenewService passwordRenewService;
+
+    private static final Logger logger = LogManager.getLogger(PasswordRenewController.class);
+    private LogIdUtil util = new LogIdUtil();
 
     @PostMapping("renewPassword")
     private ResponseEntity<?> sendRenewPasswordEmail(@RequestBody PasswordResetRequestDTO dto){

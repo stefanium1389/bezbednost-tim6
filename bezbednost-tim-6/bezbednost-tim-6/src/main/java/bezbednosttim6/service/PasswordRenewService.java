@@ -6,6 +6,9 @@ import java.util.*;
 import bezbednosttim6.dto.CodeAndRenewPasswordsDTO;
 import bezbednosttim6.model.PasswordRenew;
 import bezbednosttim6.repository.PasswordRenewRepository;
+import bezbednosttim6.security.LogIdUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,6 +38,9 @@ public class PasswordRenewService {
     private PasswordEncoder encoder;
 
     private static int EXPIRES = 60*10; //10 minuta
+
+    private static final Logger logger = LogManager.getLogger(PasswordRenewService.class);
+    private LogIdUtil util = new LogIdUtil();
 
 
     private String generateToken() {
@@ -66,8 +72,11 @@ public class PasswordRenewService {
             mailService.sendPasswordRenewMail(email, token);
         }
         catch (IOException e) {
+            util.getNewLogId();
+            logger.error("Problem with email sending!");
             throw new ConditionNotMetException("Problem with email sending!");
         }
+//        logger.info("Successfully sent email!");
         return new SuccessDTO("Successfully sent email!");
 
     }
@@ -75,30 +84,44 @@ public class PasswordRenewService {
     public SuccessDTO putPasswordRenew(CodeAndRenewPasswordsDTO dto) {
         Optional<PasswordRenew> prOpt = passwordRenewRepo.findByToken(dto.getCode());
         if(prOpt.isEmpty()) {
+            util.getNewLogId();
+            logger.error("Code is incorrect!");
             throw new ObjectNotFoundException("Code is incorrect!");
         }
         PasswordRenew actual = prOpt.get();
         if(actual.getExpires().before(new Date(System.currentTimeMillis()))) {
+            util.getNewLogId();
+            logger.error("Code has expired!");
             throw new ConditionNotMetException("Code has expired!");
         }
         User user = userRepo.findUserByEmail(actual.getEmail());
         if(user == null) {
+            util.getNewLogId();
+            logger.error("User doesn't exist");
             throw new ObjectNotFoundException("User does not exist!");
         }
 
         if (!encoder.matches(dto.getOldPassword(), user.getPassword())) {
+            util.getNewLogId();
+            logger.error("Old password not matching for user: " + user.getId().toString());
             throw new ConditionNotMetException("Old password not matching!");
         }
 
         if(!Objects.equals(dto.getNewPassword(), dto.getRepeatPassword())) {
+            util.getNewLogId();
+            logger.error("Passwords not matching for user: " + user.getId().toString());
             throw new ConditionNotMetException("Passwords not matching!");
         }
 
         if (Objects.equals(dto.getNewPassword(), dto.getOldPassword())) {
+            util.getNewLogId();
+            logger.error("Enter new password (old password entered) for user: " + user.getId().toString());
             throw new ConditionNotMetException("Enter new password!");
         }
 
         if (!isValid(dto.getNewPassword(), user.getEmail())) {
+            util.getNewLogId();
+            logger.error("Enter new password (old password entered) for user: " + user.getId().toString());
             throw new ConditionNotMetException("Passwords already used!");
         }
 

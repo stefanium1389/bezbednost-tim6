@@ -1,5 +1,8 @@
 package bezbednosttim6.controller;
 
+import bezbednosttim6.security.LogIdUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +26,9 @@ public class PasswordResetController {
 	
 	@Autowired
 	private PasswordResetService passwordResetService;
+
+	private static final Logger logger = LogManager.getLogger(PasswordResetController.class);
+	private LogIdUtil util = new LogIdUtil();
 	
 	@PostMapping("resetPassword")
 	private ResponseEntity<?> sendResetPasswordEmail(@RequestBody PasswordResetRequestDTO dto){
