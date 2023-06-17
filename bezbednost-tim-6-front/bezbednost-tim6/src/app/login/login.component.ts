@@ -79,8 +79,8 @@ export class LoginComponent implements OnInit {
                 }
                 if (error?.status == 307) {
                     console.log('idemoo');
-                    //this.router.navigate(["renew-password"]);
-                    //this.sendRenew();
+                    this.router.navigate(["renew-password"]);
+                    this.sendRenew();
                 }
                 
               }

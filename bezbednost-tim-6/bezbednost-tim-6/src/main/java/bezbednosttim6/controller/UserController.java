@@ -78,9 +78,16 @@ public class UserController {
             sc.setAuthentication(auth);
 
             System.out.println("lmaoo");
-            LoginCreateCodeDTO response = userService.loginStepOne(loginRequestDTO);
 
-            return new ResponseEntity<LoginCreateCodeDTO>(response, HttpStatus.OK);
+            String email = loginRequestDTO.getEmail();
+            Optional<PasswordRenew> lastRenewOpt = passwordRenewService.findByLatestTimestamp(email);
+            if (lastRenewOpt.isEmpty()) {
+                passwordRenewService.postPasswordRenew(email);
+                return new ResponseEntity<>(HttpStatus.TEMPORARY_REDIRECT);
+            } else {
+                LoginCreateCodeDTO response = userService.loginStepOne(loginRequestDTO);
+                return new ResponseEntity<LoginCreateCodeDTO>(response, HttpStatus.OK);
+            }
         } catch (AuthenticationException e) {
             ErrorDTO error = new ErrorDTO(e.getMessage());
             return new ResponseEntity<ErrorDTO>(error, HttpStatus.BAD_REQUEST);

@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface PasswordRenewRepository extends JpaRepository<PasswordRenew, Long> {
     Optional<PasswordRenew> findByToken(String token);
 
-    @Query(value = "SELECT * FROM password_renew WHERE email=?1 and successful = true and timestamp > (current_timestamp() - interval 30 day) ORDER BY timestamp DESC LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM password_renew WHERE email=?1 and successful = true and timestamp > (current_timestamp() - interval 5 minute) ORDER BY timestamp DESC LIMIT 1", nativeQuery = true)
     Optional<PasswordRenew> findByLatestTimestamp(String email);
 
     @Query(value = "SELECT old_password FROM password_renew WHERE email=?1 and successful = true", nativeQuery = true)
