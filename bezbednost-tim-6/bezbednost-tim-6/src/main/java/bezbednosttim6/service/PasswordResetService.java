@@ -7,6 +7,9 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
+import bezbednosttim6.security.LogIdUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -41,6 +44,9 @@ public class PasswordResetService {
 	private PasswordEncoder encoder;
 	
 	private static int EXPIRES = 60*60*24; //1 dan
+
+	private static final Logger logger = LogManager.getLogger(PasswordResetService.class);
+	private LogIdUtil util = new LogIdUtil();
 	
 	
 	private String generateToken() {
@@ -55,8 +61,12 @@ public class PasswordResetService {
 	}
 	
 	private String generatePasswordResetRequest(String email) {
+		util.getNewLogId();
+		logger.info("User requested password reset via email");
 		User user = userRepo.findUserByEmail(email);
 		if(user == null) {
+			util.getNewLogId();
+			logger.error("User with said email doesn't exist");
 			throw new ObjectNotFoundException("User does not exist, please register!");
 		}
 		PasswordReset reset = new PasswordReset();
@@ -68,11 +78,17 @@ public class PasswordResetService {
 		reset.setExpires(new Date(System.currentTimeMillis()+(EXPIRES*1000)));
 		passwordResetRepo.save(reset);
 		passwordResetRepo.flush();
+		util.getNewLogId();
+		logger.info("Email sent to user");
 		return token;
 	}
 	private String generatePasswordResetRequestSMS(String phone) {
+		util.getNewLogId();
+		logger.info("User requested password reset via SMS");
 		User user = userRepo.findUserByTelephoneNumber(phone);
 		if(user == null) {
+			util.getNewLogId();
+			logger.error("User with said number doesn't exist");
 			throw new ObjectNotFoundException("User does not exist, please register!");
 		}
 		PasswordReset reset = new PasswordReset();
@@ -84,6 +100,8 @@ public class PasswordResetService {
 		reset.setExpires(new Date(System.currentTimeMillis()+(EXPIRES*1000)));
 		passwordResetRepo.save(reset);
 		passwordResetRepo.flush();
+		util.getNewLogId();
+		logger.info("SMS sent sucessfully");
 		return code;
 	}
 
@@ -96,6 +114,8 @@ public class PasswordResetService {
 				mailService.sendPasswordResetMail(email, token);
 			} 
 			catch (IOException e) {
+				util.getNewLogId();
+				logger.error("Problem with email sending!");
 				throw new ConditionNotMetException("Problem with email sending!");
 			}
 		}
@@ -106,20 +126,30 @@ public class PasswordResetService {
 				smsService.sendPasswordResetSMS("+381" + phoneNumber, code);
 			}
 			catch (Exception e) {
+				util.getNewLogId();
+				logger.error("Problem with SMS sending!");
 				throw new ConditionNotMetException("Problem with SMS sending!");
 			}
 		}
+		util.getNewLogId();
+		logger.info("User is successfully sent the code/token");
 		return new SuccessDTO("Successfully sent!");
 		
 	}
 
 	public SuccessDTO putPasswordReset(CodeAndPasswordDTO dto) {
+		util.getNewLogId();
+		logger.info("User is required to enter code and new passwords");
 		Optional<PasswordReset> prOpt = passwordResetRepo.findByToken(dto.getCode());
 		if(prOpt.isEmpty()) {
+			util.getNewLogId();
+			logger.error("Code is incorrect");
 			throw new ObjectNotFoundException("Code is incorrect!");
 		}
 		PasswordReset actual = prOpt.get();
 		if(actual.getExpires().before(new Date(System.currentTimeMillis()))) {
+			util.getNewLogId();
+			logger.error("Code has expired");
 			throw new ConditionNotMetException("Code has expired!");
 		}
 		User user = null;
@@ -130,9 +160,13 @@ public class PasswordResetService {
 			user = userRepo.findUserByTelephoneNumber(actual.getEmail());
 		}
 		if(user == null) {
+			util.getNewLogId();
+			logger.error("User does not exist");
 			throw new ObjectNotFoundException("User does not exist!");
 		}
 		if(!dto.getNewPassword().equals(dto.getRepeatPassword())) {
+			util.getNewLogId();
+			logger.error("Password not matching");
 			throw new ConditionNotMetException("Passwords not matching!");
 		}
 		String password = encoder.encode(dto.getNewPassword());
@@ -141,7 +175,8 @@ public class PasswordResetService {
 		userRepo.flush();
 		passwordResetRepo.delete(actual);
 		passwordResetRepo.flush();
-		
+		util.getNewLogId();
+		logger.info("Password successfully reseted");
 		return new SuccessDTO("Password successfully changed!");	
 	}
 

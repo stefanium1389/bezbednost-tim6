@@ -76,7 +76,8 @@ public class PasswordRenewService {
             logger.error("Problem with email sending!");
             throw new ConditionNotMetException("Problem with email sending!");
         }
-//        logger.info("Successfully sent email!");
+        util.getNewLogId();
+        logger.info("Successfully sent email!");
         return new SuccessDTO("Successfully sent email!");
 
     }
@@ -134,7 +135,8 @@ public class PasswordRenewService {
         user.setPassword(newEnc);
         userRepo.save(user);
         userRepo.flush();
-
+        util.getNewLogId();
+        logger.info("Password successfully renewed!");
         return new SuccessDTO("Password successfully renewed!");
     }
 

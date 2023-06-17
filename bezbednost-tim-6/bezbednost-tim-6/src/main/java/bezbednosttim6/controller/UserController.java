@@ -230,7 +230,7 @@ public class UserController {
     public ResponseEntity<?> captcha(@RequestBody RecaptchaToken dto) {
         try {
             util.getNewLogId();
-            logger.warn("Recaptcha toke is being read");
+            logger.warn("Recaptcha token is being read");
             if (userService.isValidCaptcha(dto.getToken())) {
                 util.getNewLogId();
                 logger.info("Recaptcha token is successful");

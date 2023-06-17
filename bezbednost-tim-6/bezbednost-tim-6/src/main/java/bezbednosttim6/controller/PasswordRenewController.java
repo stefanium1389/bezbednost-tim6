@@ -31,7 +31,10 @@ public class PasswordRenewController {
     private ResponseEntity<?> sendRenewPasswordEmail(@RequestBody PasswordResetRequestDTO dto){
 
         try {
+            util.getNewLogId();
+            logger.info("User is trying to renew password");
             SuccessDTO success = passwordRenewService.postPasswordRenew(dto.getEmail());
+
             return new ResponseEntity<SuccessDTO>(success,HttpStatus.NO_CONTENT);
         }
         catch(ObjectNotFoundException e){

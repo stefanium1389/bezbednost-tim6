@@ -25,5 +25,35 @@
         <appender-ref ref="console" />
     </logger>
 
+    <logger name="bezbednosttim6.controller.PasswordResetController" level="all">
+        <appender-ref ref="file" />
+        <appender-ref ref="console" />
+    </logger>
+
+    <logger name="bezbednosttim6.controller.PasswordRenewController" level="all">
+        <appender-ref ref="file" />
+        <appender-ref ref="console" />
+    </logger>
+
+    <logger name="bezbednosttim6.controller.CertificateController" level="all">
+        <appender-ref ref="file" />
+        <appender-ref ref="console" />
+    </logger>
+
+    <logger name="bezbednosttim6.service.UserService" level="all">
+        <appender-ref ref="file" />
+        <appender-ref ref="console" />
+    </logger>
+
+    <logger name="bezbednosttim6.service.PasswordRenewService" level="all">
+        <appender-ref ref="file" />
+        <appender-ref ref="console" />
+    </logger>
+
+    <logger name="bezbednosttim6.service.PasswordResetService" level="all">
+        <appender-ref ref="file" />
+        <appender-ref ref="console" />
+    </logger>
+
 
 </configuration>

@@ -3,6 +3,11 @@
 -- INSERT INTO users (email, password, name, surname, telephone_number, role_id, activated)
 -- VALUES ('stefanbogdjr@gmail.com', '$2a$10$iYCFgw.vl7KlYVikqSbLtOyAR5lNEKalF29dfYfGn7SRiE8pbskeu', 'Stefan','Bogdanovic', '644962814', 2, true);
 
+INSERT INTO users (email, password, name, surname, telephone_number, role_id, activated, verify_with_mail)
+VALUES ('andrijinkristina@gmail.com', '$2a$10$iYCFgw.vl7KlYVikqSbLtOyAR5lNEKalF29dfYfGn7SRiE8pbskeu', 'Kristina','Andrijin', '6521545154', 1, true, true);
+INSERT INTO users (email, password, name, surname, telephone_number, role_id, activated, verify_with_mail)
+VALUES ('stefanbogdjr@gmail.com', '$2a$10$iYCFgw.vl7KlYVikqSbLtOyAR5lNEKalF29dfYfGn7SRiE8pbskeu', 'Stefan','Bogdanovic', '644962814', 2, true, true);
+
 INSERT INTO roles (name) VALUES ('ROLE_ADMIN');
 INSERT INTO roles (name) VALUES ('ROLE_USER');
 
