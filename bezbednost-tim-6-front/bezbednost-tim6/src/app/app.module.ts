@@ -28,6 +28,7 @@ import { RenewPasswordComponent } from './renew-password/renew-password.componen
 import { MatSelectModule } from '@angular/material/select';
 import { RecaptchaV3Module, RECAPTCHA_V3_SITE_KEY } from 'ng-recaptcha';
 import { environment } from 'src/environments/environment';
+import { TwoFactorAuthComponent } from './two-factor-auth/two-factor-auth.component';
 
 
 @NgModule({
@@ -47,7 +48,8 @@ import { environment } from 'src/environments/environment';
     ViewReceivedRequestsComponent,
     InputReasonComponent,
     ViewAllRequestsComponent,
-    RenewPasswordComponent
+    RenewPasswordComponent,
+    TwoFactorAuthComponent
   ],
   imports: [
     BrowserModule,
